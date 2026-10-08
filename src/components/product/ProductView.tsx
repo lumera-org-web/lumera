@@ -32,7 +32,7 @@ export const ProductView: React.FC<ProductViewProps> = ({ product }) => {
   const activeImage = images[selectedImageIndex] || images[0];
 
   const activeImageUrl = activeImage?.image_url
-    ? getCloudinaryUrl(activeImage.image_url, { width: 900, height: 1100, crop: 'fill' })
+    ? getCloudinaryUrl(activeImage.image_url, { width: 1000, height: 1200, crop: 'limit' })
     : '';
 
   const handleAddToCart = () => {
@@ -80,21 +80,35 @@ export const ProductView: React.FC<ProductViewProps> = ({ product }) => {
             position: 'relative',
             flex: 1,
             aspectRatio: '4 / 5',
-            backgroundColor: '#1E120D',
+            backgroundColor: '#18100C',
             borderRadius: '4px',
             overflow: 'hidden',
             border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
+          {/* Ambient Studio Lighting Glow */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'radial-gradient(circle at 50% 50%, rgba(200, 162, 101, 0.1) 0%, rgba(24, 16, 12, 0.4) 50%, transparent 80%)',
+              pointerEvents: 'none',
+            }}
+          />
+
           {activeImageUrl ? (
-            <Image
-              src={activeImageUrl}
-              alt={displayName}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 50vw"
-              style={{ objectFit: 'cover' }}
-            />
+            <div style={{ position: 'absolute', inset: 0, padding: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <Image
+                  src={activeImageUrl}
+                  alt={displayName}
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  style={{ objectFit: 'contain' }}
+                />
+              </div>
+            </div>
           ) : (
             <div
               style={{
@@ -153,7 +167,7 @@ export const ProductView: React.FC<ProductViewProps> = ({ product }) => {
             }}
           >
             {images.map((img, idx) => {
-              const thumbUrl = getCloudinaryUrl(img.image_url, { width: 150, height: 180, crop: 'fill' });
+              const thumbUrl = getCloudinaryUrl(img.image_url, { width: 200, height: 240, crop: 'limit' });
               const isSelected = idx === selectedImageIndex;
               return (
                 <button
@@ -165,11 +179,13 @@ export const ProductView: React.FC<ProductViewProps> = ({ product }) => {
                     borderRadius: '2px',
                     overflow: 'hidden',
                     border: isSelected ? '1px solid var(--color-gold-400)' : '1px solid rgba(255, 255, 255, 0.08)',
+                    backgroundColor: '#18100C',
                     opacity: isSelected ? 1 : 0.6,
                     transition: 'all 0.2s',
+                    padding: '4px',
                   }}
                 >
-                  <Image src={thumbUrl} alt="" fill sizes="74px" style={{ objectFit: 'cover' }} />
+                  <Image src={thumbUrl} alt="" fill sizes="74px" style={{ objectFit: 'contain', padding: '4px' }} />
                 </button>
               );
             })}

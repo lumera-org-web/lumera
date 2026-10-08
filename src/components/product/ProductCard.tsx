@@ -29,11 +29,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const secondaryImage = product.images?.[1];
 
   const primaryUrl = primaryImage?.image_url
-    ? getCloudinaryUrl(primaryImage.image_url, { width: 600, height: 750, crop: 'fill' })
+    ? getCloudinaryUrl(primaryImage.image_url, { width: 800, height: 1000, crop: 'limit' })
     : '';
 
   const secondaryUrl = secondaryImage?.image_url
-    ? getCloudinaryUrl(secondaryImage.image_url, { width: 600, height: 750, crop: 'fill' })
+    ? getCloudinaryUrl(secondaryImage.image_url, { width: 800, height: 1000, crop: 'limit' })
     : primaryUrl;
 
   // Badge logic
@@ -101,24 +101,44 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         style={{
           position: 'relative',
           width: '100%',
-          paddingTop: '120%', // 4:5 aspect ratio
-          backgroundColor: '#1E120D',
+          paddingTop: '115%', // Luxury portrait proportion
+          backgroundColor: '#18100C',
           overflow: 'hidden',
           display: 'block',
         }}
       >
+        {/* Soft Ambient Radial Spotlight Glow */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 50% 50%, rgba(200, 162, 101, 0.08) 0%, rgba(24, 16, 12, 0.4) 60%, transparent 80%)',
+            pointerEvents: 'none',
+          }}
+        />
+
         {primaryUrl ? (
-          <Image
-            src={isHovered && secondaryUrl ? secondaryUrl : primaryUrl}
-            alt={displayName}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            style={{
-              objectFit: 'cover',
-              transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-              transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-            }}
-          />
+          <div className="product-image-frame">
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+              }}
+            >
+              <Image
+                src={isHovered && secondaryUrl ? secondaryUrl : primaryUrl}
+                alt={displayName}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                style={{
+                  objectFit: 'contain',
+                }}
+              />
+            </div>
+          </div>
         ) : (
           <div
             style={{
@@ -341,6 +361,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           border-color: rgba(200, 162, 101, 0.4);
           transform: translateY(-2px);
         }
+        .product-image-frame {
+          position: absolute;
+          inset: 0;
+          padding: 0.85rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
         .product-badge-wrap {
           top: 0.5rem;
           left: 0.5rem;
@@ -358,6 +386,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           flex: 1;
         }
         @media (min-width: 768px) {
+          .product-image-frame {
+            padding: 1.15rem;
+          }
           .product-badge-wrap {
             top: 0.75rem;
             left: 0.75rem;

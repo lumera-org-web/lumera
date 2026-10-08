@@ -334,28 +334,29 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
           }
 
           .hero-banner-section {
-            min-height: 86vh !important;
+            min-height: 88vh !important;
             height: auto !important;
             display: flex !important;
             flex-direction: column !important;
-            justify-content: flex-start !important;
+            justify-content: flex-end !important;
             align-items: center !important;
           }
 
           .hero-ambient-scrim {
             background: linear-gradient(
               180deg,
-              rgba(13, 7, 5, 0.88) 0%,
-              rgba(13, 7, 5, 0.65) 28%,
-              rgba(13, 7, 5, 0.15) 48%,
-              transparent 65%,
-              rgba(13, 7, 5, 0.45) 100%
+              rgba(13, 7, 5, 0.25) 0%,
+              rgba(13, 7, 5, 0.15) 35%,
+              rgba(13, 7, 5, 0.55) 60%,
+              rgba(13, 7, 5, 0.88) 80%,
+              rgba(13, 7, 5, 0.98) 100%
             ) !important;
           }
 
           .hero-content-container {
-            padding-top: 3.25rem !important;
-            padding-bottom: 2rem !important;
+            margin-top: auto !important;
+            padding-top: 2rem !important;
+            padding-bottom: 3.5rem !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
@@ -373,33 +374,34 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
 
           .hero-title {
             font-family: 'Cormorant Garamond', Georgia, serif !important;
-            font-size: clamp(2rem, 7.8vw, 2.7rem) !important;
+            font-size: clamp(1.85rem, 7.5vw, 2.5rem) !important;
             font-weight: 500 !important;
             color: #FFFFFF !important;
             letter-spacing: 0.05em !important;
             line-height: 1.12 !important;
-            margin-bottom: 0.6rem !important;
+            margin-bottom: 0.5rem !important;
             text-align: center !important;
-            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9) !important;
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95) !important;
           }
 
           .hero-subtitle {
             font-family: 'Cormorant Garamond', Georgia, serif !important;
-            font-size: 1.05rem !important;
+            font-size: clamp(0.875rem, 3.2vw, 1.05rem) !important;
             font-weight: 400 !important;
             color: #E7DDCE !important;
             letter-spacing: 0.02em !important;
             line-height: 1.45 !important;
-            margin-bottom: 1.35rem !important;
+            margin-bottom: 1.25rem !important;
             text-align: center !important;
-            max-width: 310px !important;
-            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85) !important;
+            max-width: 320px !important;
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9) !important;
           }
 
           .hero-cta-wrapper {
             display: flex !important;
             justify-content: center !important;
             width: 100% !important;
+            margin-bottom: 0.5rem !important;
           }
 
           .hero-cta-btn {
@@ -409,7 +411,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
             border: 1px solid var(--color-gold-400) !important;
             background: linear-gradient(180deg, rgba(28, 16, 12, 0.88) 0%, rgba(14, 8, 6, 0.95) 100%) !important;
             color: #FAF4EE !important;
-            padding: 0.75rem 2rem !important;
+            padding: 0.8rem 2.25rem !important;
             font-size: 0.72rem !important;
             font-weight: 600 !important;
             letter-spacing: 0.18em !important;
@@ -420,13 +422,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
 
           .hero-indicators {
             position: absolute !important;
-            bottom: 1.25rem !important;
+            bottom: 1.15rem !important;
             left: 50% !important;
             transform: translateX(-50%) !important;
             display: flex !important;
             align-items: center !important;
             gap: 0.65rem !important;
             justify-content: center !important;
+            z-index: 20 !important;
           }
 
           .hero-indicator-btn {

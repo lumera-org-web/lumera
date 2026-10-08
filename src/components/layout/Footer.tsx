@@ -310,7 +310,7 @@ export const Footer: React.FC = () => {
                 rel="noopener noreferrer"
                 className="footer-ekodrix-link"
               >
-                Ekodrix (ekodrix.com)
+                Ekodrix
               </a>
             </div>
           </div>

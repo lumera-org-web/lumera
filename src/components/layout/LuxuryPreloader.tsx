@@ -47,6 +47,7 @@ export const LuxuryPreloader: React.FC = () => {
   return (
     <div
       id="lumera-luxury-preloader"
+      suppressHydrationWarning
       style={{
         position: 'fixed',
         inset: 0,

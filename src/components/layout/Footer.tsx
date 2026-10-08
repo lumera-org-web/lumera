@@ -245,8 +245,8 @@ export const Footer: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/admin" className="footer-link-item" style={{ color: 'var(--color-gold-400)' }}>
-                      {locale === 'ar' ? 'بوابة الإدارة والمحتوى' : 'Admin / CMS Portal'}
+                    <Link href="/shop" className="footer-link-item">
+                      {locale === 'ar' ? 'ضمان الأصالة والجودة' : 'Authenticity Guarantee'}
                     </Link>
                   </li>
                 </ul>
@@ -295,11 +295,24 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* ========================================================================= */}
-        {/* 3. BOTTOM BAR (Copyright & Saudi Payment Badges) */}
+        {/* 3. BOTTOM BAR (Copyright, Crafted by Ekodrix & Saudi Payment Badges) */}
         {/* ========================================================================= */}
         <div className="footer-bottom-bar">
-          <div className="footer-copyright">
-            © {new Date().getFullYear()} LUMÉRA. ALL RIGHTS RESERVED. KINGDOM OF SAUDI ARABIA.
+          <div className="footer-legal-col">
+            <div className="footer-copyright">
+              © {new Date().getFullYear()} LUMÉRA. ALL RIGHTS RESERVED. KINGDOM OF SAUDI ARABIA.
+            </div>
+            <div className="footer-craft">
+              {locale === 'ar' ? 'تصميم وتطوير بواسطة ' : 'Crafted by '}
+              <a
+                href="https://ekodrix.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-ekodrix-link"
+              >
+                Ekodrix (ekodrix.com)
+              </a>
+            </div>
           </div>
 
           {/* Saudi Payment Badges */}
@@ -579,6 +592,28 @@ export const Footer: React.FC = () => {
             justify-content: space-between;
             text-align: left;
           }
+        }
+        .footer-legal-col {
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+        }
+        .footer-craft {
+          font-size: 0.68rem;
+          color: #8E7D74;
+          letter-spacing: 0.02em;
+        }
+        .footer-ekodrix-link {
+          color: var(--color-gold-400);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 3px;
+          text-decoration-color: rgba(200, 162, 101, 0.4);
+          transition: all 0.2s ease;
+        }
+        .footer-ekodrix-link:hover {
+          color: var(--color-gold-300);
+          text-decoration-color: var(--color-gold-300);
         }
         .footer-payment-badges {
           display: flex;

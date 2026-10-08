@@ -41,7 +41,7 @@ export default async function RootLayout({
   ]);
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -49,7 +49,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans">
+      <body className="font-sans" suppressHydrationWarning>
         <LocaleProvider>
           <WishlistProvider>
             <CartProvider>

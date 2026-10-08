@@ -1,0 +1,363 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* LUMÉRA Luxury Color Palette */
+  --color-espresso-950: #0D0705;
+  --color-espresso-900: #140C09;
+  --color-espresso-850: #1A100C;
+  --color-espresso-800: #241611;
+  --color-espresso-700: #331E17;
+  --color-espresso-600: #4A2D23;
+
+  /* Warm Cream & Ivory (Editorial Skincare & Contrast) */
+  --color-ivory-50: #FDFBF7;
+  --color-ivory-100: #FAF7F2;
+  --color-ivory-200: #F3ECE2;
+  --color-ivory-300: #E7DDCE;
+  --color-ivory-400: #D8C7B2;
+
+  /* Champagne & Warm Antique Gold */
+  --color-gold-300: #F0DDBE;
+  --color-gold-400: #DEC197;
+  --color-gold-500: #C8A265;
+  --color-gold-600: #A88143;
+  --color-gold-700: #7E5F2B;
+
+  /* Text & Surfaces */
+  --bg-primary: var(--color-espresso-900);
+  --bg-secondary: var(--color-espresso-850);
+  --bg-tertiary: var(--color-espresso-800);
+  --bg-elevated: var(--color-espresso-700);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #E3D9D2;
+  --text-muted: #9E8E85;
+  --text-accent: var(--color-gold-400);
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-gold: rgba(200, 162, 101, 0.25);
+  --border-light: rgba(0, 0, 0, 0.08);
+
+  /* Modern Luxury Beauty Typography (Matching Reference 2 - Montserrat / Outfit) */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-editorial-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Montserrat', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Montserrat', 'Outfit', sans-serif;
+  --font-arabic: 'Amiri', 'Montserrat', sans-serif;
+
+  /* Layout */
+  --max-width: 1440px;
+  --header-height: 84px;
+  --announcement-height: 38px;
+
+  /* Transitions */
+  --transition-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* RTL Typography & Direction */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+  font-family: var(--font-arabic), var(--font-sans);
+}
+
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] .font-serif {
+  font-family: var(--font-arabic), serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Luxury Typography Classes */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.text-gold {
+  color: var(--color-gold-400);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+/* Headings matching modern beauty typography */
+.editorial-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.35rem, 5.5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.editorial-section-tag {
+  font-family: var(--font-sans);
+  font-size: 0.725rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold-400);
+  margin-bottom: 0.75rem;
+}
+
+.editorial-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.editorial-lead {
+  font-size: clamp(0.925rem, 1.4vw, 1.1rem);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-weight: 300;
+  max-width: 520px;
+}
+
+/* Containers */
+.container-lumera {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container-lumera {
+    padding: 0 2.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container-lumera {
+    padding: 0 3.5rem;
+  }
+}
+
+/* Buttons */
+.btn-lumera-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.85rem 2rem;
+  background-color: var(--color-gold-400);
+  color: var(--color-espresso-950);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  transition: all var(--transition-smooth);
+}
+
+.btn-lumera-primary:hover {
+  background-color: var(--color-gold-300);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(222, 193, 151, 0.25);
+}
+
+.btn-lumera-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.85rem 2rem;
+  background-color: transparent;
+  color: #FFFFFF;
+  border: 1px solid var(--border-gold);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  transition: all var(--transition-smooth);
+}
+
+.btn-lumera-outline:hover {
+  background-color: rgba(222, 193, 151, 0.1);
+  border-color: var(--color-gold-400);
+  color: var(--color-gold-300);
+}
+
+.btn-lumera-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-gold-400);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+  padding: 0.25rem 0;
+  border-bottom: 1px solid transparent;
+}
+
+.btn-lumera-link:hover {
+  color: var(--color-gold-300);
+  border-bottom-color: var(--color-gold-400);
+  gap: 0.75rem;
+}
+
+/* Badges */
+.badge-lumera {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 1px;
+}
+
+.badge-trending {
+  background-color: #A36B42;
+  color: #FFFFFF;
+}
+
+.badge-bestseller {
+  background-color: #2E1B15;
+  color: var(--color-gold-400);
+  border: 1px solid var(--border-gold);
+}
+
+.badge-new {
+  background-color: var(--color-gold-400);
+  color: var(--color-espresso-950);
+}
+
+.badge-sale {
+  background-color: #8C2D19;
+  color: #FFFFFF;
+}
+
+/* Arched Arches for Fragrance category pills */
+.arch-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px 9999px 4px 4px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  transition: transform var(--transition-smooth), border-color var(--transition-smooth);
+}
+
+.arch-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-gold);
+}
+
+/* Skincare Ivory Theme Section */
+.theme-ivory {
+  background-color: var(--color-ivory-100);
+  color: var(--color-espresso-900);
+}
+
+.theme-ivory .editorial-section-tag {
+  color: var(--color-espresso-600);
+}
+
+.theme-ivory .editorial-lead {
+  color: var(--color-espresso-700);
+}
+
+.theme-ivory .btn-lumera-link {
+  color: var(--color-espresso-900);
+  border-bottom-color: var(--color-espresso-800);
+}
+
+/* Smooth Skeleton shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.08) 37%,
+      rgba(255, 255, 255, 0.03) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-espresso-950);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-espresso-700);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-600);
+}

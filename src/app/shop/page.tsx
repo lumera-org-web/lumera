@@ -113,13 +113,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             </Link>
           </div>
         ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
-              gap: '1.75rem',
-            }}
-          >
+          <div className="lumera-products-grid">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

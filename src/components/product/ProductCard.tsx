@@ -146,10 +146,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Top Badge */}
         {badgeText && (
           <div
+            className="product-badge-wrap"
             style={{
               position: 'absolute',
-              top: '0.75rem',
-              left: '0.75rem',
               zIndex: 2,
             }}
           >
@@ -161,13 +160,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <button
           onClick={handleToggleWishlist}
           aria-label="Save to wishlist"
+          className="product-wishlist-btn"
           style={{
             position: 'absolute',
-            top: '0.65rem',
-            right: '0.65rem',
             zIndex: 3,
-            width: '32px',
-            height: '32px',
             borderRadius: '50%',
             backgroundColor: isFavorited ? 'var(--color-gold-400)' : 'rgba(20, 12, 9, 0.65)',
             backdropFilter: 'blur(4px)',
@@ -178,7 +174,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             transition: 'all 0.2s ease',
           }}
         >
-          <Heart size={15} fill={isFavorited ? '#0D0705' : 'none'} strokeWidth={1.75} />
+          <Heart size={14} fill={isFavorited ? '#0D0705' : 'none'} strokeWidth={1.75} />
         </button>
 
         {/* Desktop Quick Add Bar on Hover */}
@@ -230,24 +226,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </Link>
 
       {/* Product Information */}
-      <div
-        style={{
-          padding: '0.9rem',
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-        }}
-      >
+      <div className="product-card-body">
         {/* Brand */}
         {product.brand && (
           <span
             style={{
-              fontSize: '0.675rem',
+              fontSize: 'clamp(0.575rem, 1.2vw, 0.675rem)',
               fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               color: 'var(--color-gold-400)',
-              marginBottom: '0.2rem',
+              marginBottom: '0.15rem',
+              display: 'block',
             }}
           >
             {product.brand.name}
@@ -258,25 +248,35 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <Link
           href={`/product/${product.slug}`}
           style={{
-            fontSize: '0.85rem',
+            fontSize: 'clamp(0.75rem, 1.5vw, 0.85rem)',
             fontWeight: 500,
-            lineHeight: 1.4,
+            lineHeight: 1.35,
             color: '#FFFFFF',
-            marginBottom: '0.35rem',
+            marginBottom: '0.25rem',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            minHeight: '2.4rem',
+            minHeight: '2.05rem',
           }}
         >
           {displayName}
         </Link>
 
-        {/* Rating matching Reference Image 2 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.5rem', fontSize: '0.725rem' }}>
+        {/* Rating */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.3rem',
+            marginBottom: '0.4rem',
+            fontSize: 'clamp(0.625rem, 1.2vw, 0.725rem)',
+          }}
+        >
           <span style={{ color: '#F5A623', fontWeight: 600 }}>★ {product.rating || '4.9'}</span>
-          <span style={{ color: '#8E7D74', fontSize: '0.675rem' }}>({product.reviews_count || 124} reviews)</span>
+          <span style={{ color: '#8E7D74', fontSize: 'clamp(0.575rem, 1vw, 0.675rem)' }}>
+            ({product.reviews_count || 124})
+          </span>
         </div>
 
         {/* Price & Mobile Add */}
@@ -286,13 +286,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingTop: '0.35rem',
+            paddingTop: '0.25rem',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', flexWrap: 'wrap' }}>
             <span
               style={{
-                fontSize: '0.9rem',
+                fontSize: 'clamp(0.825rem, 1.6vw, 0.9rem)',
                 fontWeight: 600,
                 color: '#FFFFFF',
                 letterSpacing: '0.02em',
@@ -303,7 +303,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {product.compare_at_price && product.compare_at_price > product.price && (
               <span
                 style={{
-                  fontSize: '0.75rem',
+                  fontSize: 'clamp(0.675rem, 1.2vw, 0.75rem)',
                   color: '#9E8E85',
                   textDecoration: 'line-through',
                 }}
@@ -318,8 +318,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             onClick={handleQuickAdd}
             aria-label="Add to bag"
             style={{
-              width: '28px',
-              height: '28px',
+              width: '26px',
+              height: '26px',
               borderRadius: '2px',
               backgroundColor: 'rgba(200, 162, 101, 0.15)',
               border: '1px solid var(--border-gold)',
@@ -327,10 +327,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexShrink: 0,
             }}
             className="mobile-add-btn"
           >
-            {addedNotice ? <Check size={14} /> : <Plus size={15} />}
+            {addedNotice ? <Check size={13} /> : <Plus size={14} />}
           </button>
         </div>
       </div>
@@ -339,6 +340,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         .product-card-root:hover {
           border-color: rgba(200, 162, 101, 0.4);
           transform: translateY(-2px);
+        }
+        .product-badge-wrap {
+          top: 0.5rem;
+          left: 0.5rem;
+        }
+        .product-wishlist-btn {
+          top: 0.5rem;
+          right: 0.5rem;
+          width: 28px;
+          height: 28px;
+        }
+        .product-card-body {
+          padding: 0.65rem 0.55rem 0.75rem 0.55rem;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+        @media (min-width: 768px) {
+          .product-badge-wrap {
+            top: 0.75rem;
+            left: 0.75rem;
+          }
+          .product-wishlist-btn {
+            top: 0.65rem;
+            right: 0.65rem;
+            width: 32px;
+            height: 32px;
+          }
+          .product-card-body {
+            padding: 0.9rem;
+          }
         }
         @media (min-width: 860px) {
           .desktop-quick-add {

@@ -14,40 +14,50 @@ export const TrendingSection: React.FC<TrendingSectionProps> = ({ products = [] 
   const { locale, t } = useLocale();
 
   return (
-    <section
-      style={{
-        backgroundColor: '#120A08',
-        padding: '5.5rem 0',
-        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-      }}
-    >
+    <section className="trending-section-root">
       <div className="container-lumera">
         {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'flex-end',
-            justifyContent: 'space-between',
-            marginBottom: '3rem',
-            gap: '1rem',
-          }}
-        >
+        <div className="trending-header">
           <div>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.675rem',
+                fontWeight: 700,
+                letterSpacing: '0.22em',
+                textTransform: 'uppercase',
+                color: 'var(--color-gold-400)',
+                display: 'block',
+                marginBottom: '0.35rem',
+              }}
+            >
+              {locale === 'ar' ? 'مختارات الموسم' : 'CURATED SELECTION'}
+            </span>
             <h2
               className="editorial-section-title"
-              style={{ color: '#FFFFFF', marginBottom: '0.4rem' }}
+              style={{
+                color: '#FFFFFF',
+                marginBottom: '0.35rem',
+                fontSize: 'clamp(1.4rem, 3.2vw, 2.4rem)',
+              }}
             >
               {locale === 'ar' ? 'الأكثر رواجاً الآن' : 'TRENDING NOW'}
             </h2>
-            <p style={{ color: '#9E8E85', fontSize: '0.9rem', margin: 0 }}>
+            <p
+              style={{
+                color: '#9E8E85',
+                fontSize: 'clamp(0.75rem, 1.8vw, 0.875rem)',
+                margin: 0,
+                maxWidth: '480px',
+              }}
+            >
               {locale === 'ar'
                 ? 'أحدث الاكتشافات التجميلية المفضلة لدى الجميع في المملكة.'
                 : 'The beauty discoveries everyone is talking about.'}
             </p>
           </div>
 
-          <Link href="/shop?filter=trending" className="btn-lumera-link">
+          <Link href="/shop?filter=trending" className="btn-lumera-link" style={{ whiteSpace: 'nowrap' }}>
             <span>{t('viewAll')}</span>
           </Link>
         </div>
@@ -74,19 +84,36 @@ export const TrendingSection: React.FC<TrendingSectionProps> = ({ products = [] 
             </Link>
           </div>
         ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-              gap: '1.5rem',
-            }}
-          >
+          <div className="lumera-products-grid">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        .trending-section-root {
+          background-color: #120A08;
+          padding: 3rem 0;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .trending-header {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          margin-bottom: 1.5rem;
+          gap: 1rem;
+        }
+        @media (min-width: 768px) {
+          .trending-section-root {
+            padding: 5.5rem 0;
+          }
+          .trending-header {
+            margin-bottom: 3rem;
+          }
+        }
+      `}</style>
     </section>
   );
 };

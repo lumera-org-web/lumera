@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNavigation } from '@/components/layout/MobileNavigation';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import { LuxuryPreloader } from '@/components/layout/LuxuryPreloader';
 import { Banner, Category } from '@/types';
 
 interface StorefrontShellProps {
@@ -30,6 +31,7 @@ export const StorefrontShell: React.FC<StorefrontShellProps> = ({
 
   return (
     <>
+      <LuxuryPreloader />
       <AnnouncementBar banners={banners} />
       <Header categories={categories} />
       <main style={{ minHeight: '80vh' }}>{children}</main>

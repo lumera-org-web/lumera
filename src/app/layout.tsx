@@ -42,6 +42,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(sessionStorage.getItem('lumera_intro_done')){document.documentElement.classList.add('lumera-skip-intro');}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="font-sans">
         <LocaleProvider>
           <WishlistProvider>

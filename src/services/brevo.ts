@@ -1,7 +1,10 @@
 /**
  * Brevo Transactional Email Service
  * Handles server-side dynamic emails (Order Confirmations, Shipping, Welcome)
+ * Supports both Brevo SMTP Relay (xsmtpsib-*) and REST API (xkeysib-*)
  */
+
+import nodemailer from 'nodemailer';
 
 interface BrevoRecipient {
   email: string;
@@ -21,15 +24,49 @@ export async function sendBrevoEmail({
   htmlContent,
   textContent,
 }: SendEmailParams): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  const apiKey = process.env.BREVO_API_KEY;
-  const senderEmail = process.env.BREVO_SENDER_EMAIL || 'concierge@lumera.sa';
+  const apiKey = process.env.BREVO_SMTP_KEY || process.env.BREVO_API_KEY;
+  const smtpLogin = process.env.BREVO_SMTP_LOGIN || 'bd67a9001@smtp-brevo.com';
+  const smtpHost = process.env.BREVO_SMTP_SERVER || 'smtp-relay.brevo.com';
+  const smtpPort = Number(process.env.BREVO_SMTP_PORT) || 587;
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || 'Lumera.ksa123@gmail.com';
   const senderName = process.env.BREVO_SENDER_NAME || 'LUMÉRA';
 
   if (!apiKey) {
-    console.warn('[Brevo] BREVO_API_KEY not configured. Email suppressed for logging.');
+    console.warn('[Brevo] Brevo credentials not configured. Email suppressed for logging.');
     return { success: true, messageId: 'simulated_local' };
   }
 
+  // 1. If key is an SMTP key (starts with 'xsmtpsib-') or BREVO_SMTP_KEY is set, use Nodemailer SMTP relay
+  if (apiKey.startsWith('xsmtpsib-') || process.env.BREVO_SMTP_KEY) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: false, // STARTTLS
+        auth: {
+          user: smtpLogin,
+          pass: apiKey,
+        },
+      });
+
+      const recipientList = to.map((r) => (r.name ? `"${r.name}" <${r.email}>` : r.email)).join(', ');
+
+      const info = await transporter.sendMail({
+        from: `"${senderName}" <${senderEmail}>`,
+        to: recipientList,
+        subject,
+        text: textContent || htmlContent.replace(/<[^>]*>/g, ''),
+        html: htmlContent,
+      });
+
+      return { success: true, messageId: info.messageId };
+    } catch (smtpErr: any) {
+      console.error('[Brevo SMTP Error]:', smtpErr);
+      return { success: false, error: smtpErr.message };
+    }
+  }
+
+  // 2. Otherwise use Brevo REST API (xkeysib-...)
   try {
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
@@ -49,14 +86,14 @@ export async function sendBrevoEmail({
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      console.error('[Brevo] API Error:', err);
+      console.error('[Brevo REST API Error]:', err);
       return { success: false, error: JSON.stringify(err) };
     }
 
     const data = await res.json();
     return { success: true, messageId: data.messageId };
   } catch (error: any) {
-    console.error('[Brevo] Network Exception:', error);
+    console.error('[Brevo Network Exception]:', error);
     return { success: false, error: error.message };
   }
 }
@@ -75,11 +112,11 @@ export async function sendOrderConfirmation(order: {
     <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; background: #140C09; color: #FAF7F2; padding: 40px 24px; border: 1px solid #C8A265;">
       <div style="text-align: center; margin-bottom: 30px;">
         <h1 style="color: #DEC197; letter-spacing: 4px; font-weight: normal; margin: 0;">LUMÉRA</h1>
-        <p style="color: #9E8E85; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px;">Saudi Arabia</p>
+        <p style="color: #9E8E85; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px;">Saudi Arabia · Haute Parfumerie & Beauty</p>
       </div>
       <p style="font-size: 16px; line-height: 1.6;">Dear ${order.customer_name},</p>
       <p style="font-size: 15px; line-height: 1.6; color: #E3D9D2;">
-        Thank you for choosing LUMÉRA. Your order <strong style="color: #DEC197;">#${order.order_number}</strong> has been received and is being prepared with utmost care for swift delivery.
+        Thank you for choosing LUMÉRA. Your order <strong style="color: #DEC197;">#${order.order_number}</strong> has been received and is being prepared with utmost care for swift dispatch.
       </p>
       <div style="margin: 30px 0; padding: 20px; background: #1A100C; border: 1px solid rgba(255,255,255,0.08);">
         <h3 style="margin-top: 0; color: #DEC197; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Order Summary</h3>

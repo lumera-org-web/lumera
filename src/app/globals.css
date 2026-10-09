@@ -396,3 +396,42 @@ img {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-gold-600);
 }
+
+/* Visibility Utilities */
+.d-none {
+  display: none !important;
+}
+
+.d-inline {
+  display: inline !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.d-block {
+  display: block !important;
+}
+
+@media (min-width: 768px) {
+  .d-md-none {
+    display: none !important;
+  }
+  .d-md-inline {
+    display: inline !important;
+  }
+  .d-md-flex {
+    display: flex !important;
+  }
+  .d-md-block {
+    display: block !important;
+  }
+}
+
+/* LUMÉRA Announcement Bar Zero-Shift */
+.lumera-announcement-bar {
+  height: 38px;
+  max-height: 38px;
+  overflow: hidden;
+}

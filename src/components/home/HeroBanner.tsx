@@ -31,6 +31,16 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
 
   const activeBanner = heroBanners[currentSlide] || heroBanners[0];
 
+  const rawTag =
+    locale === 'ar' && activeBanner?.subtitle_ar
+      ? activeBanner.subtitle_ar
+      : activeBanner?.subtitle || (locale === 'ar' ? 'المجموعة الحصرية' : 'HAUTE PERFUMERY');
+
+  // Strip any slide index markers like "· SLIDE 01" so count doesn't re-appear
+  const tag =
+    rawTag.replace(/\s*[·•|-]?\s*SLIDE\s*\d+/i, '').trim() ||
+    (locale === 'ar' ? 'المجموعة الحصرية' : 'HAUTE PERFUMERY');
+
   const title =
     locale === 'ar' && activeBanner?.title_ar
       ? activeBanner.title_ar
@@ -138,13 +148,16 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
       {/* Content Container */}
       <div className="container-lumera hero-content-container">
         <div key={currentSlide} className="hero-text-block animate-hero-fade">
-          {/* Main Editorial Title */}
-          <h1 className="editorial-hero-title hero-title">
+          {/* Editorial Category Tag */}
+          {tag ? <div className="hero-tag">{tag}</div> : null}
+
+          {/* Main Editorial Title in Cormorant Garamond */}
+          <h1 className="hero-title">
             {title}
           </h1>
 
           {/* Subtitle */}
-          <p className="editorial-lead hero-subtitle">
+          <p className="hero-subtitle">
             {subtitle}
           </p>
 
@@ -200,18 +213,39 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
           max-width: 640px;
         }
 
+        .hero-tag {
+          font-family: var(--font-sans);
+          font-size: 0.725rem;
+          letter-spacing: 0.26em;
+          text-transform: uppercase;
+          color: var(--color-gold-400);
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+          display: inline-block;
+        }
+
         .hero-title {
+          font-family: 'Cormorant Garamond', Georgia, serif !important;
+          font-size: clamp(2.8rem, 5.2vw, 4.8rem);
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          line-height: 1.08;
+          text-transform: uppercase;
           color: #FFFFFF;
           white-space: pre-line;
-          margin-bottom: 1.5rem;
-          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+          margin-bottom: 1.35rem;
+          text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
         }
 
         .hero-subtitle {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+          font-weight: 400;
           color: #D8C7B2;
-          margin-bottom: 2.5rem;
-          font-size: 1.05rem;
+          letter-spacing: 0.02em;
           line-height: 1.6;
+          margin-bottom: 2.25rem;
+          max-width: 560px;
         }
 
         .hero-cta-wrapper {
@@ -253,6 +287,23 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
 
         .animate-hero-fade {
           animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        [dir="rtl"] .hero-title,
+        html[dir="rtl"] .hero-title {
+          font-family: var(--font-arabic), serif !important;
+          letter-spacing: 0 !important;
+        }
+
+        [dir="rtl"] .hero-subtitle,
+        html[dir="rtl"] .hero-subtitle {
+          font-family: var(--font-arabic), serif !important;
+        }
+
+        [dir="rtl"] .hero-tag,
+        html[dir="rtl"] .hero-tag {
+          font-family: var(--font-arabic), sans-serif !important;
+          letter-spacing: 0.1em !important;
         }
 
         /* Desktop Viewport Rules (Strictly Preserved Same) */
@@ -317,13 +368,21 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
             align-items: center !important;
           }
 
+          .hero-tag {
+            font-size: 0.68rem !important;
+            letter-spacing: 0.24em !important;
+            margin-bottom: 0.45rem !important;
+            text-align: center !important;
+          }
+
           .hero-title {
             font-family: 'Cormorant Garamond', Georgia, serif !important;
-            font-size: clamp(1.85rem, 7.5vw, 2.5rem) !important;
-            font-weight: 500 !important;
+            font-size: clamp(2rem, 7.5vw, 2.75rem) !important;
+            font-weight: 600 !important;
             color: #FFFFFF !important;
-            letter-spacing: 0.05em !important;
-            line-height: 1.12 !important;
+            letter-spacing: 0.04em !important;
+            line-height: 1.1 !important;
+            text-transform: uppercase !important;
             margin-bottom: 0.5rem !important;
             text-align: center !important;
             text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95) !important;
@@ -331,14 +390,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
 
           .hero-subtitle {
             font-family: 'Cormorant Garamond', Georgia, serif !important;
-            font-size: clamp(0.875rem, 3.2vw, 1.05rem) !important;
+            font-size: clamp(0.9rem, 3.2vw, 1.05rem) !important;
             font-weight: 400 !important;
             color: #E7DDCE !important;
             letter-spacing: 0.02em !important;
             line-height: 1.45 !important;
             margin-bottom: 1.25rem !important;
             text-align: center !important;
-            max-width: 320px !important;
+            max-width: 330px !important;
             text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9) !important;
           }
 

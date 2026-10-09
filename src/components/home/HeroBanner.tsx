@@ -155,27 +155,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
             </Link>
           </div>
         </div>
-
-        {/* Slide Indicator Dots / Numbers */}
-        {heroBanners.length > 1 && (
-          <div className="hero-indicators">
-            {heroBanners.map((_, idx) => {
-              const num = `0${idx + 1}`;
-              const active = currentSlide === idx;
-              return (
-                <button
-                  key={num}
-                  onClick={() => setCurrentSlide(idx)}
-                  className={`hero-indicator-btn ${active ? 'active' : ''}`}
-                  aria-label={`Slide ${idx + 1}`}
-                >
-                  <span className="hero-indicator-num">{num}</span>
-                  <span className="hero-indicator-dot" />
-                </button>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       {/* Embedded Responsive CSS: Desktop preserved 100% same, Mobile styled like luxury reference */}
@@ -261,40 +240,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
           border-color: var(--color-gold-400);
         }
 
-        .hero-indicators {
-          position: absolute;
-          bottom: 1.5rem;
-          left: 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 1.25rem;
-          font-size: 0.75rem;
-          letter-spacing: 0.15em;
-          color: #7E6F67;
-          z-index: 15;
-        }
-
-        .hero-indicator-btn {
-          color: #7E6F67;
-          font-weight: 400;
-          background: transparent;
-          border: none;
-          border-bottom: 2px solid transparent;
-          padding-bottom: 3px;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .hero-indicator-btn.active {
-          color: var(--color-gold-400);
-          font-weight: 700;
-          border-bottom-color: var(--color-gold-400);
-        }
-
-        .hero-indicator-dot {
-          display: none;
-        }
-
         @keyframes heroFadeIn {
           from {
             opacity: 0;
@@ -356,7 +301,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
           .hero-content-container {
             margin-top: auto !important;
             padding-top: 2rem !important;
-            padding-bottom: 3.5rem !important;
+            padding-bottom: 2.25rem !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
@@ -401,7 +346,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
             display: flex !important;
             justify-content: center !important;
             width: 100% !important;
-            margin-bottom: 0.5rem !important;
           }
 
           .hero-cta-btn {
@@ -418,47 +362,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
             text-transform: uppercase !important;
             border-radius: 2px !important;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 16px rgba(200, 162, 101, 0.12) !important;
-          }
-
-          .hero-indicators {
-            position: absolute !important;
-            bottom: 1.15rem !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            display: flex !important;
-            align-items: center !important;
-            gap: 0.65rem !important;
-            justify-content: center !important;
-            z-index: 20 !important;
-          }
-
-          .hero-indicator-btn {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            border: none !important;
-            padding: 0.35rem !important;
-            background: transparent !important;
-          }
-
-          .hero-indicator-num {
-            display: none !important;
-          }
-
-          .hero-indicator-dot {
-            display: block !important;
-            width: 7px !important;
-            height: 7px !important;
-            border-radius: 50% !important;
-            background-color: rgba(255, 255, 255, 0.3) !important;
-            transition: all 0.3s ease !important;
-          }
-
-          .hero-indicator-btn.active .hero-indicator-dot {
-            width: 22px !important;
-            border-radius: 4px !important;
-            background-color: var(--color-gold-400) !important;
-            box-shadow: 0 0 10px rgba(200, 162, 101, 0.5) !important;
           }
         }
       `}</style>

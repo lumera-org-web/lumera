@@ -330,8 +330,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
           }
 
           .hero-banner-section {
-            min-height: 88vh !important;
-            height: auto !important;
+            height: calc(100vh - 95px) !important;
+            height: calc(100dvh - 95px) !important;
+            min-height: 520px !important;
+            max-height: 720px !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: flex-end !important;
@@ -341,18 +343,18 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
           .hero-ambient-scrim {
             background: linear-gradient(
               180deg,
-              rgba(13, 7, 5, 0.25) 0%,
-              rgba(13, 7, 5, 0.15) 35%,
-              rgba(13, 7, 5, 0.55) 60%,
-              rgba(13, 7, 5, 0.88) 80%,
-              rgba(13, 7, 5, 0.98) 100%
+              rgba(13, 7, 5, 0.15) 0%,
+              rgba(13, 7, 5, 0.05) 35%,
+              rgba(13, 7, 5, 0.45) 55%,
+              rgba(13, 7, 5, 0.82) 72%,
+              rgba(13, 7, 5, 0.97) 100%
             ) !important;
           }
 
           .hero-content-container {
             margin-top: auto !important;
-            padding-top: 2rem !important;
-            padding-bottom: 2.25rem !important;
+            padding-top: 1rem !important;
+            padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px)) !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
@@ -369,35 +371,35 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
           }
 
           .hero-tag {
-            font-size: 0.68rem !important;
+            font-size: 0.65rem !important;
             letter-spacing: 0.24em !important;
-            margin-bottom: 0.45rem !important;
+            margin-bottom: 0.35rem !important;
             text-align: center !important;
           }
 
           .hero-title {
             font-family: 'Cormorant Garamond', Georgia, serif !important;
-            font-size: clamp(2rem, 7.5vw, 2.75rem) !important;
+            font-size: clamp(1.85rem, 6.8vw, 2.35rem) !important;
             font-weight: 600 !important;
             color: #FFFFFF !important;
             letter-spacing: 0.04em !important;
-            line-height: 1.1 !important;
+            line-height: 1.08 !important;
             text-transform: uppercase !important;
-            margin-bottom: 0.5rem !important;
+            margin-bottom: 0.45rem !important;
             text-align: center !important;
             text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95) !important;
           }
 
           .hero-subtitle {
             font-family: 'Cormorant Garamond', Georgia, serif !important;
-            font-size: clamp(0.9rem, 3.2vw, 1.05rem) !important;
+            font-size: clamp(0.8rem, 2.8vw, 0.92rem) !important;
             font-weight: 400 !important;
             color: #E7DDCE !important;
             letter-spacing: 0.02em !important;
-            line-height: 1.45 !important;
-            margin-bottom: 1.25rem !important;
+            line-height: 1.38 !important;
+            margin-bottom: 1rem !important;
             text-align: center !important;
-            max-width: 330px !important;
+            max-width: 310px !important;
             text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9) !important;
           }
 
@@ -414,8 +416,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
             border: 1px solid var(--color-gold-400) !important;
             background: linear-gradient(180deg, rgba(28, 16, 12, 0.88) 0%, rgba(14, 8, 6, 0.95) 100%) !important;
             color: #FAF4EE !important;
-            padding: 0.8rem 2.25rem !important;
-            font-size: 0.72rem !important;
+            padding: 0.72rem 2.2rem !important;
+            font-size: 0.7rem !important;
             font-weight: 600 !important;
             letter-spacing: 0.18em !important;
             text-transform: uppercase !important;

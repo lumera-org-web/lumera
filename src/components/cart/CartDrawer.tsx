@@ -39,7 +39,7 @@ export const CartDrawer: React.FC = () => {
       <div
         style={{
           width: '100%',
-          maxWidth: '440px',
+          maxWidth: 'min(440px, 100vw)',
           height: '100%',
           backgroundColor: '#140C09',
           borderLeft: isRtl ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
@@ -285,7 +285,7 @@ export const CartDrawer: React.FC = () => {
         {items.length > 0 && (
           <div
             style={{
-              padding: '1.5rem',
+              padding: '1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px)) 1.25rem',
               borderTop: '1px solid rgba(255, 255, 255, 0.08)',
               backgroundColor: '#0F0806',
             }}
@@ -329,7 +329,7 @@ export const CartDrawer: React.FC = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes slideIn {
           from {
             transform: translateX(${isRtl ? '-100%' : '100%'});

@@ -385,15 +385,42 @@ export default function AdminCategoriesPage() {
 
               {/* Image */}
               <div style={{ padding: '1rem', backgroundColor: '#1A0F0B', borderRadius: '3px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--color-gold-400)', marginBottom: '0.5rem', fontWeight: 700, textTransform: 'uppercase' }}>Category Image</label>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--color-gold-400)', marginBottom: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Category Image</label>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   {imageUrl ? (
-                    <div style={{ position: 'relative', width: '70px', height: '70px', borderRadius: '2px', overflow: 'hidden' }}>
-                      <Image src={imageUrl} alt="" fill sizes="70px" style={{ objectFit: 'cover' }} />
+                    <div style={{ position: 'relative', width: '75px', height: '75px', borderRadius: '3px', overflow: 'hidden', border: '1px solid var(--border-gold)', backgroundColor: '#0D0705', flexShrink: 0 }}>
+                      <Image src={imageUrl} alt="" fill sizes="75px" style={{ objectFit: 'cover' }} />
+                      <button
+                        type="button"
+                        onClick={() => setImageUrl('')}
+                        title="Remove image"
+                        style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(0,0,0,0.7)', border: 'none', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                      >
+                        <X size={12} />
+                      </button>
                     </div>
-                  ) : null}
-                  <div style={{ flex: 1 }}>
-                    <input type="text" placeholder="Image URL (https://...)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} style={{ width: '100%', padding: '0.6rem', backgroundColor: '#140C09', border: '1px solid rgba(255,255,255,0.1)', color: '#FFFFFF', borderRadius: '2px', fontSize: '0.8rem' }} />
+                  ) : (
+                    <div style={{ width: '75px', height: '75px', borderRadius: '3px', border: '1px dashed rgba(255, 255, 255, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6A554A', fontSize: '0.7rem', flexShrink: 0, textAlign: 'center', padding: '0.25rem' }}>
+                      No image
+                    </div>
+                  )}
+
+                  <div style={{ flex: 1, minWidth: '220px' }}>
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 1.1rem', backgroundColor: 'rgba(200, 162, 101, 0.15)', border: '1px solid var(--border-gold)', color: 'var(--color-gold-400)', fontSize: '0.75rem', fontWeight: 700, borderRadius: '2px', cursor: uploadingImage ? 'not-allowed' : 'pointer', opacity: uploadingImage ? 0.7 : 1 }}>
+                        <Upload size={14} />
+                        <span>{uploadingImage ? 'Uploading Image...' : 'Upload Image'}</span>
+                        <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} style={{ display: 'none' }} />
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      placeholder="Or paste image URL (https://...)"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      style={{ width: '100%', padding: '0.6rem', backgroundColor: '#140C09', border: '1px solid rgba(255,255,255,0.1)', color: '#FFFFFF', borderRadius: '2px', fontSize: '0.8rem' }}
+                    />
                   </div>
                 </div>
               </div>

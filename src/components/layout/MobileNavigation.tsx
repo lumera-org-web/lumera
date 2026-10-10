@@ -36,7 +36,10 @@ export const MobileNavigation: React.FC = () => {
         backgroundColor: 'rgba(20, 12, 9, 0.95)',
         backdropFilter: 'blur(16px)',
         borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        padding: '0.5rem 1rem env(safe-area-inset-bottom, 0.5rem) 1rem',
+        paddingTop: '0.75rem',
+        paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
+        paddingLeft: '1rem',
+        paddingRight: '1rem',
       }}
       className="d-mobile-dock"
     >

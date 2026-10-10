@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { Package, Search, Clock, CheckCircle2, Truck, ArrowRight, User, ShieldCheck } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { formatPrice } from '@/utils/formatters';
@@ -156,16 +155,6 @@ export default function AccountPage() {
               Personal beauty consultations and urgent same-day delivery coordination in Jeddah.
             </p>
             <span className="account-concierge-email">concierge@lumera.sa</span>
-          </div>
-
-          <div className="account-concierge-card">
-            <h3 className="account-concierge-title">Admin / CMS Portal</h3>
-            <p className="account-concierge-desc">
-              Authorized management of inventory, Cloudinary uploads, banners, and Saudi orders.
-            </p>
-            <Link href="/admin" className="account-concierge-link">
-              Open Admin Portal →
-            </Link>
           </div>
         </div>
       </div>

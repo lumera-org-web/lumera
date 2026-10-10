@@ -246,7 +246,7 @@ export const DashboardClient: React.FC<DashboardClientProps> = ({
         <div style={{ backgroundColor: '#160E0B', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '1.75rem', borderRadius: '3px' }}>
           <h3 style={{ fontSize: '1rem', color: '#FFFFFF', marginBottom: '0.5rem' }}>Orders & Deliveries</h3>
           <p style={{ color: '#9E8E85', fontSize: '0.8rem', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-            View Saudi customer orders, tracking IDs, update dispatch status, and send Brevo shipping emails.
+            View Saudi customer orders, tracking IDs, update dispatch status, and send shipping emails.
           </p>
           <Link href="/admin/orders" className="btn-lumera-link" style={{ fontSize: '0.75rem' }}>
             Open Orders Manager →

@@ -190,17 +190,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0D0705', color: '#FAF7F2' }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: '#0D0705', color: '#FAF7F2' }}>
       {/* Sidebar */}
       <aside
         style={{
           width: '260px',
+          height: '100vh',
           backgroundColor: '#140C09',
           borderRight: '1px solid rgba(255, 255, 255, 0.08)',
           padding: '2rem 1.5rem',
           display: 'flex',
           flexDirection: 'column',
           flexShrink: 0,
+          overflowY: 'auto',
         }}
         className="admin-sidebar"
       >
@@ -287,7 +289,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, padding: '2.5rem 3rem', overflowY: 'auto' }}>
+      <main style={{ flex: 1, height: '100vh', padding: '2.5rem 3rem', overflowY: 'auto', minWidth: 0 }}>
         {children}
       </main>
 

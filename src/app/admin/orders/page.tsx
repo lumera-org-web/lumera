@@ -35,26 +35,90 @@ export default function AdminOrdersPage() {
     setUpdatingId(orderId);
     try {
       const supabase = createClient();
+
+      const updateData: { order_status: string; payment_status?: string } = {
+        order_status: newStatus,
+      };
+
+      const isCodPending =
+        newStatus === 'delivered' &&
+        order.payment_method?.toLowerCase() === 'cod' &&
+        order.payment_status !== 'paid';
+
+      if (isCodPending) {
+        updateData.payment_status = 'paid';
+      }
+
       await supabase
         .from('orders')
-        .update({ order_status: newStatus })
+        .update(updateData)
         .eq('id', orderId);
 
-      // Trigger Brevo status update email if shipped
-      if (newStatus === 'shipped') {
+      // Trigger Brevo order status update email notification
+      await fetch('/api/brevo/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'order_status',
+          orderStatus: newStatus,
+          orderNumber: order.order_number,
+          customerName: order.customer_name,
+          customerEmail: order.customer_email,
+          courier: order.courier || 'Saudi Post / Aramex',
+          trackingNumber: order.tracking_number || `SA-${Date.now().toString().slice(-6)}`,
+          total: order.total,
+          items: order.items,
+        }),
+      }).catch((e) => console.error('[Brevo status email error]', e));
+
+      // Trigger payment update email if COD was automatically marked paid upon delivery
+      if (isCodPending) {
         await fetch('/api/brevo/notify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            type: 'shipping',
+            type: 'payment',
             orderNumber: order.order_number,
             customerName: order.customer_name,
             customerEmail: order.customer_email,
-            courier: order.courier || 'Saudi Post / Aramex',
-            trackingNumber: order.tracking_number || `SA-${Date.now().toString().slice(-6)}`,
+            paymentMethod: order.payment_method,
+            paymentStatus: 'paid',
+            total: order.total,
           }),
-        }).catch(() => {});
+        }).catch((e) => console.error('[Brevo payment email error]', e));
       }
+
+      await loadOrders();
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleUpdatePaymentStatus = async (orderId: string, newPaymentStatus: string, order: any) => {
+    setUpdatingId(orderId);
+    try {
+      const supabase = createClient();
+      await supabase
+        .from('orders')
+        .update({ payment_status: newPaymentStatus })
+        .eq('id', orderId);
+
+      // Trigger Brevo payment update email notification
+      await fetch('/api/brevo/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'payment',
+          orderNumber: order.order_number,
+          customerName: order.customer_name,
+          customerEmail: order.customer_email,
+          paymentMethod: order.payment_method,
+          paymentStatus: newPaymentStatus,
+          total: order.total,
+        }),
+      }).catch((e) => console.error('[Brevo payment email error]', e));
 
       await loadOrders();
     } catch (err: any) {
@@ -71,7 +135,7 @@ export default function AdminOrdersPage() {
           Saudi Orders & Fulfillment
         </h1>
         <p style={{ color: '#9E8E85', fontSize: '0.85rem', marginTop: '0.35rem' }}>
-          Manage customer orders, update delivery status, and automatically trigger Brevo email notifications.
+          Manage customer orders, update delivery status, and automatic email notifications.
         </p>
       </div>
 
@@ -125,6 +189,29 @@ export default function AdminOrdersPage() {
                   <div style={{ fontSize: '0.75rem', color: 'var(--color-gold-400)', textTransform: 'uppercase', marginTop: '0.2rem' }}>
                     Payment: {order.payment_method} ({order.payment_status})
                   </div>
+                  {/* Payment Update Action */}
+                  <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end', marginTop: '0.4rem' }}>
+                    {order.payment_status !== 'paid' && (
+                      <button
+                        onClick={() => handleUpdatePaymentStatus(order.id, 'paid', order)}
+                        disabled={updatingId === order.id}
+                        style={{ padding: '0.25rem 0.5rem', backgroundColor: 'rgba(62, 237, 139, 0.15)', border: '1px solid #3EED8B', color: '#3EED8B', fontSize: '0.675rem', borderRadius: '2px', cursor: 'pointer' }}
+                        title="Mark Paid"
+                      >
+                        ✓ Mark Paid
+                      </button>
+                    )}
+                    {order.payment_status === 'paid' && (
+                      <button
+                        onClick={() => handleUpdatePaymentStatus(order.id, 'refunded', order)}
+                        disabled={updatingId === order.id}
+                        style={{ padding: '0.25rem 0.5rem', backgroundColor: 'rgba(167, 139, 250, 0.15)', border: '1px solid #A78BFA', color: '#A78BFA', fontSize: '0.675rem', borderRadius: '2px', cursor: 'pointer' }}
+                        title="Mark Refunded"
+                      >
+                        Mark Refunded
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -159,7 +246,7 @@ export default function AdminOrdersPage() {
                     <button
                       onClick={() => handleUpdateStatus(order.id, 'processing', order)}
                       disabled={updatingId === order.id}
-                      style={{ padding: '0.4rem 0.85rem', backgroundColor: '#130A08', border: '1px solid rgba(255,255,255,0.1)', color: '#D8C7B2', fontSize: '0.725rem', borderRadius: '2px' }}
+                      style={{ padding: '0.4rem 0.85rem', backgroundColor: '#130A08', border: '1px solid rgba(255,255,255,0.1)', color: '#D8C7B2', fontSize: '0.725rem', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       Set Processing
                     </button>
@@ -168,16 +255,16 @@ export default function AdminOrdersPage() {
                     <button
                       onClick={() => handleUpdateStatus(order.id, 'shipped', order)}
                       disabled={updatingId === order.id}
-                      style={{ padding: '0.4rem 0.85rem', backgroundColor: 'rgba(200, 162, 101, 0.15)', border: '1px solid var(--border-gold)', color: 'var(--color-gold-400)', fontSize: '0.725rem', borderRadius: '2px', fontWeight: 600 }}
+                      style={{ padding: '0.4rem 0.85rem', backgroundColor: 'rgba(200, 162, 101, 0.15)', border: '1px solid var(--border-gold)', color: 'var(--color-gold-400)', fontSize: '0.725rem', borderRadius: '2px', fontWeight: 600, cursor: 'pointer' }}
                     >
-                      Mark Shipped (Brevo Email)
+                      Mark Shipped
                     </button>
                   )}
                   {order.order_status !== 'delivered' && (
                     <button
                       onClick={() => handleUpdateStatus(order.id, 'delivered', order)}
                       disabled={updatingId === order.id}
-                      style={{ padding: '0.4rem 0.85rem', backgroundColor: '#130A08', border: '1px solid #3EED8B', color: '#3EED8B', fontSize: '0.725rem', borderRadius: '2px' }}
+                      style={{ padding: '0.4rem 0.85rem', backgroundColor: '#130A08', border: '1px solid #3EED8B', color: '#3EED8B', fontSize: '0.725rem', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       Mark Delivered
                     </button>

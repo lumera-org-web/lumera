@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { sendOrderConfirmation } from '@/services/brevo';
+import { sendOrderConfirmation, sendAdminOrderNotification } from '@/services/brevo';
 
 export async function POST(req: NextRequest) {
   try {
@@ -86,14 +86,24 @@ export async function POST(req: NextRequest) {
       await supabase.from('order_items').insert(itemsToInsert);
     }
 
-    // Trigger Brevo transactional email
+    // Trigger Brevo transactional emails: User Confirmation + Automatic Admin Notification
     try {
-      await sendOrderConfirmation({
+      const emailPayload = {
         order_number: orderNumber,
         customer_name: shippingAddress.fullName,
         customer_email: contact.email,
+        customer_phone: contact.phone,
+        shipping_address: shippingAddress,
+        payment_method: paymentMethod || 'card',
+        payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
         total: finalTotal,
-      });
+        items: verifiedItems,
+      };
+
+      await Promise.allSettled([
+        sendOrderConfirmation(emailPayload),
+        sendAdminOrderNotification(emailPayload),
+      ]);
     } catch (emailErr) {
       console.warn('[Brevo order confirmation email error]', emailErr);
     }

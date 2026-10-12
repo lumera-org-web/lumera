@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Search, User, Heart, ShoppingBag, Menu, X, ArrowRight } from 'lucide-react';
 import { Logo } from './Logo';
 import { useCart } from '@/context/CartContext';
@@ -13,6 +13,127 @@ import { Category } from '@/types';
 interface HeaderProps {
   categories?: Category[];
 }
+
+function isLinkActive(
+  linkHref: string,
+  pathname: string,
+  searchParams: ReturnType<typeof useSearchParams> | null
+) {
+  const [linkPath, linkQuery] = linkHref.split('?');
+
+  if (linkQuery) {
+    if (pathname !== linkPath) return false;
+    if (!searchParams) return false;
+    const linkParams = new URLSearchParams(linkQuery);
+    for (const [key, val] of linkParams.entries()) {
+      if (searchParams.get(key) !== val) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  if (pathname !== linkPath) return false;
+
+  // When on /shop without matching a query link (e.g. ?filter=trending or ?filter=new)
+  if (linkPath === '/shop') {
+    const filter = searchParams?.get('filter');
+    if (filter === 'trending' || filter === 'new') {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+interface NavLinksItemProps {
+  navLinks: { label: string; href: string }[];
+  pathname: string;
+}
+
+const DesktopNavLinks: React.FC<NavLinksItemProps> = ({ navLinks, pathname }) => {
+  const searchParams = useSearchParams();
+
+  return (
+    <>
+      {navLinks.map((link) => {
+        const active = isLinkActive(link.href, pathname, searchParams);
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            style={{
+              fontSize: '0.725rem',
+              fontWeight: 500,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: active ? 'var(--color-gold-400)' : '#E3D9D2',
+              transition: 'color 0.2s ease',
+              position: 'relative',
+              padding: '0.4rem 0',
+            }}
+            className="nav-link-hover"
+          >
+            {link.label}
+            {active && (
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  backgroundColor: 'var(--color-gold-400)',
+                }}
+              />
+            )}
+          </Link>
+        );
+      })}
+    </>
+  );
+};
+
+const DesktopNavFallback: React.FC<NavLinksItemProps> = ({ navLinks, pathname }) => {
+  return (
+    <>
+      {navLinks.map((link) => {
+        const active = isLinkActive(link.href, pathname, null);
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            style={{
+              fontSize: '0.725rem',
+              fontWeight: 500,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: active ? 'var(--color-gold-400)' : '#E3D9D2',
+              transition: 'color 0.2s ease',
+              position: 'relative',
+              padding: '0.4rem 0',
+            }}
+            className="nav-link-hover"
+          >
+            {link.label}
+            {active && (
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  backgroundColor: 'var(--color-gold-400)',
+                }}
+              />
+            )}
+          </Link>
+        );
+      })}
+    </>
+  );
+};
 
 export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
   const pathname = usePathname();
@@ -96,40 +217,9 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
             className="d-desktop-nav"
             aria-label="Main Navigation"
           >
-            {navLinks.map((link) => {
-              const active = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  style={{
-                    fontSize: '0.725rem',
-                    fontWeight: 500,
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: active ? 'var(--color-gold-400)' : '#E3D9D2',
-                    transition: 'color 0.2s ease',
-                    position: 'relative',
-                    padding: '0.4rem 0',
-                  }}
-                  className="nav-link-hover"
-                >
-                  {link.label}
-                  {active && (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: '1px',
-                        backgroundColor: 'var(--color-gold-400)',
-                      }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
+            <Suspense fallback={<DesktopNavFallback navLinks={navLinks} pathname={pathname} />}>
+              <DesktopNavLinks navLinks={navLinks} pathname={pathname} />
+            </Suspense>
           </nav>
 
           {/* Right Action Icons: Search, Account, Wishlist, Cart */}
@@ -383,33 +473,12 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
             <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1.5rem' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <Link
-                  href="/account"
-                  onClick={() => setMobileMenuOpen(false)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#D8C7B2', fontSize: '0.85rem' }}
-                >
-                  <User size={18} color="var(--color-gold-400)" />
-                  <span>{t('nav.account')}</span>
-                </Link>
-                <Link
                   href="/wishlist"
                   onClick={() => setMobileMenuOpen(false)}
                   style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#D8C7B2', fontSize: '0.85rem' }}
                 >
                   <Heart size={18} color="var(--color-gold-400)" />
                   <span>{t('nav.wishlist')} ({wishlistCount})</span>
-                </Link>
-                <Link
-                  href="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  style={{
-                    fontSize: '0.75rem',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: 'var(--color-gold-400)',
-                    marginTop: '0.5rem',
-                  }}
-                >
-                  Admin / CMS Portal →
                 </Link>
               </div>
             </div>

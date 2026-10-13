@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Layers, Image as ImageIcon, ShoppingCart, ExternalLink, Lock, KeyRound, LogOut, Sliders } from 'lucide-react';
+import { LayoutDashboard, Package, Layers, Image as ImageIcon, ShoppingCart, ExternalLink, Lock, LogOut, Sliders } from 'lucide-react';
 import { Logo } from '@/components/layout/Logo';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -56,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Checking session
   if (isAuthenticated === null) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#0D0705', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D8C7B2' }}>
+      <div className="flex min-h-screen items-center justify-center bg-[#0D0705] text-[#D8C7B2]">
         Verifying Security Credentials...
       </div>
     );
@@ -65,113 +65,50 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Not Authenticated -> Show Luxury Password Gate
   if (!isAuthenticated) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          backgroundColor: '#0D0705',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '2rem',
-        }}
-      >
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '440px',
-            backgroundColor: '#140C09',
-            border: '1px solid var(--border-gold)',
-            borderRadius: '4px',
-            padding: '3rem 2.5rem',
-            textAlign: 'center',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.7)',
-          }}
-        >
-          <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+      <div className="flex min-h-screen items-center justify-center bg-[#0D0705] p-8">
+        <div className="w-full max-w-[440px] rounded border border-gold-400/30 bg-[#140C09] p-10 text-center shadow-[0_20px_40px_rgba(0,0,0,0.7)] max-[768px]:p-6">
+          <div className="mb-6 flex justify-center">
             <Logo width={170} height={68} href="#" />
           </div>
 
-          <div
-            style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(200, 162, 101, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 1.25rem auto',
-              color: 'var(--color-gold-400)',
-            }}
-          >
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-gold-400/10 text-gold-400">
             <Lock size={22} />
           </div>
 
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '1.5rem',
-              color: '#FFFFFF',
-              marginBottom: '0.4rem',
-            }}
-          >
+          <h2 className="mb-[0.4rem] font-serif text-[1.5rem] text-white">
             Admin & CMS Portal
           </h2>
-          <p style={{ color: '#9E8E85', fontSize: '0.8rem', marginBottom: '2rem' }}>
+          <p className="mb-8 text-[0.8rem] text-[#9E8E85]">
             Enter your master password to manage Supabase products, Cloudinary assets, and Saudi orders.
           </p>
 
           {errorMsg && (
-            <div
-              style={{
-                padding: '0.75rem',
-                backgroundColor: 'rgba(214, 69, 41, 0.15)',
-                border: '1px solid #D64529',
-                color: '#FFB2A3',
-                fontSize: '0.8rem',
-                borderRadius: '2px',
-                marginBottom: '1.5rem',
-              }}
-            >
+            <div className="mb-6 rounded-[2px] border border-[#D64529] bg-[#D64529]/15 p-3 text-[0.8rem] text-[#FFB2A3]">
               {errorMsg}
             </div>
           )}
 
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ position: 'relative' }}>
-              <input
-                type="password"
-                required
-                placeholder="Enter Admin Password (e.g. lumera2026)"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.9rem 1rem',
-                  backgroundColor: '#190F0C',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#FFFFFF',
-                  borderRadius: '2px',
-                  fontSize: '0.9rem',
-                  outline: 'none',
-                  textAlign: 'center',
-                  letterSpacing: '0.1em',
-                }}
-              />
-            </div>
+          <form onSubmit={handleLogin} className="flex flex-col gap-5">
+            <input
+              type="password"
+              required
+              placeholder="Enter Admin Password (e.g. lumera2026)"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              className="w-full rounded-[2px] border border-white/[0.12] bg-[#190F0C] p-[0.9rem_1rem] text-center text-[0.9rem] tracking-[0.1em] text-white outline-none focus:border-gold-400"
+            />
 
             <button
               type="submit"
               disabled={loading}
-              className="btn-lumera-primary"
-              style={{ padding: '0.95rem', width: '100%', fontWeight: 700 }}
+              className="btn-lumera-primary w-full p-[0.95rem] font-bold"
             >
               {loading ? 'Verifying...' : 'Unlock Portal'}
             </button>
           </form>
 
-          <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1.5rem' }}>
-            <Link href="/" style={{ fontSize: '0.75rem', color: '#9E8E85' }}>
+          <div className="mt-8 border-t border-white/[0.08] pt-6">
+            <Link href="/" className="text-[0.75rem] text-[#9E8E85] transition-colors hover:text-white">
               ← Return to Public Storefront
             </Link>
           </div>
@@ -190,39 +127,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: '#0D0705', color: '#FAF7F2' }}>
+    <div className="flex h-screen overflow-hidden bg-[#0D0705] text-[#FAF7F2]">
       {/* Sidebar */}
-      <aside
-        style={{
-          width: '260px',
-          height: '100vh',
-          backgroundColor: '#140C09',
-          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
-          padding: '2rem 1.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          flexShrink: 0,
-          overflowY: 'auto',
-        }}
-        className="admin-sidebar"
-      >
-        <div style={{ marginBottom: '2.5rem' }}>
+      <aside className="flex h-screen w-[260px] shrink-0 flex-col overflow-y-auto border-r border-white/[0.08] bg-[#140C09] p-8 max-[768px]:w-[70px] max-[768px]:p-[1.5rem_0.5rem]">
+        <div className="mb-10 max-[768px]:hidden">
           <Logo width={150} height={60} href="/admin" />
-          <div
-            style={{
-              fontSize: '0.65rem',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: 'var(--color-gold-400)',
-              marginTop: '0.65rem',
-              fontWeight: 600,
-            }}
-          >
+          <div className="mt-[0.65rem] text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-gold-400">
             ADMIN & CMS PORTAL
           </div>
         </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+        <nav className="flex flex-1 flex-col gap-2">
           {links.map((link) => {
             const active = pathname === link.href;
             const Icon = link.icon;
@@ -230,77 +145,42 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link
                 key={link.href}
                 href={link.href}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '2px',
-                  fontSize: '0.8rem',
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  color: active ? 'var(--color-espresso-950)' : '#D8C7B2',
-                  backgroundColor: active ? 'var(--color-gold-400)' : 'transparent',
-                  fontWeight: active ? 700 : 500,
-                  transition: 'all 0.15s ease',
-                }}
+                className={`flex items-center gap-3 rounded-[2px] p-[0.75rem_1rem] text-[0.8rem] uppercase tracking-[0.08em] transition-all duration-150 max-[768px]:justify-center max-[768px]:px-2 ${
+                  active
+                    ? 'bg-gold-400 font-bold text-espresso-950'
+                    : 'bg-transparent font-medium text-[#D8C7B2] hover:text-white'
+                }`}
               >
                 <Icon size={18} />
-                <span>{link.label}</span>
+                <span className="max-[768px]:hidden">{link.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <div className="flex flex-col gap-[0.85rem] border-t border-white/[0.08] pt-6 max-[768px]:items-center">
           <Link
             href="/"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              fontSize: '0.75rem',
-              color: '#9E8E85',
-              transition: 'color 0.2s',
-            }}
+            className="flex items-center gap-2 text-[0.75rem] text-[#9E8E85] transition-colors hover:text-white"
           >
             <ExternalLink size={15} />
-            <span>View Public Storefront</span>
+            <span className="max-[768px]:hidden">View Public Storefront</span>
           </Link>
 
           <button
             onClick={handleLogout}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              fontSize: '0.75rem',
-              color: '#E05A47',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
+            className="flex cursor-pointer items-center gap-2 border-none bg-transparent p-0 text-[0.75rem] text-[#E05A47] transition-opacity hover:opacity-80"
           >
             <LogOut size={15} />
-            <span>Lock Admin Portal</span>
+            <span className="max-[768px]:hidden">Lock Admin Portal</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, height: '100vh', padding: '2.5rem 3rem', overflowY: 'auto', minWidth: 0 }}>
+      <main className="h-screen min-w-0 flex-1 overflow-y-auto p-10 max-[768px]:p-6">
         {children}
       </main>
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .admin-sidebar {
-            width: 70px !important;
-            padding: 1.5rem 0.5rem !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

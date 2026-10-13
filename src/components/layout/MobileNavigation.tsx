@@ -3,67 +3,28 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, Search, Heart, ShoppingBag } from 'lucide-react';
+import { Home, Compass, Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
-import { useLocale } from '@/context/LocaleContext';
 
 export const MobileNavigation: React.FC = () => {
   const pathname = usePathname();
   const { itemCount, openDrawer } = useCart();
   const { wishlistCount } = useWishlist();
-  const { t } = useLocale();
 
   // Hide on admin routes or checkout
   if (pathname.startsWith('/admin') || pathname.startsWith('/checkout')) {
     return null;
   }
 
-  const items = [
-    { label: 'Home', href: '/', icon: Home },
-    { label: 'Shop', href: '/shop', icon: Compass },
-    { label: 'Wishlist', href: '/wishlist', icon: Heart, count: wishlistCount },
-  ];
-
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 45,
-        backgroundColor: 'rgba(20, 12, 9, 0.95)',
-        backdropFilter: 'blur(16px)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        paddingTop: '0.75rem',
-        paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
-        paddingLeft: '1rem',
-        paddingRight: '1rem',
-      }}
-      className="d-mobile-dock"
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          maxWidth: '480px',
-          margin: '0 auto',
-        }}
-      >
+    <div className="fixed bottom-0 left-0 right-0 z-45 border-t border-white/[0.08] bg-[#140C09]/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] pt-3 backdrop-blur-[16px] md:hidden">
+      <div className="mx-auto flex max-w-[480px] items-center justify-around">
         <Link
           href="/"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.2rem',
-            color: pathname === '/' ? 'var(--color-gold-400)' : '#9E8E85',
-            fontSize: '0.625rem',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}
+          className={`flex flex-col items-center gap-[0.2rem] text-[0.625rem] uppercase tracking-[0.05em] transition-colors ${
+            pathname === '/' ? 'text-gold-400' : 'text-[#9E8E85]'
+          }`}
         >
           <Home size={19} strokeWidth={1.5} />
           <span>Home</span>
@@ -71,16 +32,9 @@ export const MobileNavigation: React.FC = () => {
 
         <Link
           href="/shop"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.2rem',
-            color: pathname === '/shop' ? 'var(--color-gold-400)' : '#9E8E85',
-            fontSize: '0.625rem',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}
+          className={`flex flex-col items-center gap-[0.2rem] text-[0.625rem] uppercase tracking-[0.05em] transition-colors ${
+            pathname === '/shop' ? 'text-gold-400' : 'text-[#9E8E85]'
+          }`}
         >
           <Compass size={19} strokeWidth={1.5} />
           <span>Shop</span>
@@ -88,37 +42,13 @@ export const MobileNavigation: React.FC = () => {
 
         <Link
           href="/wishlist"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.2rem',
-            color: pathname === '/wishlist' ? 'var(--color-gold-400)' : '#9E8E85',
-            fontSize: '0.625rem',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            position: 'relative',
-          }}
+          className={`relative flex flex-col items-center gap-[0.2rem] text-[0.625rem] uppercase tracking-[0.05em] transition-colors ${
+            pathname === '/wishlist' ? 'text-gold-400' : 'text-[#9E8E85]'
+          }`}
         >
           <Heart size={19} strokeWidth={1.5} />
           {wishlistCount > 0 && (
-            <span
-              style={{
-                position: 'absolute',
-                top: '-3px',
-                right: '4px',
-                backgroundColor: 'var(--color-gold-400)',
-                color: '#0D0705',
-                fontSize: '0.55rem',
-                fontWeight: 700,
-                width: '13px',
-                height: '13px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <span className="absolute -top-[3px] right-[4px] flex h-[13px] w-[13px] items-center justify-center rounded-full bg-gold-400 text-[0.55rem] font-bold text-[#0D0705]">
               {wishlistCount}
             </span>
           )}
@@ -127,51 +57,17 @@ export const MobileNavigation: React.FC = () => {
 
         <button
           onClick={openDrawer}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.2rem',
-            color: '#9E8E85',
-            fontSize: '0.625rem',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            position: 'relative',
-          }}
+          className="relative flex flex-col items-center gap-[0.2rem] text-[0.625rem] uppercase tracking-[0.05em] text-[#9E8E85] transition-colors"
         >
           <ShoppingBag size={19} strokeWidth={1.5} />
           {itemCount > 0 && (
-            <span
-              style={{
-                position: 'absolute',
-                top: '-3px',
-                right: '-3px',
-                backgroundColor: 'var(--color-gold-400)',
-                color: '#0D0705',
-                fontSize: '0.55rem',
-                fontWeight: 700,
-                width: '13px',
-                height: '13px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <span className="absolute -top-[3px] -right-[3px] flex h-[13px] w-[13px] items-center justify-center rounded-full bg-gold-400 text-[0.55rem] font-bold text-[#0D0705]">
               {itemCount}
             </span>
           )}
           <span>Bag</span>
         </button>
       </div>
-
-      <style jsx>{`
-        @media (min-width: 768px) {
-          .d-mobile-dock {
-            display: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

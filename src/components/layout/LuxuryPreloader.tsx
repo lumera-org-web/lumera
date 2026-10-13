@@ -15,7 +15,7 @@ export const LuxuryPreloader: React.FC = () => {
         setShouldRender(false);
         return; // Don't show pre-loader on subsequent page navigations/refreshes in same tab
       }
-    } catch (e) {
+    } catch {
       // Ignore storage errors in restricted contexts
     }
 
@@ -29,7 +29,7 @@ export const LuxuryPreloader: React.FC = () => {
       setShouldRender(false);
       try {
         sessionStorage.setItem('lumera_intro_done', 'true');
-      } catch (e) {
+      } catch {
         // Ignore
       }
     }, 2200);
@@ -48,54 +48,18 @@ export const LuxuryPreloader: React.FC = () => {
     <div
       id="lumera-luxury-preloader"
       suppressHydrationWarning
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 999999,
-        backgroundColor: '#0D0705',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        opacity: isFadingOut ? 0 : 1,
-        transform: isFadingOut ? 'scale(1.02)' : 'scale(1)',
-        pointerEvents: isFadingOut ? 'none' : 'all',
-        transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-        willChange: 'opacity, transform',
-        overflow: 'hidden',
-      }}
+      className={`fixed inset-0 z-[999999] flex flex-col items-center justify-center overflow-hidden bg-[#0D0705] transition-[opacity,transform] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[opacity,transform] ${
+        isFadingOut ? 'pointer-events-none scale-[1.02] opacity-0' : 'pointer-events-auto scale-100 opacity-100'
+      }`}
       aria-hidden="true"
     >
       {/* Ambient Gold Radial Glow Aura */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '500px',
-          height: '500px',
-          background: 'radial-gradient(circle, rgba(243, 193, 172, 0.12) 0%, rgba(200, 162, 101, 0.05) 40%, transparent 70%)',
-          pointerEvents: 'none',
-          animation: 'lumeraPulseAura 2s ease-in-out infinite alternate',
-        }}
-      />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 animate-pulse-aura bg-[radial-gradient(circle,rgba(243,193,172,0.12)_0%,rgba(200,162,101,0.05)_40%,transparent_70%)]" />
 
       {/* Centered Luxury Brand Intro Box */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          padding: '0 2rem',
-          animation: 'lumeraScaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        }}
-      >
+      <div className="relative z-[2] flex animate-scale-in flex-col items-center px-8 text-center">
         {/* Crown / Crest Sparkle */}
-        <div style={{ marginBottom: '1.25rem', opacity: 0.9 }}>
+        <div className="mb-5 opacity-90">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M12 2C12 2 13.5 6.5 17 8C13.5 9.5 12 14 12 14C12 14 10.5 9.5 7 8C10.5 6.5 12 2 12 2Z"
@@ -112,95 +76,27 @@ export const LuxuryPreloader: React.FC = () => {
         </div>
 
         {/* High-Res Brand Logo */}
-        <div style={{ position: 'relative', width: '220px', height: '80px', marginBottom: '0.85rem' }}>
+        <div className="relative mb-[0.85rem] h-[80px] w-[220px]">
           <Image
             src="/images/lumera-logo.png"
             alt="LUMÉRA"
             fill
             priority
             unoptimized
-            style={{ objectFit: 'contain' }}
+            className="object-contain"
           />
         </div>
 
         {/* Tagline */}
-        <div
-          style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: '0.68rem',
-            fontWeight: 600,
-            letterSpacing: '0.38em',
-            textTransform: 'uppercase',
-            color: '#F3C1AC',
-            marginBottom: '2rem',
-            opacity: 0.9,
-          }}
-        >
+        <div className="mb-8 font-sans text-[0.68rem] font-semibold uppercase tracking-[0.38em] text-[#F3C1AC] opacity-90">
           HAUTE BEAUTY · SAUDI ARABIA
         </div>
 
         {/* Hairline Gold Progress Bar */}
-        <div
-          style={{
-            width: '140px',
-            height: '1.5px',
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: '1px',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              width: '100%',
-              background: 'linear-gradient(90deg, #C8A265 0%, #F3C1AC 50%, #C8A265 100%)',
-              animation: 'lumeraHairlineProgress 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-            }}
-          />
+        <div className="relative h-[1.5px] w-[140px] overflow-hidden rounded-[1px] bg-white/[0.08]">
+          <div className="absolute inset-y-0 left-0 w-full animate-hairline-progress bg-[linear-gradient(90deg,#C8A265_0%,#F3C1AC_50%,#C8A265_100%)]" />
         </div>
       </div>
-
-      {/* Embedded CSS Animations */}
-      <style>{`
-        html.lumera-skip-intro #lumera-luxury-preloader {
-          display: none !important;
-        }
-
-        @keyframes lumeraScaleIn {
-          0% {
-            opacity: 0;
-            transform: scale(0.94);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
-        @keyframes lumeraPulseAura {
-          0% {
-            opacity: 0.5;
-            transform: translate(-50%, -50%) scale(0.95);
-          }
-          100% {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.1);
-          }
-        }
-
-        @keyframes lumeraHairlineProgress {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(0%);
-          }
-        }
-      `}</style>
     </div>
   );
 };

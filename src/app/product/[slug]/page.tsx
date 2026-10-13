@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { getProductBySlug } from '@/services/products';
 import { ProductView } from '@/components/product/ProductView';
 
@@ -35,12 +34,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   if (!product) {
     return (
-      <div style={{ backgroundColor: '#140C09', minHeight: '80vh', padding: '6rem 0' }}>
-        <div className="container-lumera" style={{ textAlign: 'center' }}>
-          <h1 style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-gold-400)', fontSize: '2rem', marginBottom: '1rem' }}>
+      <div className="flex min-h-[80vh] items-center bg-[#140C09] py-24">
+        <div className="container-lumera mx-auto text-center">
+          <h1 className="mb-4 font-serif text-[2rem] text-gold-400">
             Product Not Found
           </h1>
-          <p style={{ color: '#9E8E85', marginBottom: '2rem' }}>
+          <p className="mb-8 text-[#9E8E85]">
             This item may be temporarily unavailable or unlisted in our active Saudi catalog.
           </p>
           <Link href="/shop" className="btn-lumera-outline">
@@ -71,38 +70,30 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   };
 
   return (
-    <div style={{ backgroundColor: '#140C09', minHeight: '85vh', padding: '2rem 0 6rem 0' }}>
+    <div className="min-h-[85vh] bg-[#140C09] py-8 pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="container-lumera">
         {/* Breadcrumbs */}
-        <nav
-          style={{
-            fontSize: '0.725rem',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: '#7E6F67',
-            marginBottom: '2rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          <Link href="/" style={{ color: '#D8C7B2' }}>
+        <nav className="mb-8 flex items-center gap-2 text-[0.725rem] uppercase tracking-[0.1em] text-[#7E6F67]">
+          <Link href="/" className="text-[#D8C7B2] transition-colors hover:text-white">
             Home
           </Link>
           <span>/</span>
           {product.category && (
             <>
-              <Link href={`/category/${product.category.slug}`} style={{ color: '#D8C7B2' }}>
+              <Link
+                href={`/category/${product.category.slug}`}
+                className="text-[#D8C7B2] transition-colors hover:text-white"
+              >
                 {product.category.name}
               </Link>
               <span>/</span>
             </>
           )}
-          <span style={{ color: 'var(--color-gold-400)' }}>{product.name}</span>
+          <span className="text-gold-400">{product.name}</span>
         </nav>
 
         {/* Interactive Luxury Product View */}

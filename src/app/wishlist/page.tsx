@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Heart, Trash2, ArrowRight } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useWishlist } from '@/context/WishlistContext';
 import { createClient } from '@/utils/supabase/client';
 import { Product } from '@/types';
@@ -40,64 +40,30 @@ export default function WishlistPage() {
   }, [wishlist]);
 
   return (
-    <div style={{ backgroundColor: '#140C09', minHeight: '85vh', padding: '3rem 0 6rem 0' }}>
+    <div className="min-h-[85vh] bg-[#140C09] py-12 pb-24">
       <div className="container-lumera">
-        <div style={{ maxWidth: '640px', marginBottom: '2.5rem' }}>
-          <h1
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '2.25rem',
-              color: '#FFFFFF',
-              marginBottom: '0.5rem',
-            }}
-          >
+        <div className="mb-10 max-w-[640px]">
+          <h1 className="mb-2 font-serif text-[2.25rem] text-white">
             Private Wishlist
           </h1>
-          <p style={{ color: '#9E8E85', fontSize: '0.9rem' }}>
+          <p className="text-[0.9rem] text-[#9E8E85]">
             Your curated edit of personal favorites and luxury beauty wishlist.
           </p>
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '4rem', color: '#9E8E85' }}>
+          <div className="p-16 text-center text-[#9E8E85]">
             Loading your favorites...
           </div>
         ) : products.length === 0 ? (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '5rem 2rem',
-              backgroundColor: '#190F0C',
-              borderRadius: '3px',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-            }}
-          >
-            <div
-              style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(200, 162, 101, 0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 1.25rem auto',
-                color: 'var(--color-gold-400)',
-              }}
-            >
+          <div className="rounded-[3px] border border-white/[0.06] bg-[#190F0C] px-8 py-20 text-center">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-gold-400/10 text-gold-400">
               <Heart size={28} />
             </div>
-            <h2
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '1.5rem',
-                color: '#FFFFFF',
-                marginBottom: '0.5rem',
-              }}
-            >
+            <h2 className="mb-2 font-serif text-[1.5rem] text-white">
               Your Wishlist is Empty
             </h2>
-            <p style={{ color: '#9E8E85', fontSize: '0.85rem', marginBottom: '1.75rem' }}>
+            <p className="mb-7 text-[0.85rem] text-[#9E8E85]">
               Tap the heart on any fragrance, skincare or makeup item to save it here.
             </p>
             <Link href="/shop" className="btn-lumera-primary">

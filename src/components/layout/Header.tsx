@@ -62,30 +62,13 @@ const DesktopNavLinks: React.FC<NavLinksItemProps> = ({ navLinks, pathname }) =>
           <Link
             key={link.href}
             href={link.href}
-            style={{
-              fontSize: '0.725rem',
-              fontWeight: 500,
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: active ? 'var(--color-gold-400)' : '#E3D9D2',
-              transition: 'color 0.2s ease',
-              position: 'relative',
-              padding: '0.4rem 0',
-            }}
-            className="nav-link-hover"
+            className={`relative py-[0.4rem] text-[0.725rem] font-medium uppercase tracking-[0.18em] transition-colors duration-200 hover:text-gold-400 ${
+              active ? 'text-gold-400' : 'text-[#E3D9D2]'
+            }`}
           >
             {link.label}
             {active && (
-              <span
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  backgroundColor: 'var(--color-gold-400)',
-                }}
-              />
+              <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-gold-400" />
             )}
           </Link>
         );
@@ -103,30 +86,13 @@ const DesktopNavFallback: React.FC<NavLinksItemProps> = ({ navLinks, pathname })
           <Link
             key={link.href}
             href={link.href}
-            style={{
-              fontSize: '0.725rem',
-              fontWeight: 500,
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: active ? 'var(--color-gold-400)' : '#E3D9D2',
-              transition: 'color 0.2s ease',
-              position: 'relative',
-              padding: '0.4rem 0',
-            }}
-            className="nav-link-hover"
+            className={`relative py-[0.4rem] text-[0.725rem] font-medium uppercase tracking-[0.18em] transition-colors duration-200 hover:text-gold-400 ${
+              active ? 'text-gold-400' : 'text-[#E3D9D2]'
+            }`}
           >
             {link.label}
             {active && (
-              <span
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  backgroundColor: 'var(--color-gold-400)',
-                }}
-              />
+              <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-gold-400" />
             )}
           </Link>
         );
@@ -172,49 +138,32 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
   return (
     <>
       <header
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 50,
-          backgroundColor: isScrolled ? 'rgba(20, 12, 9, 0.96)' : 'var(--bg-primary)',
-          backdropFilter: isScrolled ? 'blur(12px)' : 'none',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          transition: 'background-color 0.3s ease, border-color 0.3s ease',
-        }}
+        className={`sticky top-0 z-50 border-b border-white/[0.08] transition-[background-color,border-color] duration-300 ${
+          isScrolled
+            ? 'bg-[#140C09]/96 backdrop-blur-[12px]'
+            : 'bg-[var(--bg-primary)]'
+        }`}
       >
-        <div
-          className="container-lumera"
-          style={{
-            height: '76px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div className="container-lumera flex h-[76px] items-center justify-between">
           {/* Mobile Left: Menu Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }} className="d-mobile-only">
+          <div className="flex items-center gap-3 min-[992px]:hidden">
             <button
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open Navigation Menu"
-              style={{ color: '#FFFFFF', padding: '0.5rem', display: 'flex', alignItems: 'center' }}
+              className="flex items-center p-2 text-white"
             >
               <Menu size={22} strokeWidth={1.5} />
             </button>
           </div>
 
           {/* Desktop Left: Brand Logo */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="flex items-center">
             <Logo width={160} height={64} />
           </div>
 
           {/* Desktop Center: Luxury Editorial Navigation */}
           <nav
-            style={{
-              display: 'none',
-              alignItems: 'center',
-              gap: '2.25rem',
-            }}
-            className="d-desktop-nav"
+            className="hidden items-center gap-9 min-[992px]:flex"
             aria-label="Main Navigation"
           >
             <Suspense fallback={<DesktopNavFallback navLinks={navLinks} pathname={pathname} />}>
@@ -223,19 +172,12 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
           </nav>
 
           {/* Right Action Icons: Search, Account, Wishlist, Cart */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <div className="flex items-center gap-5">
             {/* Search Trigger */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
               aria-label="Search Catalog"
-              style={{
-                color: '#E3D9D2',
-                padding: '0.4rem',
-                display: 'flex',
-                alignItems: 'center',
-                transition: 'color 0.2s ease',
-              }}
-              className="icon-hover"
+              className="flex items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400"
             >
               <Search size={20} strokeWidth={1.5} />
             </button>
@@ -244,14 +186,7 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
             <Link
               href="/account"
               aria-label={t('nav.account')}
-              style={{
-                color: '#E3D9D2',
-                padding: '0.4rem',
-                display: 'none',
-                alignItems: 'center',
-                transition: 'color 0.2s ease',
-              }}
-              className="d-desktop-icon icon-hover"
+              className="hidden items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400 min-[992px]:flex"
             >
               <User size={20} strokeWidth={1.5} />
             </Link>
@@ -260,35 +195,11 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
             <Link
               href="/wishlist"
               aria-label={t('nav.wishlist')}
-              style={{
-                color: '#E3D9D2',
-                padding: '0.4rem',
-                display: 'none',
-                alignItems: 'center',
-                position: 'relative',
-                transition: 'color 0.2s ease',
-              }}
-              className="d-desktop-icon icon-hover"
+              className="relative hidden items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400 min-[992px]:flex"
             >
               <Heart size={20} strokeWidth={1.5} />
               {wishlistCount > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '2px',
-                    right: '1px',
-                    backgroundColor: 'var(--color-gold-400)',
-                    color: '#0D0705',
-                    fontSize: '0.625rem',
-                    fontWeight: 700,
-                    width: '15px',
-                    height: '15px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
+                <span className="absolute top-[2px] right-[1px] flex h-[15px] w-[15px] items-center justify-center rounded-full bg-gold-400 text-[0.625rem] font-bold text-[#0D0705]">
                   {wishlistCount}
                 </span>
               )}
@@ -298,35 +209,11 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
             <button
               onClick={openDrawer}
               aria-label={t('nav.bag')}
-              style={{
-                color: '#E3D9D2',
-                padding: '0.4rem',
-                display: 'flex',
-                alignItems: 'center',
-                position: 'relative',
-                transition: 'color 0.2s ease',
-              }}
-              className="icon-hover"
+              className="relative flex items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400"
             >
               <ShoppingBag size={20} strokeWidth={1.5} />
               {itemCount > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '2px',
-                    right: '0px',
-                    backgroundColor: 'var(--color-gold-400)',
-                    color: '#0D0705',
-                    fontSize: '0.625rem',
-                    fontWeight: 700,
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
+                <span className="absolute top-[2px] right-0 flex h-[16px] w-[16px] items-center justify-center rounded-full bg-gold-400 text-[0.625rem] font-bold text-[#0D0705]">
                   {itemCount}
                 </span>
               )}
@@ -336,14 +223,7 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
 
         {/* Search Bar Flyout */}
         {searchOpen && (
-          <div
-            style={{
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              backgroundColor: '#160E0B',
-              padding: '1rem 0',
-              animation: 'fadeIn 0.2s ease-out',
-            }}
-          >
+          <div className="animate-fade-in border-t border-white/[0.08] bg-[#160E0B] py-4">
             <div className="container-lumera">
               <form
                 onSubmit={(e) => {
@@ -352,49 +232,27 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
                     window.location.href = `/shop?search=${encodeURIComponent(searchQuery.trim())}`;
                   }
                 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  backgroundColor: '#1F140F',
-                  border: '1px solid var(--border-gold)',
-                  borderRadius: '2px',
-                  padding: '0.65rem 1rem',
-                }}
+                className="flex items-center gap-3 rounded-[2px] border border-gold-400/30 bg-[#1F140F] px-4 py-[0.65rem]"
               >
-                <Search size={18} color="var(--color-gold-400)" />
+                <Search size={18} className="text-gold-400" />
                 <input
                   type="text"
                   placeholder={t('nav.search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
-                  style={{
-                    flex: 1,
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    color: '#FFFFFF',
-                    fontSize: '0.85rem',
-                    fontFamily: 'inherit',
-                  }}
+                  className="flex-1 border-none bg-transparent font-sans text-[0.85rem] text-white outline-none placeholder:text-[#9E8E85]"
                 />
                 <button
                   type="submit"
-                  style={{
-                    fontSize: '0.75rem',
-                    letterSpacing: '0.12em',
-                    color: 'var(--color-gold-400)',
-                    textTransform: 'uppercase',
-                    fontWeight: 600,
-                  }}
+                  className="text-[0.75rem] font-semibold uppercase tracking-[0.12em] text-gold-400"
                 >
                   <ArrowRight size={18} />
                 </button>
                 <button
                   type="button"
                   onClick={() => setSearchOpen(false)}
-                  style={{ color: '#9E8E85', marginLeft: '0.5rem' }}
+                  className="ml-2 text-[#9E8E85] transition-colors hover:text-white"
                 >
                   <X size={18} />
                 </button>
@@ -407,114 +265,57 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 100,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-          }}
+          className="fixed inset-0 z-[100] flex bg-black/75 backdrop-blur-[6px]"
           onClick={() => setMobileMenuOpen(false)}
         >
           <div
-            style={{
-              width: '82%',
-              maxWidth: '340px',
-              height: '100%',
-              backgroundColor: '#140C09',
-              borderRight: '1px solid rgba(255, 255, 255, 0.08)',
-              padding: '2rem 1.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              overflowY: 'auto',
-            }}
+            className="flex h-full w-[82%] max-w-[340px] flex-col justify-between overflow-y-auto border-r border-white/[0.08] bg-[#140C09] p-8"
             onClick={(e) => e.stopPropagation()}
           >
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
+              <div className="mb-10 flex items-center justify-between">
                 <Logo width={145} height={58} />
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  style={{ color: '#FFFFFF', padding: '0.5rem' }}
+                  className="p-2 text-white"
                   aria-label="Close menu"
                 >
                   <X size={22} />
                 </button>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div className="flex flex-col gap-6">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    style={{
-                      fontSize: '0.95rem',
-                      letterSpacing: '0.16em',
-                      textTransform: 'uppercase',
-                      color: '#FFFFFF',
-                      fontWeight: 500,
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                      paddingBottom: '0.85rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}
+                    className="flex items-center justify-between border-b border-white/[0.05] pb-[0.85rem] text-[0.95rem] font-medium uppercase tracking-[0.16em] text-white transition-colors hover:text-gold-400"
                   >
                     <span>{link.label}</span>
-                    <ArrowRight size={14} color="var(--color-gold-400)" />
+                    <ArrowRight size={14} className="text-gold-400" />
                   </Link>
                 ))}
               </div>
             </div>
 
-            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1.5rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="border-t border-white/[0.08] pt-6">
+              <div className="flex flex-col gap-4">
                 <Link
                   href="/wishlist"
                   onClick={() => setMobileMenuOpen(false)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#D8C7B2', fontSize: '0.85rem' }}
+                  className="flex items-center gap-3 text-[0.85rem] text-[#D8C7B2] transition-colors hover:text-gold-400"
                 >
-                  <Heart size={18} color="var(--color-gold-400)" />
-                  <span>{t('nav.wishlist')} ({wishlistCount})</span>
+                  <Heart size={18} className="text-gold-400" />
+                  <span>
+                    {t('nav.wishlist')} ({wishlistCount})
+                  </span>
                 </Link>
               </div>
             </div>
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .icon-hover:hover {
-          color: var(--color-gold-400) !important;
-        }
-        .nav-link-hover:hover {
-          color: var(--color-gold-400) !important;
-        }
-        @media (min-width: 992px) {
-          .d-desktop-nav {
-            display: flex !important;
-          }
-          .d-desktop-icon {
-            display: flex !important;
-          }
-          .d-mobile-only {
-            display: none !important;
-          }
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-6px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </>
   );
 };

@@ -13,15 +13,23 @@ import { useLocale } from '@/context/LocaleContext';
 
 interface ProductCardProps {
   product: Product;
+  variant?: 'dark' | 'light';
+  layout?: 'vertical' | 'horizontal';
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  variant = 'dark',
+  layout = 'vertical',
+}) => {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { locale, t } = useLocale();
   const [isHovered, setIsHovered] = useState(false);
   const [addedNotice, setAddedNotice] = useState(false);
 
+  const isLight = variant === 'light';
+  const isHorizontal = layout === 'horizontal';
   const isFavorited = isInWishlist(product.id);
 
   // Images
@@ -79,99 +87,68 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const displayName = locale === 'ar' && product.name_ar ? product.name_ar : product.name;
 
+  const rootTheme = isLight
+    ? 'bg-white border-[rgba(200,162,101,0.22)] hover:border-[rgba(200,162,101,0.55)] shadow-[0_2px_10px_rgba(36,22,17,0.04)] hover:shadow-[0_12px_28px_rgba(36,22,17,0.09)]'
+    : 'bg-[#160E0B] border-white/[0.06] hover:border-[rgba(200,162,101,0.4)]';
+
+  const glow = isLight
+    ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(200,162,101,0.16)_0%,rgba(248,244,238,0.6)_60%,transparent_80%)]'
+    : 'bg-[radial-gradient(circle_at_50%_50%,rgba(200,162,101,0.08)_0%,rgba(24,16,12,0.4)_60%,transparent_80%)]';
+
+  const wishlistTheme = isFavorited
+    ? 'bg-[#DEC197] text-[#0D0705]'
+    : isLight
+    ? 'bg-white/[0.92] text-[#140C09]'
+    : 'bg-[rgba(20,12,9,0.65)] text-[#FAF7F2]';
+
   return (
     <div
-      className="product-card-root"
+      className={`relative flex overflow-hidden rounded-[3px] border transition-all duration-[280ms] ease-[ease] hover:-translate-y-0.5 ${
+        isHorizontal ? 'flex-row' : 'flex-col'
+      } ${rootTheme}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#160E0B',
-        borderRadius: '3px',
-        overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
-        transition: 'border-color 0.25s ease, transform 0.25s ease',
-      }}
     >
       {/* Visual Image Area */}
       <Link
         href={`/product/${product.slug}`}
-        style={{
-          position: 'relative',
-          width: '100%',
-          paddingTop: '115%', // Luxury portrait proportion
-          backgroundColor: '#18100C',
-          overflow: 'hidden',
-          display: 'block',
-        }}
+        className={`relative block shrink-0 overflow-hidden ${
+          isHorizontal ? 'h-full min-h-[175px] w-[42%] pt-0' : 'h-auto w-full pt-[115%]'
+        } ${isLight ? 'bg-[#F8F4EE]' : 'bg-[#18100C]'}`}
       >
         {/* Soft Ambient Radial Spotlight Glow */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'radial-gradient(circle at 50% 50%, rgba(200, 162, 101, 0.08) 0%, rgba(24, 16, 12, 0.4) 60%, transparent 80%)',
-            pointerEvents: 'none',
-          }}
-        />
+        <div className={`pointer-events-none absolute inset-0 ${glow}`} />
 
         {primaryUrl ? (
-          <div className="product-image-frame">
+          <div
+            className={`absolute inset-0 flex items-center justify-center ${
+              isHorizontal ? 'p-[0.65rem]' : 'p-[0.85rem] md:p-[1.15rem]'
+            }`}
+          >
             <div
-              style={{
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-              }}
+              className={`relative h-full w-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                isHovered ? 'scale-105' : 'scale-100'
+              }`}
             >
               <Image
                 src={isHovered && secondaryUrl ? secondaryUrl : primaryUrl}
                 alt={displayName}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                style={{
-                  objectFit: 'contain',
-                }}
+                className="object-contain"
               />
             </div>
           </div>
         ) : (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'rgba(255, 255, 255, 0.2)',
-              backgroundColor: '#1A100C',
-              padding: '1rem',
-              textAlign: 'center',
-            }}
-          >
-            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: 'var(--color-gold-400)', opacity: 0.6 }}>
-              LUMÉRA
-            </div>
-            <div style={{ fontSize: '0.65rem', letterSpacing: '0.1em', marginTop: '0.25rem' }}>
-              HAUTE EDIT
-            </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1A100C] p-4 text-center text-white/20">
+            <div className="font-serif text-[1.25rem] text-gold-400 opacity-60">LUMÉRA</div>
+            <div className="mt-1 text-[0.65rem] tracking-[0.1em]">HAUTE EDIT</div>
           </div>
         )}
 
         {/* Top Badge */}
         {badgeText && (
-          <div
-            className="product-badge-wrap"
-            style={{
-              position: 'absolute',
-              zIndex: 2,
-            }}
-          >
+          <div className="absolute left-2 top-2 z-[2] md:left-3 md:top-3">
             <span className={`badge-lumera ${badgeClass}`}>{badgeText}</span>
           </div>
         )}
@@ -180,57 +157,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <button
           onClick={handleToggleWishlist}
           aria-label="Save to wishlist"
-          className="product-wishlist-btn"
-          style={{
-            position: 'absolute',
-            zIndex: 3,
-            borderRadius: '50%',
-            backgroundColor: isFavorited ? 'var(--color-gold-400)' : 'rgba(20, 12, 9, 0.65)',
-            backdropFilter: 'blur(4px)',
-            color: isFavorited ? '#0D0705' : '#FAF7F2',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s ease',
-          }}
+          className={`absolute right-2 top-2 z-[3] flex h-7 w-7 items-center justify-center rounded-full backdrop-blur-[4px] transition-all duration-200 ease-[ease] md:right-[0.65rem] md:top-[0.65rem] md:h-8 md:w-8 ${wishlistTheme} ${
+            isLight ? 'border border-[rgba(200,162,101,0.3)] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : ''
+          }`}
         >
-          <Heart size={14} fill={isFavorited ? '#0D0705' : 'none'} strokeWidth={1.75} />
+          <Heart size={14} fill={isFavorited ? (isLight ? '#140C09' : '#0D0705') : 'none'} strokeWidth={1.75} />
         </button>
 
         {/* Desktop Quick Add Bar on Hover */}
         <div
-          className="desktop-quick-add"
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: '0.65rem',
-            backgroundColor: 'rgba(20, 12, 9, 0.85)',
-            backdropFilter: 'blur(8px)',
-            transform: isHovered ? 'translateY(0)' : 'translateY(100%)',
-            transition: 'transform 0.25s ease',
-            zIndex: 4,
-            display: 'none',
-          }}
+          className={`absolute inset-x-0 bottom-0 z-[4] hidden p-[0.65rem] backdrop-blur-[8px] transition-transform duration-[250ms] ease-[ease] min-[860px]:block ${
+            isHovered ? 'translate-y-0' : 'translate-y-full'
+          } ${isLight ? 'bg-white/[0.92]' : 'bg-[rgba(20,12,9,0.85)]'}`}
         >
           <button
             onClick={handleQuickAdd}
-            style={{
-              width: '100%',
-              padding: '0.55rem',
-              backgroundColor: 'var(--color-gold-400)',
-              color: '#0D0705',
-              fontSize: '0.65rem',
-              fontWeight: 700,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.4rem',
-              borderRadius: '2px',
-            }}
+            className={`flex w-full items-center justify-center gap-[0.4rem] rounded-[2px] p-[0.55rem] text-[0.65rem] font-bold uppercase tracking-[0.14em] transition-colors duration-200 ease-[ease] ${
+              isLight ? 'bg-[#140C09] text-[#FAF7F2]' : 'bg-[#DEC197] text-[#0D0705]'
+            }`}
           >
             {addedNotice ? (
               <>
@@ -246,19 +190,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </Link>
 
       {/* Product Information */}
-      <div className="product-card-body">
+      <div
+        className={`flex flex-1 flex-col ${
+          isHorizontal
+            ? 'w-[58%] justify-center px-[0.95rem] py-3'
+            : 'w-full justify-start p-[0.65rem_0.55rem_0.75rem_0.55rem] md:p-[0.9rem]'
+        }`}
+      >
         {/* Brand */}
         {product.brand && (
           <span
-            style={{
-              fontSize: 'clamp(0.575rem, 1.2vw, 0.675rem)',
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: 'var(--color-gold-400)',
-              marginBottom: '0.15rem',
-              display: 'block',
-            }}
+            className={`mb-[0.15rem] block text-[clamp(0.575rem,1.2vw,0.675rem)] font-semibold uppercase tracking-[0.12em] ${
+              isLight ? 'text-[#A88143]' : 'text-[#DEC197]'
+            }`}
           >
             {product.brand.name}
           </span>
@@ -267,67 +211,43 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Title */}
         <Link
           href={`/product/${product.slug}`}
-          style={{
-            fontSize: 'clamp(0.75rem, 1.5vw, 0.85rem)',
-            fontWeight: 500,
-            lineHeight: 1.35,
-            color: '#FFFFFF',
-            marginBottom: '0.25rem',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            minHeight: '2.05rem',
-          }}
+          className={`mb-1 line-clamp-2 font-medium leading-[1.35] ${
+            isHorizontal
+              ? 'min-h-0 text-[clamp(0.8rem,1.4vw,0.9rem)]'
+              : 'min-h-[2.05rem] text-[clamp(0.75rem,1.5vw,0.85rem)]'
+          } ${isLight ? 'text-[#140C09]' : 'text-white'}`}
         >
           {displayName}
         </Link>
 
         {/* Rating */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-            marginBottom: '0.4rem',
-            fontSize: 'clamp(0.625rem, 1.2vw, 0.725rem)',
-          }}
-        >
-          <span style={{ color: '#F5A623', fontWeight: 600 }}>★ {product.rating || '4.9'}</span>
-          <span style={{ color: '#8E7D74', fontSize: 'clamp(0.575rem, 1vw, 0.675rem)' }}>
+        <div className="mb-[0.4rem] flex items-center gap-[0.3rem] text-[clamp(0.625rem,1.2vw,0.725rem)]">
+          <span className={`font-semibold ${isLight ? 'text-[#D48806]' : 'text-[#F5A623]'}`}>
+            ★ {product.rating || '4.9'}
+          </span>
+          <span
+            className={`text-[clamp(0.575rem,1vw,0.675rem)] ${
+              isLight ? 'text-[#8C7B72]' : 'text-[#8E7D74]'
+            }`}
+          >
             ({product.reviews_count || 124})
           </span>
         </div>
 
         {/* Price & Mobile Add */}
         <div
-          style={{
-            marginTop: 'auto',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: '0.25rem',
-          }}
+          className={`flex items-center justify-between pt-1 ${isHorizontal ? 'mt-[0.35rem]' : 'mt-auto'}`}
         >
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', flexWrap: 'wrap' }}>
+          <div className="flex flex-wrap items-baseline gap-[0.4rem]">
             <span
-              style={{
-                fontSize: 'clamp(0.825rem, 1.6vw, 0.9rem)',
-                fontWeight: 600,
-                color: '#FFFFFF',
-                letterSpacing: '0.02em',
-              }}
+              className={`text-[clamp(0.825rem,1.6vw,0.9rem)] font-semibold tracking-[0.02em] ${
+                isLight ? 'text-[#140C09]' : 'text-white'
+              }`}
             >
               {formatPrice(product.price)}
             </span>
             {product.compare_at_price && product.compare_at_price > product.price && (
-              <span
-                style={{
-                  fontSize: 'clamp(0.675rem, 1.2vw, 0.75rem)',
-                  color: '#9E8E85',
-                  textDecoration: 'line-through',
-                }}
-              >
+              <span className="text-[clamp(0.675rem,1.2vw,0.75rem)] text-[#9E8E85] line-through">
                 {formatPrice(product.compare_at_price)}
               </span>
             )}
@@ -337,81 +257,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <button
             onClick={handleQuickAdd}
             aria-label="Add to bag"
-            style={{
-              width: '26px',
-              height: '26px',
-              borderRadius: '2px',
-              backgroundColor: 'rgba(200, 162, 101, 0.15)',
-              border: '1px solid var(--border-gold)',
-              color: 'var(--color-gold-400)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-            className="mobile-add-btn"
+            className={`flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-[2px] border bg-[rgba(200,162,101,0.15)] min-[860px]:hidden ${
+              isLight
+                ? 'border-[rgba(200,162,101,0.35)] text-[#7E5F2B]'
+                : 'border-[rgba(200,162,101,0.25)] text-[#DEC197]'
+            }`}
           >
             {addedNotice ? <Check size={13} /> : <Plus size={14} />}
           </button>
         </div>
       </div>
-
-      <style jsx>{`
-        .product-card-root:hover {
-          border-color: rgba(200, 162, 101, 0.4);
-          transform: translateY(-2px);
-        }
-        .product-image-frame {
-          position: absolute;
-          inset: 0;
-          padding: 0.85rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .product-badge-wrap {
-          top: 0.5rem;
-          left: 0.5rem;
-        }
-        .product-wishlist-btn {
-          top: 0.5rem;
-          right: 0.5rem;
-          width: 28px;
-          height: 28px;
-        }
-        .product-card-body {
-          padding: 0.65rem 0.55rem 0.75rem 0.55rem;
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-        @media (min-width: 768px) {
-          .product-image-frame {
-            padding: 1.15rem;
-          }
-          .product-badge-wrap {
-            top: 0.75rem;
-            left: 0.75rem;
-          }
-          .product-wishlist-btn {
-            top: 0.65rem;
-            right: 0.65rem;
-            width: 32px;
-            height: 32px;
-          }
-          .product-card-body {
-            padding: 0.9rem;
-          }
-        }
-        @media (min-width: 860px) {
-          .desktop-quick-add {
-            display: block !important;
-          }
-          .mobile-add-btn {
-            display: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

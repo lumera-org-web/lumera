@@ -56,23 +56,11 @@ export const FragranceSection: React.FC<FragranceSectionProps> = ({ categories =
   const ctaLink = banner?.cta_link || '/category/fragrance';
 
   return (
-    <section
-      style={{
-        position: 'relative',
-        backgroundColor: '#0D0705',
-        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-        padding: '5rem 0 5.5rem 0',
-        overflow: 'hidden',
-        minHeight: '620px',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
+    <section className="relative flex min-h-[620px] items-center overflow-hidden border-y border-white/5 bg-[#0D0705] pb-[5.5rem] pt-20">
       {/* ========================================================================= */}
       {/* OPULENT BAROQUE BACKGROUND SCENE (Right-aligned Hero LUMÉRA Flacon) */}
       {/* ========================================================================= */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
+      <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
         {banner?.image_url ? (
           <Image
             src={banner.image_url}
@@ -81,116 +69,50 @@ export const FragranceSection: React.FC<FragranceSectionProps> = ({ categories =
             priority
             unoptimized
             sizes="100vw"
-            style={{ objectFit: 'cover', objectPosition: 'center right' }}
+            className="object-cover object-[center_right]"
           />
         ) : (
           /* Default Baroque LUMÉRA Hero Scene positioned on the right */
-          <div
-            style={{
-              position: 'absolute',
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: '45%',
-              minWidth: '500px',
-              maxWidth: '820px',
-            }}
-          >
+          <div className="absolute inset-y-0 right-0 w-[45%] min-w-[500px] max-w-[820px]">
             <Image
               src="/images/fragrance/hero-flacon-ultra.webp"
               alt="LUMÉRA Flacon Imperial"
               fill
               priority
               unoptimized
-              style={{ objectFit: 'cover', objectPosition: 'center left' }}
+              className="object-cover object-[center_left]"
             />
           </div>
         )}
 
         {/* Cinematic Chiaroscuro Gradient Scrim: Deep Black over Cards, Glowing Light on Right */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background:
-              'linear-gradient(90deg, #0D0705 0%, #0D0705 44%, rgba(13, 7, 5, 0.95) 58%, rgba(13, 7, 5, 0.7) 72%, rgba(13, 7, 5, 0.12) 88%, transparent 100%)',
-          }}
-        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#0D0705_0%,#0D0705_44%,rgba(13,7,5,0.95)_58%,rgba(13,7,5,0.7)_72%,rgba(13,7,5,0.12)_88%,transparent_100%)]" />
 
         {/* Ambient Top & Bottom Vignettes */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background:
-              'linear-gradient(180deg, rgba(13, 7, 5, 0.7) 0%, transparent 18%, transparent 82%, rgba(13, 7, 5, 0.75) 100%)',
-          }}
-        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,7,5,0.7)_0%,transparent_18%,transparent_82%,rgba(13,7,5,0.75)_100%)]" />
       </div>
 
       {/* ========================================================================= */}
       {/* CONTENT: Left Side Header + Perfectly Aligned 6 Arched Cards */}
       {/* ========================================================================= */}
-      <div className="container-lumera" style={{ position: 'relative', zIndex: 10, width: '100%' }}>
+      <div className="container-lumera relative z-10 w-full">
         {/* Editorial Section Header */}
-        <div style={{ maxWidth: '560px', marginBottom: '2.5rem' }}>
-          <div
-            style={{
-              fontSize: '0.725rem',
-              letterSpacing: '0.26em',
-              textTransform: 'uppercase',
-              color: 'var(--color-gold-400)',
-              fontWeight: 600,
-              marginBottom: '0.65rem',
-            }}
-          >
+        <div className="mb-10 max-w-[560px]">
+          <div className="mb-[0.65rem] text-[0.725rem] font-semibold uppercase tracking-[0.26em] text-gold-400">
             {tag}
           </div>
 
-          <h2
-            style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: 'clamp(2.3rem, 3.8vw, 3.6rem)',
-              fontWeight: 600,
-              color: '#FFFFFF',
-              letterSpacing: '0.04em',
-              lineHeight: 1.08,
-              marginBottom: '0.85rem',
-              textTransform: 'uppercase',
-            }}
-          >
+          <h2 className="mb-[0.85rem] !font-serif text-[clamp(2.3rem,3.8vw,3.6rem)] font-semibold uppercase leading-[1.08] tracking-[0.04em] text-white">
             {title}
           </h2>
 
-          <p
-            style={{
-              color: '#D8C7B2',
-              fontSize: '0.925rem',
-              lineHeight: 1.55,
-              maxWidth: '500px',
-              marginBottom: '1.4rem',
-            }}
-          >
+          <p className="mb-[1.4rem] max-w-[500px] text-[0.925rem] leading-[1.55] text-[#D8C7B2]">
             {description}
           </p>
 
           <Link
             href={ctaLink}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: '#FFFFFF',
-              textDecoration: 'none',
-              borderBottom: '1px solid var(--color-gold-400)',
-              paddingBottom: '0.35rem',
-              transition: 'all 0.2s ease',
-            }}
-            className="fragrance-cta-hover"
+            className="inline-flex items-center gap-[0.45rem] border-b border-gold-400 pb-[0.35rem] text-[0.75rem] font-bold uppercase tracking-[0.2em] text-white no-underline transition-all duration-200 ease-[ease] hover:!tracking-[0.24em] hover:!text-gold-400"
           >
             <span>{ctaText}</span>
           </Link>
@@ -199,36 +121,12 @@ export const FragranceSection: React.FC<FragranceSectionProps> = ({ categories =
         {/* ========================================================================= */}
         {/* 6 ARCHED CARDS: Bigger, Grand Cathedral Arches + Crystal-Sharp Resolution */}
         {/* ========================================================================= */}
-        <div
-          className="fragrance-cards-grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(6, minmax(140px, 168px))',
-            gap: '0.85rem',
-            maxWidth: '1060px',
-            width: '100%',
-          }}
-        >
+        <div className="flex w-full max-w-[1060px] snap-x snap-mandatory gap-[0.85rem] overflow-x-auto pb-[0.85rem] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden min-[1081px]:grid min-[1081px]:grid-cols-[repeat(6,minmax(140px,168px))] min-[1081px]:overflow-visible min-[1081px]:pb-0">
           {fragranceFamilies.map((item) => (
             <Link
               key={item.slug}
               href={`/category/fragrance?family=${item.slug}`}
-              style={{
-                width: '100%',
-                height: '275px',
-                borderRadius: '30px 30px 6px 6px',
-                backgroundColor: '#160E0B',
-                border: '1px solid rgba(255, 255, 255, 0.22)',
-                position: 'relative',
-                overflow: 'hidden',
-                textDecoration: 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.35s ease',
-                boxShadow: '0 10px 28px rgba(0, 0, 0, 0.55)',
-              }}
-              className="fragrance-arch-card"
+              className="relative flex h-[250px] min-w-[150px] max-w-[150px] shrink-0 snap-start flex-col justify-end overflow-hidden rounded-[30px_30px_6px_6px] border border-white/[0.22] bg-[#160E0B] no-underline shadow-[0_10px_28px_rgba(0,0,0,0.55)] [transition:transform_0.35s_cubic-bezier(0.16,1,0.3,1),border-color_0.3s_ease,box-shadow_0.35s_ease] hover:-translate-y-2 hover:!border-gold-400 hover:!shadow-[0_18px_36px_rgba(0,0,0,0.75),0_0_24px_rgba(200,162,101,0.3)] min-[1081px]:h-[275px] min-[1081px]:w-full min-[1081px]:min-w-0 min-[1081px]:max-w-none"
             >
               {/* Full Artwork fills entire card through top arch to bottom - unoptimized ensures 100% original high-res sharpness */}
               {item.image_url ? (
@@ -239,77 +137,24 @@ export const FragranceSection: React.FC<FragranceSectionProps> = ({ categories =
                     fill
                     unoptimized
                     priority
-                    style={{
-                      objectFit: 'cover',
-                      objectPosition: 'center',
-                      imageRendering: '-webkit-optimize-contrast',
-                    }}
+                    className="object-cover object-center [image-rendering:-webkit-optimize-contrast]"
                   />
                   {/* Seamless Vignette Scrim at bottom - Gradual dark tint to make label perfectly readable */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background:
-                        'linear-gradient(180deg, rgba(13, 7, 5, 0) 52%, rgba(13, 7, 5, 0.65) 76%, rgba(13, 7, 5, 0.94) 100%)',
-                      pointerEvents: 'none',
-                    }}
-                  />
+                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(13,7,5,0)_52%,rgba(13,7,5,0.65)_76%,rgba(13,7,5,0.94)_100%)]" />
                 </>
               ) : (
                 <>
                   {/* Luxury ambient gold star arch fallback */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background:
-                        'radial-gradient(circle at 50% 30%, rgba(200, 162, 101, 0.16) 0%, rgba(20, 12, 9, 0.95) 80%)',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '20px',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '50%',
-                      border: '1px solid rgba(200, 162, 101, 0.3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '0.75rem',
-                      color: 'var(--color-gold-400)',
-                    }}
-                  >
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(200,162,101,0.16)_0%,rgba(20,12,9,0.95)_80%)]" />
+                  <div className="absolute left-1/2 top-5 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-[rgba(200,162,101,0.3)] text-[0.75rem] text-gold-400">
                     ✦
                   </div>
                 </>
               )}
 
               {/* Card Label Base: sits cleanly over the bottom gradient */}
-              <div
-                style={{
-                  position: 'relative',
-                  zIndex: 2,
-                  textAlign: 'center',
-                  padding: '0 0.5rem 0.95rem 0.5rem',
-                }}
-              >
-                <span
-                  style={{
-                    display: 'block',
-                    fontSize: '0.76rem',
-                    fontWeight: 600,
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    color: '#FFFFFF',
-                    fontFamily: "'Montserrat', sans-serif",
-                    textShadow: '0 2px 6px rgba(0, 0, 0, 0.95)',
-                  }}
-                >
+              <div className="relative z-[2] px-2 pb-[0.95rem] pt-0 text-center">
+                <span className="block font-sans text-[0.76rem] font-semibold uppercase tracking-[0.2em] text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.95)]">
                   {locale === 'ar' ? item.name_ar : item.name}
                 </span>
               </div>
@@ -317,40 +162,6 @@ export const FragranceSection: React.FC<FragranceSectionProps> = ({ categories =
           ))}
         </div>
       </div>
-
-      {/* Embedded CSS for smooth hover micro-animations & responsive layout */}
-      <style>{`
-        .fragrance-arch-card:hover {
-          transform: translateY(-8px);
-          border-color: var(--color-gold-400) !important;
-          box-shadow: 0 18px 36px rgba(0, 0, 0, 0.75), 0 0 24px rgba(200, 162, 101, 0.3) !important;
-        }
-        .fragrance-cta-hover:hover {
-          color: var(--color-gold-400) !important;
-          letter-spacing: 0.24em !important;
-        }
-
-        @media (max-width: 1080px) {
-          .fragrance-cards-grid {
-            display: flex !important;
-            overflow-x: auto !important;
-            scroll-snap-type: x mandatory !important;
-            padding-bottom: 0.85rem !important;
-            -webkit-overflow-scrolling: touch !important;
-            gap: 0.85rem !important;
-          }
-          .fragrance-cards-grid::-webkit-scrollbar {
-            display: none;
-          }
-          .fragrance-arch-card {
-            min-width: 150px !important;
-            max-width: 150px !important;
-            height: 250px !important;
-            scroll-snap-align: start !important;
-            flex-shrink: 0 !important;
-          }
-        }
-      `}</style>
     </section>
   );
 };

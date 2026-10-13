@@ -25,54 +25,27 @@ export const CartDrawer: React.FC = () => {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 100,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        backdropFilter: 'blur(6px)',
-        display: 'flex',
-        justifyContent: isRtl ? 'flex-start' : 'flex-end',
-      }}
+      className={`fixed inset-0 z-[100] flex bg-black/75 backdrop-blur-[6px] ${
+        isRtl ? 'justify-start' : 'justify-end'
+      }`}
       onClick={closeDrawer}
     >
       <div
-        style={{
-          width: '100%',
-          maxWidth: 'min(440px, 100vw)',
-          height: '100%',
-          backgroundColor: '#140C09',
-          borderLeft: isRtl ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
-          borderRight: isRtl ? '1px solid rgba(255, 255, 255, 0.08)' : 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          animation: 'slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
+        className={`flex h-full w-full max-w-[min(440px,100vw)] flex-col bg-[#140C09] ${
+          isRtl
+            ? 'animate-slide-in-left border-r border-white/[0.08]'
+            : 'animate-slide-in-right border-l border-white/[0.08]'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div
-          style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <ShoppingBag size={20} color="var(--color-gold-400)" />
-            <h3
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '1.15rem',
-                letterSpacing: '0.05em',
-                margin: 0,
-              }}
-            >
+        <div className="flex items-center justify-between border-b border-white/[0.08] p-6">
+          <div className="flex items-center gap-[0.65rem]">
+            <ShoppingBag size={20} className="text-gold-400" />
+            <h3 className="m-0 font-serif text-[1.15rem] tracking-[0.05em] text-white">
               {t('cart.title')}
             </h3>
-            <span style={{ fontSize: '0.8rem', color: '#9E8E85' }}>
+            <span className="text-[0.8rem] text-[#9E8E85]">
               ({items.reduce((s, i) => s + i.quantity, 0)})
             </span>
           </div>
@@ -80,61 +53,29 @@ export const CartDrawer: React.FC = () => {
           <button
             onClick={closeDrawer}
             aria-label="Close bag"
-            style={{ color: '#D8C7B2', padding: '0.35rem' }}
+            className="p-[0.35rem] text-[#D8C7B2] transition-colors hover:text-white"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Items List */}
-        <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '1.5rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.25rem',
-          }}
-        >
+        <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-6">
           {items.length === 0 ? (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                textAlign: 'center',
-                color: '#9E8E85',
-              }}
-            >
-              <div
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '1rem',
-                  color: 'var(--color-gold-400)',
-                }}
-              >
+            <div className="flex h-full flex-col items-center justify-center text-center text-[#9E8E85]">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/[0.03] text-gold-400">
                 <ShoppingBag size={28} />
               </div>
-              <p style={{ fontSize: '1rem', color: '#FAF7F2', marginBottom: '0.5rem' }}>
+              <p className="mb-2 text-[1rem] text-[#FAF7F2]">
                 {t('cart.empty')}
               </p>
-              <p style={{ fontSize: '0.8rem', maxWidth: '240px', lineHeight: 1.5, marginBottom: '1.5rem' }}>
+              <p className="mb-6 max-w-[240px] text-[0.8rem] leading-[1.5]">
                 Explore our curated fragrance, makeup, and skincare edits.
               </p>
               <Link
                 href="/shop"
                 onClick={closeDrawer}
-                className="btn-lumera-outline"
-                style={{ fontSize: '0.7rem' }}
+                className="btn-lumera-outline !text-[0.7rem]"
               >
                 Explore Collection
               </Link>
@@ -143,132 +84,69 @@ export const CartDrawer: React.FC = () => {
             items.map((item) => (
               <div
                 key={item.id}
-                style={{
-                  display: 'flex',
-                  gap: '1rem',
-                  paddingBottom: '1.25rem',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                }}
+                className="flex gap-4 border-b border-white/[0.05] pb-5"
               >
                 {/* Thumb */}
-                <div
-                  style={{
-                    position: 'relative',
-                    width: '74px',
-                    height: '92px',
-                    borderRadius: '2px',
-                    overflow: 'hidden',
-                    backgroundColor: '#1E120D',
-                    flexShrink: 0,
-                  }}
-                >
+                <div className="relative h-[92px] w-[74px] shrink-0 overflow-hidden rounded-[2px] bg-[#1E120D]">
                   {item.imageUrl ? (
                     <Image
                       src={item.imageUrl}
                       alt={item.name}
                       fill
                       sizes="74px"
-                      style={{ objectFit: 'cover' }}
+                      className="object-cover"
                     />
                   ) : (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '0.6rem',
-                        color: 'var(--color-gold-400)',
-                      }}
-                    >
+                    <div className="absolute inset-0 flex items-center justify-center text-[0.6rem] text-gold-400">
                       LUMÉRA
                     </div>
                   )}
                 </div>
 
                 {/* Info */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div className="flex flex-1 flex-col">
                   {item.brandName && (
-                    <span
-                      style={{
-                        fontSize: '0.65rem',
-                        letterSpacing: '0.1em',
-                        color: 'var(--color-gold-400)',
-                        textTransform: 'uppercase',
-                        fontWeight: 600,
-                      }}
-                    >
+                    <span className="text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-gold-400">
                       {item.brandName}
                     </span>
                   )}
-                  <h4
-                    style={{
-                      fontSize: '0.85rem',
-                      fontWeight: 400,
-                      color: '#FFFFFF',
-                      margin: '0.15rem 0',
-                      lineHeight: 1.3,
-                    }}
-                  >
+                  <h4 className="my-[0.15rem] text-[0.85rem] font-normal leading-[1.3] text-white">
                     {item.name}
                   </h4>
                   {item.size && (
-                    <span style={{ fontSize: '0.7rem', color: '#9E8E85' }}>
+                    <span className="text-[0.7rem] text-[#9E8E85]">
                       {item.size}
                     </span>
                   )}
 
-                  <div
-                    style={{
-                      marginTop: 'auto',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      paddingTop: '0.5rem',
-                    }}
-                  >
+                  <div className="mt-auto flex items-center justify-between pt-2">
                     {/* Qty Selector */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '2px',
-                      }}
-                    >
+                    <div className="flex items-center rounded-[2px] border border-white/10">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        style={{ padding: '0.2rem 0.45rem', color: '#D8C7B2' }}
+                        className="px-[0.45rem] py-[0.2rem] text-[#D8C7B2] transition-colors hover:text-white"
                       >
                         <Minus size={12} />
                       </button>
-                      <span
-                        style={{
-                          fontSize: '0.75rem',
-                          padding: '0 0.4rem',
-                          minWidth: '20px',
-                          textAlign: 'center',
-                        }}
-                      >
+                      <span className="min-w-[20px] px-[0.4rem] text-center text-[0.75rem] text-white">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        style={{ padding: '0.2rem 0.45rem', color: '#D8C7B2' }}
+                        className="px-[0.45rem] py-[0.2rem] text-[#D8C7B2] transition-colors hover:text-white"
                       >
                         <Plus size={12} />
                       </button>
                     </div>
 
                     {/* Price & Delete */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#FFFFFF' }}>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[0.85rem] font-semibold text-white">
                         {formatPrice(item.price * item.quantity)}
                       </span>
                       <button
                         onClick={() => removeItem(item.id)}
-                        style={{ color: '#7E6F67', padding: '0.2rem' }}
+                        className="p-[0.2rem] text-[#7E6F67] transition-colors hover:text-[#D64529]"
                         aria-label="Remove item"
                       >
                         <Trash2 size={15} />
@@ -283,44 +161,26 @@ export const CartDrawer: React.FC = () => {
 
         {/* Footer with Subtotal & Checkout */}
         {items.length > 0 && (
-          <div
-            style={{
-              padding: '1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px)) 1.25rem',
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-              backgroundColor: '#0F0806',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.8rem', color: '#D8C7B2' }}>
+          <div className="border-t border-white/[0.08] bg-[#0F0806] p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
+            <div className="mb-2 flex justify-between text-[0.8rem] text-[#D8C7B2]">
               <span>{t('cart.subtotal')}</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '0.8rem', color: '#D8C7B2' }}>
+            <div className="mb-4 flex justify-between text-[0.8rem] text-[#D8C7B2]">
               <span>{t('cart.shipping')} (Saudi Arabia)</span>
-              <span style={{ color: 'var(--color-gold-400)' }}>
+              <span className="font-semibold text-gold-400">
                 {shippingFee === 0 ? t('cart.complimentary') : formatPrice(shippingFee)}
               </span>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                paddingTop: '0.75rem',
-                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                marginBottom: '1.25rem',
-                fontSize: '1rem',
-                fontWeight: 600,
-                color: '#FFFFFF',
-              }}
-            >
+            <div className="mb-5 flex justify-between border-t border-white/[0.08] pt-3 text-[1rem] font-semibold text-white">
               <span>Total</span>
-              <span style={{ color: 'var(--color-gold-400)' }}>{formatPrice(total)}</span>
+              <span className="text-gold-400">{formatPrice(total)}</span>
             </div>
 
             <Link
               href="/checkout"
               onClick={closeDrawer}
-              className="btn-lumera-primary"
-              style={{ width: '100%', padding: '0.95rem', fontSize: '0.75rem', fontWeight: 700 }}
+              className="btn-lumera-primary w-full p-[0.95rem] text-[0.75rem] font-bold"
             >
               <span>{t('cart.checkout')}</span>
               <ArrowRight size={16} />
@@ -328,17 +188,6 @@ export const CartDrawer: React.FC = () => {
           </div>
         )}
       </div>
-
-      <style>{`
-        @keyframes slideIn {
-          from {
-            transform: translateX(${isRtl ? '-100%' : '100%'});
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-      `}</style>
     </div>
   );
 };

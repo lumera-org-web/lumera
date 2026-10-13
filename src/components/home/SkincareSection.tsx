@@ -33,7 +33,7 @@ export const SkincareSection: React.FC<SkincareSectionProps> = ({ banner }) => {
   const mobileBannerImageUrl = banner?.mobile_image_url || bannerImageUrl;
 
   const CrestIcon = () => (
-    <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'inherit' }}>
+    <div className="mb-3 flex items-center [justify-content:inherit]">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M12 2C12 2 13.5 6.5 17 8C13.5 9.5 12 14 12 14C12 14 10.5 9.5 7 8C10.5 6.5 12 2 12 2Z"
@@ -51,12 +51,12 @@ export const SkincareSection: React.FC<SkincareSectionProps> = ({ banner }) => {
   );
 
   return (
-    <section className="skincare-section-root">
+    <section className="overflow-hidden border-y border-black/5 bg-[#FBF8F4]">
       {/* ========================================================================= */}
       {/* 1. DESKTOP VIEWPORT: Full-bleed Panoramic Banner (Preserved 100% Unchanged) */}
       {/* ========================================================================= */}
-      <div className="skincare-desktop-view">
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
+      <div className="relative hidden min-h-[340px] w-full items-center min-[769px]:flex">
+        <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
           <Image
             src={bannerImageUrl}
             alt={title}
@@ -64,98 +64,38 @@ export const SkincareSection: React.FC<SkincareSectionProps> = ({ banner }) => {
             priority
             unoptimized
             sizes="100vw"
-            style={{
-              objectFit: 'cover',
-              objectPosition: locale === 'ar' ? 'center left' : 'center right',
-            }}
+            className={`object-cover ${locale === 'ar' ? 'object-[center_left]' : 'object-[center_right]'}`}
           />
 
           {/* Soft Directional Ivory Scrim */}
           <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background:
-                locale === 'ar'
-                  ? 'linear-gradient(270deg, #FBF8F4 0%, rgba(251, 248, 244, 0.97) 30%, rgba(251, 248, 244, 0.76) 45%, rgba(251, 248, 244, 0.25) 62%, transparent 78%)'
-                  : 'linear-gradient(90deg, #FBF8F4 0%, rgba(251, 248, 244, 0.97) 30%, rgba(251, 248, 244, 0.76) 45%, rgba(251, 248, 244, 0.25) 62%, transparent 78%)',
-            }}
+            className={`absolute inset-0 ${
+              locale === 'ar'
+                ? 'bg-[linear-gradient(270deg,#FBF8F4_0%,rgba(251,248,244,0.97)_30%,rgba(251,248,244,0.76)_45%,rgba(251,248,244,0.25)_62%,transparent_78%)]'
+                : 'bg-[linear-gradient(90deg,#FBF8F4_0%,rgba(251,248,244,0.97)_30%,rgba(251,248,244,0.76)_45%,rgba(251,248,244,0.25)_62%,transparent_78%)]'
+            }`}
           />
         </div>
 
-        <div
-          className="container-lumera"
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            width: '100%',
-            paddingTop: '3.5rem',
-            paddingBottom: '3.5rem',
-          }}
-        >
-          <div style={{ maxWidth: '540px' }}>
+        <div className="container-lumera relative z-10 w-full py-14">
+          <div className="max-w-[540px]">
             <CrestIcon />
 
-            <div
-              style={{
-                fontSize: '0.75rem',
-                letterSpacing: '0.28em',
-                textTransform: 'uppercase',
-                color: '#7D5A42',
-                fontWeight: 600,
-                marginBottom: '0.65rem',
-                fontFamily: "'Montserrat', sans-serif",
-              }}
-            >
+            <div className="mb-[0.65rem] font-sans text-[0.75rem] font-semibold uppercase tracking-[0.28em] text-[#7D5A42]">
               {tag}
             </div>
 
-            <h2
-              style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontSize: 'clamp(2.4rem, 4vw, 3.6rem)',
-                fontWeight: 600,
-                color: '#1A100C',
-                letterSpacing: '0.04em',
-                lineHeight: 1.08,
-                marginBottom: '0.85rem',
-                textTransform: 'uppercase',
-              }}
-            >
+            <h2 className="mb-[0.85rem] !font-serif text-[clamp(2.4rem,4vw,3.6rem)] font-semibold uppercase leading-[1.08] tracking-[0.04em] text-[#1A100C]">
               {title}
             </h2>
 
-            <p
-              style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontSize: '1.25rem',
-                fontWeight: 500,
-                color: '#4B352B',
-                letterSpacing: '0.02em',
-                lineHeight: 1.45,
-                marginBottom: '1.65rem',
-              }}
-            >
+            <p className="mb-[1.65rem] !font-serif text-[1.25rem] font-medium leading-[1.45] tracking-[0.02em] text-[#4B352B]">
               {description}
             </p>
 
             <Link
               href={ctaLink}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                letterSpacing: '0.22em',
-                textTransform: 'uppercase',
-                color: '#1A100C',
-                textDecoration: 'none',
-                borderBottom: '1px solid #1A100C',
-                paddingBottom: '0.35rem',
-                transition: 'all 0.2s ease',
-              }}
-              className="skincare-cta-hover"
+              className="inline-flex items-center gap-2 border-b border-[#1A100C] pb-[0.35rem] text-[0.75rem] font-bold uppercase tracking-[0.22em] text-[#1A100C] no-underline transition-all duration-200 ease-[ease] hover:!border-gold-600 hover:!text-gold-600 hover:!tracking-[0.26em]"
             >
               <span>{ctaText}</span>
             </Link>
@@ -166,80 +106,33 @@ export const SkincareSection: React.FC<SkincareSectionProps> = ({ banner }) => {
       {/* ========================================================================= */}
       {/* 2. MOBILE VIEWPORT: Crystal-Clear Editorial Layout (No Text Overlap, No Haze) */}
       {/* ========================================================================= */}
-      <div className="skincare-mobile-view">
+      <div className="flex w-full flex-col bg-[#FBF8F4] min-[769px]:hidden">
         {/* Top Text Block: 100% Clear High-Contrast Typography on Clean Ivory */}
-        <div className="skincare-mobile-content">
+        <div className="flex flex-col items-center px-6 pb-8 pt-12 text-center">
           <CrestIcon />
 
-          <div
-            style={{
-              fontSize: '0.7rem',
-              letterSpacing: '0.24em',
-              textTransform: 'uppercase',
-              color: '#8C674E',
-              fontWeight: 700,
-              marginBottom: '0.5rem',
-              fontFamily: "'Montserrat', sans-serif",
-            }}
-          >
+          <div className="mb-2 font-sans text-[0.7rem] font-bold uppercase tracking-[0.24em] text-[#8C674E]">
             {tag}
           </div>
 
-          <h2
-            style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: 'clamp(2rem, 8vw, 2.6rem)',
-              fontWeight: 600,
-              color: '#1A100C',
-              letterSpacing: '0.04em',
-              lineHeight: 1.12,
-              marginBottom: '0.65rem',
-              textTransform: 'uppercase',
-            }}
-          >
+          <h2 className="mb-[0.65rem] !font-serif text-[clamp(2rem,8vw,2.6rem)] font-semibold uppercase leading-[1.12] tracking-[0.04em] text-[#1A100C]">
             {title}
           </h2>
 
-          <p
-            style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: '1.15rem',
-              fontWeight: 500,
-              color: '#4B352B',
-              letterSpacing: '0.02em',
-              lineHeight: 1.4,
-              marginBottom: '1.4rem',
-              maxWidth: '340px',
-              marginInline: 'auto',
-            }}
-          >
+          <p className="mx-auto mb-[1.4rem] max-w-[340px] !font-serif text-[1.15rem] font-medium leading-[1.4] tracking-[0.02em] text-[#4B352B]">
             {description}
           </p>
 
           <Link
             href={ctaLink}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              fontSize: '0.72rem',
-              fontWeight: 700,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: '#1A100C',
-              textDecoration: 'none',
-              borderBottom: '1px solid #1A100C',
-              paddingBottom: '0.35rem',
-              transition: 'all 0.2s ease',
-            }}
-            className="skincare-cta-hover"
+            className="inline-flex items-center gap-[0.45rem] border-b border-[#1A100C] pb-[0.35rem] text-[0.72rem] font-bold uppercase tracking-[0.2em] text-[#1A100C] no-underline transition-all duration-200 ease-[ease] hover:!border-gold-600 hover:!text-gold-600 hover:!tracking-[0.26em]"
           >
             <span>{ctaText}</span>
           </Link>
         </div>
 
         {/* Bottom Photography: Full-Color, 100% Sharp & Vibrant (Zero Fog/Milky Wash) */}
-        <div className="skincare-mobile-photo-wrap">
+        <div className="relative h-[290px] w-full overflow-hidden">
           <Image
             src={mobileBannerImageUrl}
             alt={title}
@@ -247,81 +140,12 @@ export const SkincareSection: React.FC<SkincareSectionProps> = ({ banner }) => {
             priority
             unoptimized
             sizes="100vw"
-            style={{
-              objectFit: 'cover',
-              objectPosition: '75% center',
-            }}
+            className="object-cover object-[75%_center]"
           />
           {/* Subtle Top Edge Feather into the Ivory Section Background */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '35px',
-              background: 'linear-gradient(180deg, #FBF8F4 0%, transparent 100%)',
-              pointerEvents: 'none',
-            }}
-          />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[35px] bg-[linear-gradient(180deg,#FBF8F4_0%,transparent_100%)]" />
         </div>
       </div>
-
-      {/* Embedded CSS for Hover & Responsive Viewport Toggle */}
-      <style>{`
-        .skincare-section-root {
-          background-color: #FBF8F4;
-          border-top: 1px solid rgba(0, 0, 0, 0.05);
-          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-          overflow: hidden;
-        }
-
-        .skincare-cta-hover:hover {
-          color: var(--color-gold-600) !important;
-          border-bottom-color: var(--color-gold-600) !important;
-          letter-spacing: 0.26em !important;
-        }
-
-        /* Desktop Viewport Rules (100% Preserved) */
-        @media (min-width: 769px) {
-          .skincare-mobile-view {
-            display: none !important;
-          }
-          .skincare-desktop-view {
-            position: relative;
-            min-height: 340px;
-            display: flex;
-            align-items: center;
-            width: 100%;
-          }
-        }
-
-        /* Mobile Viewport Rules (Ultra-Clear Editorial Presentation) */
-        @media (max-width: 768px) {
-          .skincare-desktop-view {
-            display: none !important;
-          }
-          .skincare-mobile-view {
-            display: flex !important;
-            flex-direction: column !important;
-            width: 100% !important;
-            background-color: #FBF8F4 !important;
-          }
-          .skincare-mobile-content {
-            padding: 3rem 1.5rem 2rem 1.5rem !important;
-            text-align: center !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-          }
-          .skincare-mobile-photo-wrap {
-            position: relative !important;
-            width: 100% !important;
-            height: 290px !important;
-            overflow: hidden !important;
-          }
-        }
-      `}</style>
     </section>
   );
 };

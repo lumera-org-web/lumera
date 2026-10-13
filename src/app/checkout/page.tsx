@@ -83,18 +83,18 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div style={{ backgroundColor: '#140C09', minHeight: '80vh', padding: '6rem 1rem', display: 'flex', alignItems: 'center' }}>
-        <div className="container-lumera" style={{ textAlign: 'center', maxWidth: '480px', margin: '0 auto' }}>
-          <div style={{ width: '68px', height: '68px', borderRadius: '50%', backgroundColor: 'rgba(200, 162, 101, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto', color: 'var(--color-gold-400)' }}>
+      <div className="flex min-h-[80vh] items-center bg-[#140C09] px-4 py-24">
+        <div className="container-lumera mx-auto max-w-[480px] text-center">
+          <div className="mx-auto mb-6 flex h-[68px] w-[68px] items-center justify-center rounded-full bg-gold-400/10 text-gold-400">
             <ShoppingBag size={30} />
           </div>
-          <h1 style={{ fontFamily: 'Cormorant Garamond, Georgia, serif', color: '#FFFFFF', fontSize: '2.25rem', marginBottom: '0.75rem', textTransform: 'uppercase' }}>
+          <h1 className="mb-3 font-serif text-[2.25rem] uppercase text-white">
             Your Bag is Empty
           </h1>
-          <p style={{ color: '#9E8E85', marginBottom: '2rem', fontSize: '0.9rem' }}>
+          <p className="mb-8 text-[0.9rem] text-[#9E8E85]">
             Please select your desired fragrances, makeup, or skincare before checking out.
           </p>
-          <Link href="/shop" className="btn-lumera-primary" style={{ padding: '0.95rem 2rem' }}>
+          <Link href="/shop" className="btn-lumera-primary px-8 py-[0.95rem]">
             Explore Collection
           </Link>
         </div>
@@ -103,79 +103,105 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="checkout-page-wrapper">
+    <div className="min-h-[90vh] bg-[#140C09] py-10 pb-24 max-[768px]:pb-[calc(6rem+env(safe-area-inset-bottom,0px))] max-[768px]:pt-6">
       <div className="container-lumera">
         {/* Step Header */}
-        <div className="checkout-header">
-          <h1 className="checkout-title">Checkout</h1>
+        <div className="mb-8">
+          <h1 className="mb-3 font-serif text-[clamp(1.85rem,4vw,2.5rem)] uppercase tracking-[0.04em] text-white">
+            Checkout
+          </h1>
 
-          <div className="checkout-stepper">
-            <div className="checkout-step-item" style={{ color: 'var(--color-gold-400)' }}>
-              <span className="checkout-step-num" style={{ backgroundColor: 'var(--color-gold-400)', color: '#0D0705' }}>1</span>
+          <div className="flex flex-wrap items-center gap-6 text-[0.75rem] uppercase tracking-[0.12em] max-[768px]:gap-2 max-[768px]:text-[0.68rem]">
+            <div className="flex items-center gap-2 text-gold-400">
+              <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-gold-400 text-[0.7rem] font-bold text-[#0D0705] max-[768px]:h-[18px] max-[768px]:w-[18px] max-[768px]:text-[0.625rem]">
+                1
+              </span>
               <span>Shipping</span>
             </div>
-            <span className="checkout-step-divider">—</span>
-            <div className="checkout-step-item" style={{ color: 'var(--color-gold-400)' }}>
-              <span className="checkout-step-num" style={{ backgroundColor: 'var(--color-gold-400)', color: '#0D0705' }}>2</span>
+            <span className="text-[#4A342B]">—</span>
+            <div className="flex items-center gap-2 text-gold-400">
+              <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-gold-400 text-[0.7rem] font-bold text-[#0D0705] max-[768px]:h-[18px] max-[768px]:w-[18px] max-[768px]:text-[0.625rem]">
+                2
+              </span>
               <span>Payment</span>
             </div>
-            <span className="checkout-step-divider">—</span>
-            <div className="checkout-step-item" style={{ color: '#7E6F67' }}>
-              <span className="checkout-step-num" style={{ backgroundColor: '#2A1A14', color: '#FAF7F2' }}>3</span>
+            <span className="text-[#4A342B]">—</span>
+            <div className="flex items-center gap-2 text-[#7E6F67]">
+              <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#2A1A14] text-[0.7rem] font-bold text-[#FAF7F2] max-[768px]:h-[18px] max-[768px]:w-[18px] max-[768px]:text-[0.625rem]">
+                3
+              </span>
               <span>Review</span>
             </div>
           </div>
         </div>
 
         {/* Mobile Compact Order Summary Collapsible Banner */}
-        <div className="checkout-mobile-summary-card">
+        <div className="mb-6 hidden overflow-hidden rounded-[3px] border border-white/[0.08] bg-[#190F0C] max-[991px]:block">
           <button
             type="button"
             onClick={() => setMobileSummaryOpen(!mobileSummaryOpen)}
-            className="checkout-mobile-summary-btn"
+            className="flex w-full cursor-pointer items-center justify-between bg-transparent p-[0.85rem_1rem]"
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ShoppingBag size={16} color="var(--color-gold-400)" />
-              <span style={{ fontSize: '0.8rem', color: '#FAF7F2', fontWeight: 500 }}>
+            <div className="flex items-center gap-2">
+              <ShoppingBag size={16} className="text-gold-400" />
+              <span className="text-[0.8rem] font-medium text-[#FAF7F2]">
                 {mobileSummaryOpen ? 'Hide order summary' : 'Show order summary'}
               </span>
-              {mobileSummaryOpen ? <ChevronUp size={14} color="#9E8E85" /> : <ChevronDown size={14} color="#9E8E85" />}
+              {mobileSummaryOpen ? (
+                <ChevronUp size={14} className="text-[#9E8E85]" />
+              ) : (
+                <ChevronDown size={14} className="text-[#9E8E85]" />
+              )}
             </div>
-            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-gold-400)' }}>
+            <span className="text-[0.9rem] font-bold text-gold-400">
               {formatPrice(total)}
             </span>
           </button>
 
           {mobileSummaryOpen && (
-            <div className="checkout-mobile-summary-dropdown">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div className="border-t border-white/[0.06] bg-[#120907] p-4">
+              <div className="mb-4 flex flex-col gap-3">
                 {items.map((item) => (
-                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ position: 'relative', width: '44px', height: '54px', borderRadius: '2px', overflow: 'hidden', backgroundColor: '#221510', flexShrink: 0 }}>
+                  <div key={item.id} className="flex items-center gap-3">
+                    <div className="relative h-[54px] w-[44px] shrink-0 overflow-hidden rounded-[2px] bg-[#221510]">
                       {item.imageUrl ? (
-                        <Image src={item.imageUrl} alt={item.name} fill sizes="44px" style={{ objectFit: 'cover' }} />
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          fill
+                          sizes="44px"
+                          className="object-cover"
+                        />
                       ) : (
-                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.5rem', color: 'var(--color-gold-400)' }}>LUMÉRA</div>
+                        <div className="absolute inset-0 flex items-center justify-center text-[0.5rem] text-gold-400">
+                          LUMÉRA
+                        </div>
                       )}
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.78rem', color: '#FFFFFF', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                      <div style={{ fontSize: '0.68rem', color: '#9E8E85' }}>Qty: {item.quantity} {item.size ? `· ${item.size}` : ''}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[0.78rem] font-medium text-white">
+                        {item.name}
+                      </div>
+                      <div className="text-[0.68rem] text-[#9E8E85]">
+                        Qty: {item.quantity} {item.size ? `· ${item.size}` : ''}
+                      </div>
                     </div>
-                    <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#FFFFFF', flexShrink: 0 }}>
+                    <div className="shrink-0 text-[0.8rem] font-semibold text-white">
                       {formatPrice(item.price * item.quantity)}
                     </div>
                   </div>
                 ))}
               </div>
-              <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.78rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#D8C7B2' }}>
+              <div className="flex flex-col gap-[0.45rem] border-t border-white/[0.08] pt-3 text-[0.78rem]">
+                <div className="flex justify-between text-[#D8C7B2]">
                   <span>Subtotal</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#D8C7B2' }}>
+                <div className="flex justify-between text-[#D8C7B2]">
                   <span>Saudi Shipping</span>
-                  <span style={{ color: 'var(--color-gold-400)' }}>{shippingFee === 0 ? 'Complimentary' : formatPrice(shippingFee)}</span>
+                  <span className="text-gold-400">
+                    {shippingFee === 0 ? 'Complimentary' : formatPrice(shippingFee)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -183,98 +209,110 @@ export default function CheckoutPage() {
         </div>
 
         {errorMsg && (
-          <div className="checkout-error-banner">
+          <div className="mb-6 rounded-[3px] border border-[#D64529] bg-[#D64529]/15 p-4 text-[0.85rem] text-[#FFB2A3]">
             {errorMsg}
           </div>
         )}
 
-        <div className="checkout-layout-grid">
+        <div className="grid grid-cols-1 items-start gap-8 min-[992px]:grid-cols-[1fr_380px] min-[992px]:gap-12">
           {/* LEFT: Checkout Form */}
-          <form onSubmit={handleSubmitOrder} className="checkout-form-column">
+          <form onSubmit={handleSubmitOrder} className="flex flex-col gap-8">
             {/* 1. Contact Information */}
-            <div className="checkout-card">
-              <h2 className="checkout-card-title">
+            <div className="rounded-[3px] border border-white/[0.08] bg-[#190F0C] p-8 max-[768px]:p-[1.25rem_1rem]">
+              <h2 className="mb-5 text-[0.85rem] font-semibold uppercase tracking-[0.14em] text-gold-400">
                 1. Contact Information
               </h2>
 
-              <div className="checkout-two-col">
+              <div className="mb-4 grid grid-cols-2 gap-4 max-[768px]:grid-cols-1">
                 <div>
-                  <label className="checkout-label">Email Address *</label>
+                  <label className="mb-[0.4rem] block text-[0.725rem] text-[#B5A59D]">
+                    Email Address *
+                  </label>
                   <input
                     type="email"
                     required
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="checkout-input"
+                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-4 py-3 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
                   />
                 </div>
 
                 <div>
-                  <label className="checkout-label">Saudi Mobile (+966) *</label>
-                  <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <span className="checkout-phone-prefix">+966</span>
+                  <label className="mb-[0.4rem] block text-[0.725rem] text-[#B5A59D]">
+                    Saudi Mobile (+966) *
+                  </label>
+                  <div className="flex w-full items-center">
+                    <span className="rounded-l-[2px] border border-r-0 border-white/[0.12] bg-[#241611] px-[0.85rem] py-3 text-[0.85rem] font-semibold text-gold-400">
+                      +966
+                    </span>
                     <input
                       type="tel"
                       required
                       placeholder="50 123 4567"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="checkout-input checkout-phone-input"
+                      className="w-full flex-1 rounded-l-none rounded-r-[2px] border border-white/[0.12] bg-[#130A08] px-4 py-3 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
                     />
                   </div>
                 </div>
               </div>
 
-              <label className="checkout-checkbox-label">
+              <label className="flex cursor-pointer items-center gap-[0.65rem] text-[0.775rem] text-[#D8C7B2]">
                 <input
                   type="checkbox"
                   checked={receiveWhatsApp}
                   onChange={(e) => setReceiveWhatsApp(e.target.checked)}
-                  style={{ accentColor: 'var(--color-gold-400)' }}
+                  className="accent-[#DEC197]"
                 />
                 <span>Receive order updates & shipment tracking via WhatsApp</span>
               </label>
             </div>
 
             {/* 2. Delivery Address */}
-            <div className="checkout-card">
-              <h2 className="checkout-card-title">
+            <div className="rounded-[3px] border border-white/[0.08] bg-[#190F0C] p-8 max-[768px]:p-[1.25rem_1rem]">
+              <h2 className="mb-5 text-[0.85rem] font-semibold uppercase tracking-[0.14em] text-gold-400">
                 2. Delivery Address (Saudi Arabia)
               </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.25rem' }}>
+              <div className="mb-5 flex flex-col gap-4">
                 <div>
-                  <label className="checkout-label">Full Name *</label>
+                  <label className="mb-[0.4rem] block text-[0.725rem] text-[#B5A59D]">
+                    Full Name *
+                  </label>
                   <input
                     type="text"
                     required
                     placeholder="First and last name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="checkout-input"
+                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-4 py-3 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
                   />
                 </div>
 
                 <div>
-                  <label className="checkout-label">Street Address & District *</label>
+                  <label className="mb-[0.4rem] block text-[0.725rem] text-[#B5A59D]">
+                    Street Address & District *
+                  </label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Al-Hamra District, King Abdulaziz Branch Rd"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="checkout-input"
+                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-4 py-3 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
                   />
                 </div>
 
-                <div className="checkout-two-col" style={{ marginBottom: 0 }}>
+                <div className="grid grid-cols-2 gap-4 max-[768px]:grid-cols-1">
                   <div>
-                    <label className="checkout-label">City (Saudi Arabia) *</label>
+                    <label className="mb-[0.4rem] block text-[0.725rem] text-[#B5A59D]">
+                      City (Saudi Arabia) *
+                    </label>
                     <select
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="checkout-input checkout-select"
+                      className="w-full cursor-pointer rounded-[2px] border border-white/[0.12] bg-[#130A08] px-4 py-3 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
                     >
                       {SAUDI_CITIES.map((c) => (
                         <option key={c} value={c}>
@@ -285,148 +323,192 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <label className="checkout-label">Postal Code / National Address (Optional)</label>
+                    <label className="mb-[0.4rem] block text-[0.725rem] text-[#B5A59D]">
+                      Postal Code / National Address (Optional)
+                    </label>
                     <input
                       type="text"
                       placeholder="e.g. 23321"
                       value={postalCode}
                       onChange={(e) => setPostalCode(e.target.value)}
-                      className="checkout-input"
+                      className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-4 py-3 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
                     />
                   </div>
                 </div>
               </div>
 
-              <label className="checkout-checkbox-label">
+              <label className="flex cursor-pointer items-center gap-[0.65rem] text-[0.775rem] text-[#D8C7B2]">
                 <input
                   type="checkbox"
                   checked={saveAddress}
                   onChange={(e) => setSaveAddress(e.target.checked)}
-                  style={{ accentColor: 'var(--color-gold-400)' }}
+                  className="accent-[#DEC197]"
                 />
                 <span>Save this address for next time</span>
               </label>
             </div>
 
             {/* 3. Payment Method */}
-            <div className="checkout-card">
-              <h2 className="checkout-card-title">
+            <div className="rounded-[3px] border border-white/[0.08] bg-[#190F0C] p-8 max-[768px]:p-[1.25rem_1rem]">
+              <h2 className="mb-5 text-[0.85rem] font-semibold uppercase tracking-[0.14em] text-gold-400">
                 3. Payment Method
               </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div className="flex flex-col gap-[0.85rem]">
                 {/* Credit / Debit Card (Mada, Visa, Mastercard) */}
-                <label className={`checkout-payment-option ${paymentMethod === 'card' ? 'active' : ''}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label
+                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
+                    paymentMethod === 'card'
+                      ? 'border-gold-400 bg-gold-400/[0.08]'
+                      : 'border-white/[0.08]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
                     <input
                       type="radio"
                       name="payment"
                       checked={paymentMethod === 'card'}
                       onChange={() => setPaymentMethod('card')}
-                      style={{ accentColor: 'var(--color-gold-400)' }}
+                      className="accent-[#DEC197]"
                     />
-                    <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 500 }}>
+                    <span className="text-[0.85rem] font-medium text-white">
                       Credit / Debit Card
                     </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '0.35rem', fontSize: '0.625rem', fontWeight: 700 }}>
-                    <span style={{ padding: '0.15rem 0.4rem', background: '#241611', color: '#FAF7F2', borderRadius: '2px' }}>mada</span>
-                    <span style={{ padding: '0.15rem 0.4rem', background: '#241611', color: '#FAF7F2', borderRadius: '2px' }}>VISA</span>
-                    <span style={{ padding: '0.15rem 0.4rem', background: '#241611', color: '#FAF7F2', borderRadius: '2px' }}>MC</span>
+                  <div className="flex gap-[0.35rem] text-[0.625rem] font-bold">
+                    <span className="rounded-[2px] bg-[#241611] px-[0.4rem] py-[0.15rem] text-[#FAF7F2]">
+                      mada
+                    </span>
+                    <span className="rounded-[2px] bg-[#241611] px-[0.4rem] py-[0.15rem] text-[#FAF7F2]">
+                      VISA
+                    </span>
+                    <span className="rounded-[2px] bg-[#241611] px-[0.4rem] py-[0.15rem] text-[#FAF7F2]">
+                      MC
+                    </span>
                   </div>
                 </label>
 
                 {/* Apple Pay */}
-                <label className={`checkout-payment-option ${paymentMethod === 'apple_pay' ? 'active' : ''}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label
+                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
+                    paymentMethod === 'apple_pay'
+                      ? 'border-gold-400 bg-gold-400/[0.08]'
+                      : 'border-white/[0.08]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
                     <input
                       type="radio"
                       name="payment"
                       checked={paymentMethod === 'apple_pay'}
                       onChange={() => setPaymentMethod('apple_pay')}
-                      style={{ accentColor: 'var(--color-gold-400)' }}
+                      className="accent-[#DEC197]"
                     />
-                    <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 500 }}>
+                    <span className="text-[0.85rem] font-medium text-white">
                       Apple Pay
                     </span>
                   </div>
-                  <span style={{ padding: '0.15rem 0.5rem', background: '#FFFFFF', color: '#000000', borderRadius: '2px', fontSize: '0.68rem', fontWeight: 700 }}>
+                  <span className="rounded-[2px] bg-white px-2 py-[0.15rem] text-[0.68rem] font-bold text-black">
                     Apple Pay
                   </span>
                 </label>
 
                 {/* Tabby */}
-                <label className={`checkout-payment-option ${paymentMethod === 'tabby' ? 'active' : ''}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label
+                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
+                    paymentMethod === 'tabby'
+                      ? 'border-gold-400 bg-gold-400/[0.08]'
+                      : 'border-white/[0.08]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
                     <input
                       type="radio"
                       name="payment"
                       checked={paymentMethod === 'tabby'}
                       onChange={() => setPaymentMethod('tabby')}
-                      style={{ accentColor: 'var(--color-gold-400)' }}
+                      className="accent-[#DEC197]"
                     />
-                    <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 500 }}>
+                    <span className="text-[0.85rem] font-medium text-white">
                       Tabby (4 interest-free payments)
                     </span>
                   </div>
-                  <span style={{ padding: '0.15rem 0.5rem', background: '#3EED8B', color: '#000000', borderRadius: '2px', fontSize: '0.68rem', fontWeight: 700 }}>
+                  <span className="rounded-[2px] bg-[#3EED8B] px-2 py-[0.15rem] text-[0.68rem] font-bold text-black">
                     tabby
                   </span>
                 </label>
 
                 {/* Tamara */}
-                <label className={`checkout-payment-option ${paymentMethod === 'tamara' ? 'active' : ''}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label
+                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
+                    paymentMethod === 'tamara'
+                      ? 'border-gold-400 bg-gold-400/[0.08]'
+                      : 'border-white/[0.08]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
                     <input
                       type="radio"
                       name="payment"
                       checked={paymentMethod === 'tamara'}
                       onChange={() => setPaymentMethod('tamara')}
-                      style={{ accentColor: 'var(--color-gold-400)' }}
+                      className="accent-[#DEC197]"
                     />
-                    <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 500 }}>
+                    <span className="text-[0.85rem] font-medium text-white">
                       Tamara (Split or pay later)
                     </span>
                   </div>
-                  <span style={{ padding: '0.15rem 0.5rem', background: '#FFAE80', color: '#000000', borderRadius: '2px', fontSize: '0.68rem', fontWeight: 700 }}>
+                  <span className="rounded-[2px] bg-[#FFAE80] px-2 py-[0.15rem] text-[0.68rem] font-bold text-black">
                     tamara
                   </span>
                 </label>
 
                 {/* STC Pay */}
-                <label className={`checkout-payment-option ${paymentMethod === 'stc_pay' ? 'active' : ''}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label
+                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
+                    paymentMethod === 'stc_pay'
+                      ? 'border-gold-400 bg-gold-400/[0.08]'
+                      : 'border-white/[0.08]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
                     <input
                       type="radio"
                       name="payment"
                       checked={paymentMethod === 'stc_pay'}
                       onChange={() => setPaymentMethod('stc_pay')}
-                      style={{ accentColor: 'var(--color-gold-400)' }}
+                      className="accent-[#DEC197]"
                     />
-                    <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 500 }}>
+                    <span className="text-[0.85rem] font-medium text-white">
                       STC Pay
                     </span>
                   </div>
-                  <span style={{ padding: '0.15rem 0.5rem', background: '#4F008C', color: '#FFFFFF', borderRadius: '2px', fontSize: '0.68rem', fontWeight: 700 }}>
+                  <span className="rounded-[2px] bg-[#4F008C] px-2 py-[0.15rem] text-[0.68rem] font-bold text-white">
                     stc pay
                   </span>
                 </label>
 
                 {/* Cash on Delivery */}
-                <label className={`checkout-payment-option ${paymentMethod === 'cod' ? 'active' : ''}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <label
+                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
+                    paymentMethod === 'cod'
+                      ? 'border-gold-400 bg-gold-400/[0.08]'
+                      : 'border-white/[0.08]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
                     <input
                       type="radio"
                       name="payment"
                       checked={paymentMethod === 'cod'}
                       onChange={() => setPaymentMethod('cod')}
-                      style={{ accentColor: 'var(--color-gold-400)' }}
+                      className="accent-[#DEC197]"
                     />
-                    <span style={{ fontSize: '0.85rem', color: '#FFFFFF', fontWeight: 500 }}>
+                    <span className="text-[0.85rem] font-medium text-white">
                       Cash on Delivery
                     </span>
                   </div>
-                  <span style={{ fontSize: '0.7rem', color: '#9E8E85' }}>COD</span>
+                  <span className="text-[0.7rem] text-[#9E8E85]">COD</span>
                 </label>
               </div>
             </div>
@@ -435,345 +517,87 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="btn-lumera-primary checkout-submit-btn"
+              className="btn-lumera-primary w-full p-[1.15rem] text-[0.85rem] font-bold tracking-[0.16em]"
             >
               {submitting ? 'SECURELY PROCESSING ORDER...' : `PLACE ORDER · ${formatPrice(total)}`}
             </button>
           </form>
 
           {/* RIGHT: Order Summary Desktop Card */}
-          <div className="checkout-order-summary">
-            <h3 className="checkout-summary-title">
+          <div className="static rounded-[3px] border border-white/[0.08] bg-[#190F0C] p-8 max-[768px]:p-[1.25rem_1rem] min-[992px]:sticky min-[992px]:top-[90px]">
+            <h3 className="mb-5 font-serif text-[1.35rem] uppercase text-white">
               Order Summary
             </h3>
 
             {/* Items */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.25rem' }}>
+            <div className="mb-5 flex flex-col gap-[0.85rem]">
               {items.map((item) => (
-                <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <div style={{ position: 'relative', width: '52px', height: '64px', borderRadius: '2px', overflow: 'hidden', backgroundColor: '#221510', flexShrink: 0 }}>
+                <div key={item.id} className="flex items-center gap-[0.85rem]">
+                  <div className="relative h-[64px] w-[52px] shrink-0 overflow-hidden rounded-[2px] bg-[#221510]">
                     {item.imageUrl ? (
-                      <Image src={item.imageUrl} alt={item.name} fill sizes="52px" style={{ objectFit: 'cover' }} />
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        sizes="52px"
+                        className="object-cover"
+                      />
                     ) : (
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.55rem', color: 'var(--color-gold-400)' }}>
+                      <div className="absolute inset-0 flex items-center justify-center text-[0.55rem] text-gold-400">
                         LUMÉRA
                       </div>
                     )}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '0.8rem', color: '#FFFFFF', fontWeight: 500, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#9E8E85' }}>Qty: {item.quantity} {item.size ? `· ${item.size}` : ''}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-[0.8rem] font-medium leading-[1.3] text-white">
+                      {item.name}
+                    </div>
+                    <div className="text-[0.7rem] text-[#9E8E85]">
+                      Qty: {item.quantity} {item.size ? `· ${item.size}` : ''}
+                    </div>
                   </div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#FFFFFF', flexShrink: 0 }}>
+                  <div className="shrink-0 text-[0.85rem] font-semibold text-white">
                     {formatPrice(item.price * item.quantity)}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#D8C7B2' }}>
+            <div className="flex flex-col gap-[0.65rem] border-t border-white/[0.06] pt-4">
+              <div className="flex justify-between text-[0.8rem] text-[#D8C7B2]">
                 <span>Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#D8C7B2' }}>
+              <div className="flex justify-between text-[0.8rem] text-[#D8C7B2]">
                 <span>Saudi Shipping</span>
-                <span style={{ color: 'var(--color-gold-400)' }}>
+                <span className="text-gold-400">
                   {shippingFee === 0 ? 'Complimentary' : formatPrice(shippingFee)}
                 </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '1.15rem', fontWeight: 600, color: '#FFFFFF' }}>
+              <div className="flex justify-between border-t border-white/[0.08] pt-4 text-[1.15rem] font-semibold text-white">
                 <span>Total</span>
-                <span style={{ color: 'var(--color-gold-400)' }}>{formatPrice(total)}</span>
+                <span className="text-gold-400">{formatPrice(total)}</span>
               </div>
             </div>
 
             {/* Bottom 3 Trust Pillars */}
-            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', marginTop: '1.5rem', paddingTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.72rem', color: '#9E8E85' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Lock size={14} color="var(--color-gold-400)" />
+            <div className="mt-6 flex flex-col gap-[0.65rem] border-t border-white/[0.08] pt-5 text-[0.72rem] text-[#9E8E85]">
+              <div className="flex items-center gap-2">
+                <Lock size={14} className="text-gold-400" />
                 <span>Secure 256-bit SSL encrypted checkout</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <ShieldCheck size={14} color="var(--color-gold-400)" />
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={14} className="text-gold-400" />
                 <span>100% Authentic Saudi luxury guarantee</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Truck size={14} color="var(--color-gold-400)" />
+              <div className="flex items-center gap-2">
+                <Truck size={14} className="text-gold-400" />
                 <span>Express courier tracking dispatched from Jeddah</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        .checkout-page-wrapper {
-          background-color: #140C09;
-          min-height: 90vh;
-          padding: 2.5rem 0 6rem 0;
-        }
-
-        .checkout-header {
-          margin-bottom: 2rem;
-        }
-
-        .checkout-title {
-          font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: clamp(1.85rem, 4vw, 2.5rem);
-          color: #FFFFFF;
-          margin-bottom: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-        }
-
-        .checkout-stepper {
-          display: flex;
-          align-items: center;
-          gap: 1.5rem;
-          font-size: 0.75rem;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          flex-wrap: wrap;
-        }
-
-        .checkout-step-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .checkout-step-num {
-          width: 22px;
-          height: 22px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 0.7rem;
-        }
-
-        .checkout-step-divider {
-          color: #4A342B;
-        }
-
-        .checkout-mobile-summary-card {
-          display: none;
-          background-color: #190F0C;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 3px;
-          margin-bottom: 1.5rem;
-          overflow: hidden;
-        }
-
-        .checkout-mobile-summary-btn {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0.85rem 1rem;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-        }
-
-        .checkout-mobile-summary-dropdown {
-          padding: 1rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
-          background-color: #120907;
-        }
-
-        .checkout-error-banner {
-          padding: 1rem;
-          background-color: rgba(214, 69, 41, 0.15);
-          border: 1px solid #D64529;
-          color: #FFB2A3;
-          border-radius: 3px;
-          margin-bottom: 1.5rem;
-          font-size: 0.85rem;
-        }
-
-        .checkout-layout-grid {
-          display: grid;
-          grid-template-columns: 1fr 380px;
-          gap: 3rem;
-          align-items: flex-start;
-        }
-
-        .checkout-form-column {
-          display: flex;
-          flex-direction: column;
-          gap: 2rem;
-        }
-
-        .checkout-card {
-          padding: 2rem;
-          background-color: #190F0C;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 3px;
-        }
-
-        .checkout-card-title {
-          font-size: 0.85rem;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--color-gold-400);
-          margin-bottom: 1.25rem;
-          font-weight: 600;
-        }
-
-        .checkout-label {
-          display: block;
-          font-size: 0.725rem;
-          color: #B5A59D;
-          margin-bottom: 0.4rem;
-        }
-
-        .checkout-two-col {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
-        .checkout-input {
-          width: 100%;
-          padding: 0.75rem 1rem;
-          background-color: #130A08;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          color: #FFFFFF;
-          border-radius: 2px;
-          font-size: 0.85rem;
-          outline: none;
-          transition: border-color 0.2s;
-        }
-
-        .checkout-input:focus {
-          border-color: var(--color-gold-400);
-        }
-
-        .checkout-select {
-          cursor: pointer;
-        }
-
-        .checkout-phone-prefix {
-          padding: 0.75rem 0.85rem;
-          background-color: #241611;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-right: none;
-          color: var(--color-gold-400);
-          font-size: 0.85rem;
-          font-weight: 600;
-          border-radius: 2px 0 0 2px;
-        }
-
-        .checkout-phone-input {
-          flex: 1;
-          border-radius: 0 2px 2px 0;
-        }
-
-        .checkout-checkbox-label {
-          display: flex;
-          align-items: center;
-          gap: 0.65rem;
-          font-size: 0.775rem;
-          color: #D8C7B2;
-          cursor: pointer;
-        }
-
-        .checkout-payment-option {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0.9rem 1rem;
-          background-color: #130A08;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 2px;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .checkout-payment-option.active {
-          background-color: rgba(200, 162, 101, 0.08);
-          border-color: var(--color-gold-400);
-        }
-
-        .checkout-submit-btn {
-          padding: 1.15rem;
-          font-size: 0.85rem;
-          font-weight: 700;
-          width: 100%;
-          cursor: pointer;
-          letter-spacing: 0.16em;
-        }
-
-        .checkout-order-summary {
-          padding: 2rem;
-          background-color: #190F0C;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 3px;
-          position: sticky;
-          top: 90px;
-        }
-
-        .checkout-summary-title {
-          font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: 1.35rem;
-          color: #FFFFFF;
-          margin-bottom: 1.25rem;
-          text-transform: uppercase;
-        }
-
-        @media (max-width: 991px) {
-          .checkout-layout-grid {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-          }
-
-          .checkout-mobile-summary-card {
-            display: block;
-          }
-
-          .checkout-order-summary {
-            position: static;
-            top: auto;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .checkout-page-wrapper {
-            padding: 1.5rem 0 calc(6rem + env(safe-area-inset-bottom, 0px)) 0;
-          }
-
-          .checkout-stepper {
-            gap: 0.5rem;
-            font-size: 0.68rem;
-          }
-
-          .checkout-step-num {
-            width: 18px;
-            height: 18px;
-            font-size: 0.625rem;
-          }
-
-          .checkout-card {
-            padding: 1.25rem 1rem;
-          }
-
-          .checkout-two-col {
-            grid-template-columns: 1fr;
-          }
-
-          .checkout-payment-option {
-            padding: 0.75rem 0.85rem;
-          }
-
-          .checkout-order-summary {
-            padding: 1.25rem 1rem;
-          }
-        }
-      `}</style>
     </div>
   );
 }

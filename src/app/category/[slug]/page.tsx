@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { getCategoryBySlug } from '@/services/categories';
 import { getProducts } from '@/services/products';
 import { ProductCard } from '@/components/product/ProductCard';
@@ -49,48 +48,23 @@ export default async function CategoryPage({
     'Discover scents ranging from viral Arabian compositions to modern niche-inspired fragrances.';
 
   return (
-    <div style={{ backgroundColor: '#140C09', minHeight: '85vh', padding: '2.5rem 0 6rem 0' }}>
+    <div className="min-h-[85vh] bg-[#140C09] py-10 pb-24">
       <div className="container-lumera">
         {/* Breadcrumb */}
-        <nav
-          style={{
-            fontSize: '0.725rem',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: '#7E6F67',
-            marginBottom: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          <Link href="/" style={{ color: '#D8C7B2', transition: 'color 0.2s' }}>
+        <nav className="mb-6 flex items-center gap-2 text-[0.725rem] uppercase tracking-[0.1em] text-[#7E6F67]">
+          <Link href="/" className="text-[#D8C7B2] transition-colors hover:text-white">
             Home
           </Link>
           <span>/</span>
-          <span style={{ color: 'var(--color-gold-400)' }}>{categoryName}</span>
+          <span className="text-gold-400">{categoryName}</span>
         </nav>
 
         {/* Category Header */}
-        <div style={{ maxWidth: '780px', marginBottom: '2.5rem' }}>
-          <h1
-            className="editorial-section-title"
-            style={{
-              color: '#FFFFFF',
-              marginBottom: '0.75rem',
-              letterSpacing: '0.04em',
-            }}
-          >
+        <div className="mb-10 max-w-[780px]">
+          <h1 className="editorial-section-title mb-3 tracking-[0.04em] text-white">
             {categoryName}
           </h1>
-          <p
-            style={{
-              fontSize: '0.95rem',
-              color: '#D8C7B2',
-              lineHeight: 1.6,
-              fontWeight: 300,
-            }}
-          >
+          <p className="text-[0.95rem] font-light leading-[1.6] text-[#D8C7B2]">
             {categoryDesc}
           </p>
         </div>
@@ -100,26 +74,11 @@ export default async function CategoryPage({
 
         {/* Product Grid */}
         {products.length === 0 ? (
-          <div
-            style={{
-              padding: '5rem 2rem',
-              textAlign: 'center',
-              backgroundColor: '#190F0C',
-              borderRadius: '3px',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-            }}
-          >
-            <h3
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '1.5rem',
-                color: 'var(--color-gold-400)',
-                marginBottom: '0.75rem',
-              }}
-            >
+          <div className="rounded-[3px] border border-white/[0.05] bg-[#190F0C] px-8 py-20 text-center">
+            <h3 className="mb-3 font-serif text-[1.5rem] text-gold-400">
               No Products in this Category Yet
             </h3>
-            <p style={{ color: '#9E8E85', fontSize: '0.85rem', maxWidth: '420px', margin: '0 auto 2rem auto' }}>
+            <p className="mx-auto mb-8 max-w-[420px] text-[0.85rem] text-[#9E8E85]">
               Real products added via the Admin / CMS portal with category &quot;{categoryName}&quot; will automatically populate this page.
             </p>
             <Link href="/admin/products" className="btn-lumera-outline">

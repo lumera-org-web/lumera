@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
 import { Category, Banner } from '@/types';
 import { useLocale } from '@/context/LocaleContext';
 
@@ -41,24 +40,17 @@ export const MakeupSection: React.FC<MakeupSectionProps> = ({ banner, categories
   const ctaLink = banner?.cta_link || '/category/makeup';
 
   return (
-    <section
-      style={{
-        backgroundColor: '#160E0B',
-        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-        padding: '5.5rem 0',
-      }}
-    >
+    <section className="border-t border-white/5 bg-[#160E0B] py-[5.5rem]">
       <div className="container-lumera">
         {/* Header */}
-        <div style={{ maxWidth: '640px', marginBottom: '3rem' }}>
-          <div className="editorial-section-tag">{tag}</div>
-          <h2
-            className="editorial-section-title"
-            style={{ color: '#FFFFFF', marginBottom: '1rem', whiteSpace: 'pre-line' }}
-          >
+        <div className="mb-12 max-w-[640px]">
+          <div className="mb-3 font-sans text-[0.725rem] font-bold uppercase tracking-[0.22em] text-gold-400">
+            {tag}
+          </div>
+          <h2 className="mb-4 whitespace-pre-line font-display text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold uppercase leading-[1.2] tracking-[0.02em] text-white">
             {title}
           </h2>
-          <p className="editorial-lead" style={{ marginBottom: '1.5rem', color: '#D8C7B2' }}>
+          <p className="mb-6 max-w-[520px] text-[clamp(0.925rem,1.4vw,1.1rem)] font-light leading-[1.6] text-[#D8C7B2]">
             {description}
           </p>
           <Link href={ctaLink} className="btn-lumera-link">
@@ -67,13 +59,7 @@ export const MakeupSection: React.FC<MakeupSectionProps> = ({ banner, categories
         </div>
 
         {/* 3 Editorial Subcategory Showcase Panels */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1.5rem',
-          }}
-        >
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
           {blocks.map((block) => {
             const displayName = locale === 'ar' && block.name_ar ? block.name_ar : block.name;
 
@@ -81,21 +67,7 @@ export const MakeupSection: React.FC<MakeupSectionProps> = ({ banner, categories
               <Link
                 key={block.slug}
                 href={`/category/makeup?sub=${block.slug}`}
-                style={{
-                  position: 'relative',
-                  height: '380px',
-                  borderRadius: '3px',
-                  overflow: 'hidden',
-                  backgroundColor: '#221510',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  padding: '2rem',
-                  textDecoration: 'none',
-                  transition: 'transform 0.3s ease, border-color 0.3s ease',
-                }}
-                className="makeup-panel"
+                className="group relative flex h-[380px] flex-col justify-end overflow-hidden rounded-[3px] border border-white/[0.08] bg-[#221510] p-8 no-underline [transition:transform_0.3s_ease,border-color_0.3s_ease] hover:-translate-y-1 hover:!border-gold-400 hover:!shadow-[0_16px_36px_rgba(0,0,0,0.65)]"
               >
                 {/* Crystal-Clear Image without dark wash filter */}
                 {block.image_url && (
@@ -106,54 +78,19 @@ export const MakeupSection: React.FC<MakeupSectionProps> = ({ banner, categories
                     unoptimized
                     priority
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{
-                      objectFit: 'cover',
-                      objectPosition: 'center',
-                      transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                    }}
+                    className="object-cover object-center transition-transform duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
                   />
                 )}
 
                 {/* Subtle bottom-only scrim for text readability without darkening the face/photo */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background:
-                      'linear-gradient(180deg, transparent 58%, rgba(13, 7, 5, 0.35) 78%, rgba(13, 7, 5, 0.85) 100%)',
-                    pointerEvents: 'none',
-                  }}
-                />
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_58%,rgba(13,7,5,0.35)_78%,rgba(13,7,5,0.85)_100%)]" />
 
                 {/* Text Area */}
-                <div style={{ position: 'relative', zIndex: 2 }}>
-                  <h3
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '1.75rem',
-                      fontWeight: 700,
-                      color: '#FFFFFF',
-                      letterSpacing: '0.04em',
-                      textTransform: 'uppercase',
-                      marginBottom: '0.4rem',
-                      textShadow: '0 2px 8px rgba(0, 0, 0, 0.85)',
-                    }}
-                  >
+                <div className="relative z-[2]">
+                  <h3 className="mb-[0.4rem] font-display text-[1.75rem] font-bold uppercase tracking-[0.04em] text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.85)]">
                     {displayName}
                   </h3>
-                  <span
-                    style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      letterSpacing: '0.15em',
-                      color: 'var(--color-gold-400)',
-                      textTransform: 'uppercase',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      textShadow: '0 2px 6px rgba(0, 0, 0, 0.85)',
-                    }}
-                  >
+                  <span className="inline-flex items-center gap-[0.4rem] text-[0.75rem] font-semibold uppercase tracking-[0.15em] text-gold-400 [text-shadow:0_2px_6px_rgba(0,0,0,0.85)]">
                     <span>{locale === 'ar' ? 'تسوق الآن ←' : 'Shop Now →'}</span>
                   </span>
                 </div>
@@ -162,17 +99,6 @@ export const MakeupSection: React.FC<MakeupSectionProps> = ({ banner, categories
           })}
         </div>
       </div>
-
-      <style>{`
-        .makeup-panel:hover {
-          transform: translateY(-4px);
-          border-color: var(--color-gold-400) !important;
-          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65) !important;
-        }
-        .makeup-panel:hover img {
-          transform: scale(1.04);
-        }
-      `}</style>
     </section>
   );
 };

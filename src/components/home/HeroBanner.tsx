@@ -60,27 +60,23 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
   const ctaLink = activeBanner?.cta_link || '/shop';
 
   return (
-    <section className="hero-banner-section">
+    <section className="relative flex min-h-[84vh] w-full items-center overflow-hidden bg-[#110907] max-[768px]:h-[calc(100dvh-95px)] max-[768px]:max-h-[720px] max-[768px]:min-h-[520px] max-[768px]:flex-col max-[768px]:items-center max-[768px]:justify-end">
       {/* Background Slides with Smooth Cross-Fade Transition */}
-      <div className="hero-background-wrapper">
+      <div className="absolute inset-0 z-[1]">
         {heroBanners.length > 0 ? (
           heroBanners.map((banner, idx) => {
             const isCurrent = currentSlide === idx;
             return (
               <div
                 key={banner.id || idx}
-                className="hero-slide-layer"
-                style={{
-                  opacity: isCurrent ? 1 : 0,
-                  transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1)',
-                  zIndex: isCurrent ? 2 : 1,
-                  pointerEvents: isCurrent ? 'auto' : 'none',
-                }}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  isCurrent ? 'pointer-events-auto z-[2] opacity-100' : 'pointer-events-none z-[1] opacity-0'
+                }`}
               >
                 {banner.mobile_image_url ? (
                   <>
                     {/* Dedicated Mobile Banner Image (Smartphone) */}
-                    <div className="hero-mobile-img">
+                    <div className="absolute inset-0 block min-[769px]:hidden">
                       <Image
                         src={banner.mobile_image_url}
                         alt={banner.title || ''}
@@ -88,12 +84,12 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
                         priority={idx === 0}
                         unoptimized
                         sizes="100vw"
-                        style={{ objectFit: 'cover', objectPosition: 'center' }}
+                        className="object-cover object-center"
                       />
                     </div>
 
                     {/* Desktop Banner Image (Tablet / Desktop) */}
-                    <div className="hero-desktop-img">
+                    <div className="absolute inset-0 hidden min-[769px]:block">
                       {banner.image_url ? (
                         <Image
                           src={banner.image_url}
@@ -102,7 +98,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
                           priority={idx === 0}
                           unoptimized
                           sizes="100vw"
-                          style={{ objectFit: 'cover', objectPosition: 'center' }}
+                          className="object-cover object-center"
                         />
                       ) : null}
                     </div>
@@ -115,317 +111,56 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ banners = [] }) => {
                     priority={idx === 0}
                     unoptimized
                     sizes="100vw"
-                    style={{ objectFit: 'cover', objectPosition: 'center' }}
+                    className="object-cover object-center"
                   />
                 ) : (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background:
-                        'radial-gradient(circle at 65% 45%, rgba(68, 38, 30, 0.45) 0%, rgba(20, 12, 9, 0.95) 70%, #0D0705 100%)',
-                    }}
-                  />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_45%,rgba(68,38,30,0.45)_0%,rgba(20,12,9,0.95)_70%,#0D0705_100%)]" />
                 )}
               </div>
             );
           })
         ) : (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background:
-                'radial-gradient(circle at 65% 45%, rgba(68, 38, 30, 0.45) 0%, rgba(20, 12, 9, 0.95) 70%, #0D0705 100%)',
-            }}
-          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_45%,rgba(68,38,30,0.45)_0%,rgba(20,12,9,0.95)_70%,#0D0705_100%)]" />
         )}
 
         {/* Ambient Chiaroscuro Scrim */}
-        <div className="hero-ambient-scrim" />
+        <div className="pointer-events-none absolute inset-0 z-[3] bg-[linear-gradient(90deg,rgba(13,7,5,0.92)_0%,rgba(13,7,5,0.65)_45%,rgba(13,7,5,0.35)_100%)] max-[768px]:bg-[linear-gradient(180deg,rgba(13,7,5,0.15)_0%,rgba(13,7,5,0.05)_35%,rgba(13,7,5,0.45)_55%,rgba(13,7,5,0.82)_72%,rgba(13,7,5,0.97)_100%)]" />
       </div>
 
       {/* Content Container */}
-      <div className="container-lumera hero-content-container">
-        <div key={currentSlide} className="hero-text-block animate-hero-fade">
+      <div className="container-lumera relative z-10 w-full py-16 max-[768px]:mt-auto max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center max-[768px]:pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] max-[768px]:pt-4 max-[768px]:text-center">
+        <div
+          key={currentSlide}
+          className="animate-hero-fade max-w-[640px] max-[768px]:mx-auto max-[768px]:flex max-[768px]:max-w-full max-[768px]:flex-col max-[768px]:items-center max-[768px]:text-center"
+        >
           {/* Editorial Category Tag */}
-          {tag ? <div className="hero-tag">{tag}</div> : null}
+          {tag ? (
+            <div className="mb-3 inline-block font-sans text-[0.725rem] font-semibold uppercase tracking-[0.26em] text-gold-400 max-[768px]:mb-[0.35rem] max-[768px]:text-center max-[768px]:!text-[0.65rem] max-[768px]:!tracking-[0.24em] rtl:!font-arabic rtl:!tracking-[0.1em]">
+              {tag}
+            </div>
+          ) : null}
 
           {/* Main Editorial Title in Cormorant Garamond */}
-          <h1 className="hero-title">
+          <h1 className="mb-[1.35rem] whitespace-pre-line !font-serif text-[clamp(2.8rem,5.2vw,4.8rem)] font-semibold uppercase leading-[1.08] tracking-[0.04em] text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.6)] max-[768px]:mb-[0.45rem] max-[768px]:text-center max-[768px]:!text-[clamp(1.85rem,6.8vw,2.35rem)] max-[768px]:[text-shadow:0_2px_14px_rgba(0,0,0,0.95)] rtl:!font-arabic rtl:!tracking-normal">
             {title}
           </h1>
 
           {/* Subtitle */}
-          <p className="hero-subtitle">
+          <p className="mb-9 max-w-[560px] font-serif text-[clamp(1.05rem,1.4vw,1.25rem)] font-normal leading-[1.6] tracking-[0.02em] text-[#D8C7B2] max-[768px]:mb-4 max-[768px]:max-w-[310px] max-[768px]:text-center max-[768px]:text-[clamp(0.8rem,2.8vw,0.92rem)] max-[768px]:leading-[1.38] max-[768px]:text-[#E7DDCE] max-[768px]:[text-shadow:0_1px_10px_rgba(0,0,0,0.9)] rtl:!font-arabic">
             {subtitle}
           </p>
 
           {/* CTA Button */}
-          <div className="hero-cta-wrapper">
-            <Link href={ctaLink} className="hero-cta-btn">
+          <div className="block max-[768px]:flex max-[768px]:w-full max-[768px]:justify-center">
+            <Link
+              href={ctaLink}
+              className="inline-flex items-center justify-center gap-[0.65rem] border border-gold-400 bg-transparent px-9 py-4 text-[0.75rem] uppercase tracking-[0.2em] text-white no-underline transition-all duration-[250ms] ease-in-out hover:bg-gold-400 hover:text-espresso-950 max-[768px]:rounded-[2px] max-[768px]:!bg-[linear-gradient(180deg,rgba(28,16,12,0.88)_0%,rgba(14,8,6,0.95)_100%)] max-[768px]:px-[2.2rem] max-[768px]:py-[0.72rem] max-[768px]:text-[0.7rem] max-[768px]:font-semibold max-[768px]:tracking-[0.18em] max-[768px]:!text-[#FAF4EE] max-[768px]:shadow-[0_8px_24px_rgba(0,0,0,0.55),0_0_16px_rgba(200,162,101,0.12)]"
+            >
               <span>{ctaText}</span>
             </Link>
           </div>
         </div>
       </div>
-
-      {/* Embedded Responsive CSS: Desktop preserved 100% same, Mobile styled like luxury reference */}
-      <style>{`
-        .hero-banner-section {
-          position: relative;
-          width: 100%;
-          min-height: 84vh;
-          background-color: #110907;
-          display: flex;
-          align-items: center;
-          overflow: hidden;
-        }
-
-        .hero-background-wrapper {
-          position: absolute;
-          inset: 0;
-          z-index: 1;
-        }
-
-        .hero-slide-layer {
-          position: absolute;
-          inset: 0;
-        }
-
-        .hero-ambient-scrim {
-          position: absolute;
-          inset: 0;
-          z-index: 3;
-          pointer-events: none;
-          background: linear-gradient(90deg, rgba(13, 7, 5, 0.92) 0%, rgba(13, 7, 5, 0.65) 45%, rgba(13, 7, 5, 0.35) 100%);
-        }
-
-        .hero-content-container {
-          position: relative;
-          z-index: 10;
-          padding-top: 4rem;
-          padding-bottom: 4rem;
-          width: 100%;
-        }
-
-        .hero-text-block {
-          max-width: 640px;
-        }
-
-        .hero-tag {
-          font-family: var(--font-sans);
-          font-size: 0.725rem;
-          letter-spacing: 0.26em;
-          text-transform: uppercase;
-          color: var(--color-gold-400);
-          font-weight: 600;
-          margin-bottom: 0.75rem;
-          display: inline-block;
-        }
-
-        .hero-title {
-          font-family: 'Cormorant Garamond', Georgia, serif !important;
-          font-size: clamp(2.8rem, 5.2vw, 4.8rem);
-          font-weight: 600;
-          letter-spacing: 0.04em;
-          line-height: 1.08;
-          text-transform: uppercase;
-          color: #FFFFFF;
-          white-space: pre-line;
-          margin-bottom: 1.35rem;
-          text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
-        }
-
-        .hero-subtitle {
-          font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: clamp(1.05rem, 1.4vw, 1.25rem);
-          font-weight: 400;
-          color: #D8C7B2;
-          letter-spacing: 0.02em;
-          line-height: 1.6;
-          margin-bottom: 2.25rem;
-          max-width: 560px;
-        }
-
-        .hero-cta-wrapper {
-          display: block;
-        }
-
-        .hero-cta-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.65rem;
-          padding: 1rem 2.25rem;
-          font-size: 0.75rem;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: #FFFFFF;
-          border: 1px solid var(--color-gold-400);
-          text-decoration: none;
-          transition: all 0.25s ease;
-          background: transparent;
-        }
-
-        .hero-cta-btn:hover {
-          background-color: var(--color-gold-400);
-          color: var(--color-espresso-950);
-          border-color: var(--color-gold-400);
-        }
-
-        @keyframes heroFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-hero-fade {
-          animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        [dir="rtl"] .hero-title,
-        html[dir="rtl"] .hero-title {
-          font-family: var(--font-arabic), serif !important;
-          letter-spacing: 0 !important;
-        }
-
-        [dir="rtl"] .hero-subtitle,
-        html[dir="rtl"] .hero-subtitle {
-          font-family: var(--font-arabic), serif !important;
-        }
-
-        [dir="rtl"] .hero-tag,
-        html[dir="rtl"] .hero-tag {
-          font-family: var(--font-arabic), sans-serif !important;
-          letter-spacing: 0.1em !important;
-        }
-
-        /* Desktop Viewport Rules (Strictly Preserved Same) */
-        @media (min-width: 769px) {
-          .hero-mobile-img {
-            display: none !important;
-          }
-          .hero-desktop-img {
-            display: block !important;
-            position: absolute;
-            inset: 0;
-          }
-        }
-
-        /* Mobile Viewport Rules (Matches Luxury Reference Screenshot: Centered Upper Text + Product Focus Below) */
-        @media (max-width: 768px) {
-          .hero-desktop-img {
-            display: none !important;
-          }
-          .hero-mobile-img {
-            display: block !important;
-            position: absolute;
-            inset: 0;
-          }
-
-          .hero-banner-section {
-            height: calc(100vh - 95px) !important;
-            height: calc(100dvh - 95px) !important;
-            min-height: 520px !important;
-            max-height: 720px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: flex-end !important;
-            align-items: center !important;
-          }
-
-          .hero-ambient-scrim {
-            background: linear-gradient(
-              180deg,
-              rgba(13, 7, 5, 0.15) 0%,
-              rgba(13, 7, 5, 0.05) 35%,
-              rgba(13, 7, 5, 0.45) 55%,
-              rgba(13, 7, 5, 0.82) 72%,
-              rgba(13, 7, 5, 0.97) 100%
-            ) !important;
-          }
-
-          .hero-content-container {
-            margin-top: auto !important;
-            padding-top: 1rem !important;
-            padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px)) !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            text-align: center !important;
-          }
-
-          .hero-text-block {
-            max-width: 100% !important;
-            margin: 0 auto !important;
-            text-align: center !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-          }
-
-          .hero-tag {
-            font-size: 0.65rem !important;
-            letter-spacing: 0.24em !important;
-            margin-bottom: 0.35rem !important;
-            text-align: center !important;
-          }
-
-          .hero-title {
-            font-family: 'Cormorant Garamond', Georgia, serif !important;
-            font-size: clamp(1.85rem, 6.8vw, 2.35rem) !important;
-            font-weight: 600 !important;
-            color: #FFFFFF !important;
-            letter-spacing: 0.04em !important;
-            line-height: 1.08 !important;
-            text-transform: uppercase !important;
-            margin-bottom: 0.45rem !important;
-            text-align: center !important;
-            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95) !important;
-          }
-
-          .hero-subtitle {
-            font-family: 'Cormorant Garamond', Georgia, serif !important;
-            font-size: clamp(0.8rem, 2.8vw, 0.92rem) !important;
-            font-weight: 400 !important;
-            color: #E7DDCE !important;
-            letter-spacing: 0.02em !important;
-            line-height: 1.38 !important;
-            margin-bottom: 1rem !important;
-            text-align: center !important;
-            max-width: 310px !important;
-            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9) !important;
-          }
-
-          .hero-cta-wrapper {
-            display: flex !important;
-            justify-content: center !important;
-            width: 100% !important;
-          }
-
-          .hero-cta-btn {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            border: 1px solid var(--color-gold-400) !important;
-            background: linear-gradient(180deg, rgba(28, 16, 12, 0.88) 0%, rgba(14, 8, 6, 0.95) 100%) !important;
-            color: #FAF4EE !important;
-            padding: 0.72rem 2.2rem !important;
-            font-size: 0.7rem !important;
-            font-weight: 600 !important;
-            letter-spacing: 0.18em !important;
-            text-transform: uppercase !important;
-            border-radius: 2px !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 16px rgba(200, 162, 101, 0.12) !important;
-          }
-        }
-      `}</style>
     </section>
   );
 };

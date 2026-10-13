@@ -19,117 +19,32 @@ export const AnnouncementBar: React.FC<AnnouncementBarProps> = ({ banners = [] }
       : announcementBanner?.title || t('announcement.shipping');
 
   return (
-    <div
-      className="lumera-announcement-bar"
-      style={{
-        backgroundColor: '#0D0705',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.07)',
-        height: '38px',
-        maxHeight: '38px',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-        position: 'relative',
-        zIndex: 40,
-      }}
-    >
-      <div
-        className="container-lumera announcement-inner"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '100%',
-          height: '100%',
-          gap: '0.75rem',
-        }}
-      >
+    <div className="relative z-40 flex h-[38px] max-h-[38px] w-full items-center overflow-hidden border-b border-white/[0.07] bg-[#0D0705]">
+      <div className="container-lumera flex h-full w-full items-center justify-between gap-3">
         {/* Main Announcement message */}
-        <div
-          className="announcement-content"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            flex: '1 1 auto',
-            minWidth: 0,
-            overflow: 'hidden',
-          }}
-        >
-          <span
-            className="announcement-main-text"
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              fontWeight: 500,
-              color: '#FFFFFF',
-              display: 'block',
-              fontSize: '0.675rem',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}
-          >
+        <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+          <span className="block truncate text-[0.675rem] font-medium uppercase tracking-[0.12em] text-white">
             {mainText}
           </span>
         </div>
 
         {/* Right Country & Locale Selector */}
-        <div
-          className="announcement-actions"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.65rem',
-            flexShrink: 0,
-            fontSize: '0.675rem',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: '#D8C7B2',
-          }}
-        >
-          <span
-            className="announcement-country"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              color: '#DEC197',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <span style={{ fontSize: '0.85rem', lineHeight: 1 }}>🇸🇦</span>
-            <span
-              className="d-none d-md-inline"
-              style={{ display: 'none', fontSize: '0.625rem', letterSpacing: '0.1em' }}
-            >
+        <div className="flex shrink-0 items-center gap-[0.65rem] text-[0.675rem] uppercase tracking-[0.12em] text-[#D8C7B2]">
+          <span className="inline-flex items-center gap-[0.35rem] whitespace-nowrap text-[#DEC197]">
+            <span className="text-[0.85rem] leading-none">🇸🇦</span>
+            <span className="hidden text-[0.625rem] tracking-[0.1em] md:inline">
               {t('market.saudi')}
             </span>
-            <span
-              className="d-inline d-md-none"
-              style={{ fontSize: '0.625rem', letterSpacing: '0.1em', fontWeight: 600 }}
-            >
+            <span className="inline text-[0.625rem] font-semibold tracking-[0.1em] md:hidden">
               {locale === 'ar' ? 'ر.س' : 'SAR'}
             </span>
           </span>
-          <span style={{ opacity: 0.35 }}>·</span>
+          <span className="opacity-35">·</span>
           <button
             onClick={toggleLocale}
-            className="locale-toggle-btn"
             title="Toggle Arabic / English"
             type="button"
-            style={{
-              fontSize: '0.65rem',
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              color: '#FFFFFF',
-              background: 'transparent',
-              padding: '0.15rem 0.35rem',
-              borderRadius: '2px',
-              border: '1px solid rgba(200, 162, 101, 0.3)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}
+            className="cursor-pointer whitespace-nowrap rounded-[2px] border border-gold-400/30 bg-transparent px-[0.35rem] py-[0.15rem] text-[0.65rem] font-semibold tracking-[0.12em] text-white transition-colors hover:border-gold-400 hover:text-gold-400"
           >
             {locale === 'en' ? 'عربي' : 'EN'}
           </button>

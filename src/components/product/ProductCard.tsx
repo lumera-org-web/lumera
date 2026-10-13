@@ -13,15 +13,23 @@ import { useLocale } from '@/context/LocaleContext';
 
 interface ProductCardProps {
   product: Product;
+  variant?: 'dark' | 'light';
+  layout?: 'vertical' | 'horizontal';
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  variant = 'dark',
+  layout = 'vertical',
+}) => {
   const { addItem } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { locale, t } = useLocale();
   const [isHovered, setIsHovered] = useState(false);
   const [addedNotice, setAddedNotice] = useState(false);
 
+  const isLight = variant === 'light';
+  const isHorizontal = layout === 'horizontal';
   const isFavorited = isInWishlist(product.id);
 
   // Images
@@ -81,18 +89,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div
-      className="product-card-root"
+      className={`product-card-root ${isLight ? 'theme-light' : 'theme-dark'} ${
+        isHorizontal ? 'layout-horizontal' : 'layout-vertical'
+      }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
         position: 'relative',
         display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#160E0B',
+        flexDirection: isHorizontal ? 'row' : 'column',
+        backgroundColor: isLight ? '#FFFFFF' : '#160E0B',
         borderRadius: '3px',
         overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
-        transition: 'border-color 0.25s ease, transform 0.25s ease',
+        border: isLight
+          ? isHovered
+            ? '1px solid rgba(200, 162, 101, 0.55)'
+            : '1px solid rgba(200, 162, 101, 0.22)'
+          : isHovered
+          ? '1px solid rgba(200, 162, 101, 0.4)'
+          : '1px solid rgba(255, 255, 255, 0.06)',
+        boxShadow: isLight
+          ? isHovered
+            ? '0 12px 28px rgba(36, 22, 17, 0.09)'
+            : '0 2px 10px rgba(36, 22, 17, 0.04)'
+          : 'none',
+        transition: 'all 0.28s ease',
       }}
     >
       {/* Visual Image Area */}
@@ -100,9 +121,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         href={`/product/${product.slug}`}
         style={{
           position: 'relative',
-          width: '100%',
-          paddingTop: '115%', // Luxury portrait proportion
-          backgroundColor: '#18100C',
+          width: isHorizontal ? '42%' : '100%',
+          paddingTop: isHorizontal ? '0' : '115%', // Portrait proportion for vertical, auto for horizontal
+          height: isHorizontal ? '100%' : 'auto',
+          minHeight: isHorizontal ? '175px' : 'auto',
+          flexShrink: 0,
+          backgroundColor: isLight ? '#F8F4EE' : '#18100C',
           overflow: 'hidden',
           display: 'block',
         }}
@@ -112,7 +136,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at 50% 50%, rgba(200, 162, 101, 0.08) 0%, rgba(24, 16, 12, 0.4) 60%, transparent 80%)',
+            background: isLight
+              ? 'radial-gradient(circle at 50% 50%, rgba(200, 162, 101, 0.16) 0%, rgba(248, 244, 238, 0.6) 60%, transparent 80%)'
+              : 'radial-gradient(circle at 50% 50%, rgba(200, 162, 101, 0.08) 0%, rgba(24, 16, 12, 0.4) 60%, transparent 80%)',
             pointerEvents: 'none',
           }}
         />
@@ -185,16 +211,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             position: 'absolute',
             zIndex: 3,
             borderRadius: '50%',
-            backgroundColor: isFavorited ? 'var(--color-gold-400)' : 'rgba(20, 12, 9, 0.65)',
+            backgroundColor: isFavorited
+              ? 'var(--color-gold-400)'
+              : isLight
+              ? 'rgba(255, 255, 255, 0.92)'
+              : 'rgba(20, 12, 9, 0.65)',
+            border: isLight ? '1px solid rgba(200, 162, 101, 0.3)' : 'none',
+            boxShadow: isLight ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
             backdropFilter: 'blur(4px)',
-            color: isFavorited ? '#0D0705' : '#FAF7F2',
+            color: isFavorited ? '#0D0705' : isLight ? '#140C09' : '#FAF7F2',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             transition: 'all 0.2s ease',
           }}
         >
-          <Heart size={14} fill={isFavorited ? '#0D0705' : 'none'} strokeWidth={1.75} />
+          <Heart size={14} fill={isFavorited ? (isLight ? '#140C09' : '#0D0705') : 'none'} strokeWidth={1.75} />
         </button>
 
         {/* Desktop Quick Add Bar on Hover */}
@@ -206,7 +238,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             left: 0,
             right: 0,
             padding: '0.65rem',
-            backgroundColor: 'rgba(20, 12, 9, 0.85)',
+            backgroundColor: isLight ? 'rgba(255, 255, 255, 0.92)' : 'rgba(20, 12, 9, 0.85)',
             backdropFilter: 'blur(8px)',
             transform: isHovered ? 'translateY(0)' : 'translateY(100%)',
             transition: 'transform 0.25s ease',
@@ -219,8 +251,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             style={{
               width: '100%',
               padding: '0.55rem',
-              backgroundColor: 'var(--color-gold-400)',
-              color: '#0D0705',
+              backgroundColor: isLight ? '#140C09' : 'var(--color-gold-400)',
+              color: isLight ? '#FAF7F2' : '#0D0705',
               fontSize: '0.65rem',
               fontWeight: 700,
               letterSpacing: '0.14em',
@@ -230,6 +262,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               justifyContent: 'center',
               gap: '0.4rem',
               borderRadius: '2px',
+              transition: 'background-color 0.2s ease',
             }}
           >
             {addedNotice ? (
@@ -246,7 +279,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </Link>
 
       {/* Product Information */}
-      <div className="product-card-body">
+      <div
+        className="product-card-body"
+        style={{
+          width: isHorizontal ? '58%' : '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: isHorizontal ? 'center' : 'flex-start',
+        }}
+      >
         {/* Brand */}
         {product.brand && (
           <span
@@ -255,7 +296,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: 'var(--color-gold-400)',
+              color: isLight ? 'var(--color-gold-600)' : 'var(--color-gold-400)',
               marginBottom: '0.15rem',
               display: 'block',
             }}
@@ -268,16 +309,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <Link
           href={`/product/${product.slug}`}
           style={{
-            fontSize: 'clamp(0.75rem, 1.5vw, 0.85rem)',
+            fontSize: isHorizontal ? 'clamp(0.8rem, 1.4vw, 0.9rem)' : 'clamp(0.75rem, 1.5vw, 0.85rem)',
             fontWeight: 500,
             lineHeight: 1.35,
-            color: '#FFFFFF',
+            color: isLight ? '#140C09' : '#FFFFFF',
             marginBottom: '0.25rem',
             display: '-webkit-box',
-            WebkitLineClamp: 2,
+            WebkitLineClamp: isHorizontal ? 2 : 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            minHeight: '2.05rem',
+            minHeight: isHorizontal ? 'auto' : '2.05rem',
           }}
         >
           {displayName}
@@ -293,8 +334,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             fontSize: 'clamp(0.625rem, 1.2vw, 0.725rem)',
           }}
         >
-          <span style={{ color: '#F5A623', fontWeight: 600 }}>★ {product.rating || '4.9'}</span>
-          <span style={{ color: '#8E7D74', fontSize: 'clamp(0.575rem, 1vw, 0.675rem)' }}>
+          <span style={{ color: isLight ? '#D48806' : '#F5A623', fontWeight: 600 }}>★ {product.rating || '4.9'}</span>
+          <span style={{ color: isLight ? '#8C7B72' : '#8E7D74', fontSize: 'clamp(0.575rem, 1vw, 0.675rem)' }}>
             ({product.reviews_count || 124})
           </span>
         </div>
@@ -302,7 +343,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Price & Mobile Add */}
         <div
           style={{
-            marginTop: 'auto',
+            marginTop: isHorizontal ? '0.35rem' : 'auto',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -314,7 +355,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               style={{
                 fontSize: 'clamp(0.825rem, 1.6vw, 0.9rem)',
                 fontWeight: 600,
-                color: '#FFFFFF',
+                color: isLight ? '#140C09' : '#FFFFFF',
                 letterSpacing: '0.02em',
               }}
             >
@@ -324,7 +365,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <span
                 style={{
                   fontSize: 'clamp(0.675rem, 1.2vw, 0.75rem)',
-                  color: '#9E8E85',
+                  color: isLight ? '#9E8E85' : '#9E8E85',
                   textDecoration: 'line-through',
                 }}
               >
@@ -341,9 +382,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               width: '26px',
               height: '26px',
               borderRadius: '2px',
-              backgroundColor: 'rgba(200, 162, 101, 0.15)',
-              border: '1px solid var(--border-gold)',
-              color: 'var(--color-gold-400)',
+              backgroundColor: isLight ? 'rgba(200, 162, 101, 0.15)' : 'rgba(200, 162, 101, 0.15)',
+              border: isLight ? '1px solid rgba(200, 162, 101, 0.35)' : '1px solid var(--border-gold)',
+              color: isLight ? 'var(--color-gold-700)' : 'var(--color-gold-400)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -402,6 +443,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           .product-card-body {
             padding: 0.9rem;
           }
+        }
+        .layout-horizontal .product-image-frame {
+          padding: 0.65rem;
+        }
+        .layout-horizontal .product-card-body {
+          padding: 0.75rem 0.95rem;
         }
         @media (min-width: 860px) {
           .desktop-quick-add {

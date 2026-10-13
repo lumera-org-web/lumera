@@ -142,6 +142,26 @@ export async function getTrendingProducts(limit: number = 8): Promise<Product[]>
   return res.products;
 }
 
+export async function getNewArrivals(limit: number = 10): Promise<Product[]> {
+  try {
+    const res = await getProducts({ isNew: true, limit });
+    if (res.products && res.products.length > 0) {
+      return res.products;
+    }
+    // Fallback: fetch newest products if none have is_new flag
+    const newestRes = await getProducts({ sort: 'newest', limit });
+    if (newestRes.products && newestRes.products.length > 0) {
+      return newestRes.products;
+    }
+    // Secondary fallback: fetch any active products
+    const anyRes = await getProducts({ limit });
+    return anyRes.products || [];
+  } catch (err) {
+    console.error('[getNewArrivals exception]', err);
+    return [];
+  }
+}
+
 export async function searchProducts(searchTerm: string): Promise<Product[]> {
   if (!searchTerm || searchTerm.trim().length === 0) return [];
   try {

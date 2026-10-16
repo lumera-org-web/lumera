@@ -87,7 +87,7 @@ export interface Product {
 
 export interface Banner {
   id: string;
-  section_type: 'announcement' | 'hero' | 'fragrance_editorial' | 'makeup_editorial' | 'skincare_editorial';
+  section_type: 'announcement' | 'hero' | 'fragrance_editorial' | 'makeup_editorial' | 'skincare_editorial' | 'shop_by_category' | string;
   title?: string | null;
   title_ar?: string | null;
   subtitle?: string | null;

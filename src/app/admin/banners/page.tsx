@@ -12,13 +12,13 @@ export default function AdminBannersPage() {
   const [loading, setLoading] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [activeStepTab, setActiveStepTab] = useState<'all' | 'hero' | 'fragrance' | 'makeup' | 'skincare' | 'announcement'>('all');
+  const [activeStepTab, setActiveStepTab] = useState<'all' | 'hero' | 'categories' | 'fragrance' | 'makeup' | 'skincare' | 'announcement'>('all');
 
   // Banner Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [modalTitleText, setModalTitleText] = useState('Edit Section');
-  const [sectionType, setSectionType] = useState<'hero' | 'announcement' | 'fragrance_editorial' | 'makeup_editorial' | 'skincare_editorial'>('hero');
+  const [sectionType, setSectionType] = useState<'hero' | 'announcement' | 'fragrance_editorial' | 'makeup_editorial' | 'skincare_editorial' | 'shop_by_category'>('hero');
   const [title, setTitle] = useState('');
   const [titleAr, setTitleAr] = useState('');
   const [subtitle, setSubtitle] = useState('');
@@ -70,6 +70,60 @@ export default function AdminBannersPage() {
   const heroSlides = banners
     .filter((b) => b.section_type === 'hero')
     .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+  const rawCategoryCards = banners
+    .filter((b) => b.section_type === 'shop_by_category')
+    .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+
+  const defaultCategoryTemplates: Banner[] = [
+    {
+      id: 'default-fragrance',
+      section_type: 'shop_by_category',
+      title: 'FRAGRANCE',
+      title_ar: 'العطور الفاخرة',
+      subtitle: 'CATEGORY 01',
+      description: 'Iconic scents from Arabian treasures to modern classics.',
+      description_ar: 'عطور أيقونية تأسر الحواس من كنوز الشرق إلى الكلاسيكيات العصرية.',
+      cta_text: 'EXPLORE →',
+      cta_text_ar: 'استكشف ←',
+      cta_link: '/category/fragrance',
+      image_url: '/images/categories/fragrance.jpg',
+      display_order: 1,
+      is_active: true,
+    },
+    {
+      id: 'default-makeup',
+      section_type: 'shop_by_category',
+      title: 'MAKEUP',
+      title_ar: 'المكياج والتجميل',
+      subtitle: 'CATEGORY 02',
+      description: 'Elevate your everyday beauty with iconic favourites.',
+      description_ar: 'تألقي بجمال يومي ساحر مع أفضل مستحضرات التجميل المفضلة.',
+      cta_text: 'EXPLORE →',
+      cta_text_ar: 'استكشف ←',
+      cta_link: '/category/makeup',
+      image_url: '/images/categories/makeup.jpg',
+      display_order: 2,
+      is_active: true,
+    },
+    {
+      id: 'default-skincare',
+      section_type: 'shop_by_category',
+      title: 'SKINCARE',
+      title_ar: 'العناية بالبشرة',
+      subtitle: 'CATEGORY 03',
+      description: 'Healthy skin, brighter you.',
+      description_ar: 'بشرة صحية وإشراقة طبيعية مفعمة بالنضارة والجمال.',
+      cta_text: 'EXPLORE →',
+      cta_text_ar: 'استكشف ←',
+      cta_link: '/category/skincare',
+      image_url: '/images/categories/skincare.jpg',
+      display_order: 3,
+      is_active: true,
+    },
+  ];
+
+  const categoryCards = rawCategoryCards.length > 0 ? rawCategoryCards : defaultCategoryTemplates;
+
   const fragranceSection = banners.find((b) => b.section_type === 'fragrance_editorial');
   const makeupSection = banners.find((b) => b.section_type === 'makeup_editorial');
   const skincareSection = banners.find((b) => b.section_type === 'skincare_editorial');
@@ -162,6 +216,26 @@ export default function AdminBannersPage() {
     setShowModal(true);
   };
 
+  const openNewCategoryCardModal = () => {
+    setEditingId(null);
+    setModalTitleText('Add New Category Card');
+    setSectionType('shop_by_category');
+    setTitle('');
+    setTitleAr('');
+    setSubtitle(`CATEGORY 0${categoryCards.length + 1}`);
+    setDescription('');
+    setDescriptionAr('');
+    setCtaText('EXPLORE →');
+    setCtaTextAr('استكشف ←');
+    setCtaLink('/categories');
+    setImageUrl('');
+    setMobileImageUrl('');
+    setPublicId('');
+    setDisplayOrder((categoryCards.length + 1).toString());
+    setIsActive(true);
+    setShowModal(true);
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -233,7 +307,7 @@ export default function AdminBannersPage() {
         is_active: isActive,
       };
 
-      if (editingId) {
+      if (editingId && !editingId.startsWith('default-')) {
         const { error } = await supabase.from('banners').update(payload).eq('id', editingId);
         if (error) throw error;
       } else {
@@ -351,10 +425,11 @@ export default function AdminBannersPage() {
         {[
           { id: 'all', label: 'All Homepage Sections' },
           { id: 'hero', label: '1. Hero Carousel (3 Slides)' },
-          { id: 'fragrance', label: '2. Fragrance ("SCENTS THAT STAY")' },
-          { id: 'makeup', label: '3. Makeup ("BEAUTY IN EVERY DETAIL")' },
-          { id: 'skincare', label: '4. Skincare ("THE SKIN RITUAL")' },
-          { id: 'announcement', label: '5. Announcement Ribbon' },
+          { id: 'categories', label: '2. Shop By Category (3 Cards)' },
+          { id: 'fragrance', label: '3. Fragrance ("SCENTS THAT STAY")' },
+          { id: 'makeup', label: '4. Makeup ("BEAUTY IN EVERY DETAIL")' },
+          { id: 'skincare', label: '5. Skincare ("THE SKIN RITUAL")' },
+          { id: 'announcement', label: '6. Announcement Ribbon' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -518,7 +593,131 @@ export default function AdminBannersPage() {
           )}
 
           {/* ========================================================================= */}
-          {/* STEP 2: FRAGRANCE SECTION ("SCENTS THAT STAY") */}
+          {/* STEP 2: SHOP BY CATEGORY SECTION (3 CARDS) */}
+          {/* ========================================================================= */}
+          {(activeStepTab === 'all' || activeStepTab === 'categories') && (
+            <div style={{ backgroundColor: '#140C09', border: '1px solid rgba(200, 162, 101, 0.25)', borderRadius: '4px', padding: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.65rem', padding: '0.2rem 0.6rem', backgroundColor: 'var(--color-gold-400)', color: 'var(--color-espresso-950)', fontWeight: 800, borderRadius: '2px' }}>
+                      STEP 2 · SHOP BY CATEGORY
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--color-gold-400)', fontWeight: 600 }}>
+                      Category Showcase Cards ({categoryCards.length} Cards)
+                    </span>
+                  </div>
+                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: '#FFFFFF', margin: '0.4rem 0 0 0' }}>
+                    Shop By Category (Below Hero · Above Just Arrived)
+                  </h2>
+                  <p style={{ color: '#9E8E85', fontSize: '0.8rem', margin: '0.25rem 0 0 0' }}>
+                    Controls the 3 category cards (Fragrance, Makeup, Skincare) displayed right below the Hero banner and above Just Arrived. Edit authentic image, category name, description, and link.
+                  </p>
+                </div>
+
+                <button onClick={openNewCategoryCardModal} className="btn-lumera-outline" style={{ fontSize: '0.75rem', padding: '0.6rem 1.2rem' }}>
+                  <Plus size={14} />
+                  <span>Add Another Category Card</span>
+                </button>
+              </div>
+
+              {/* Category Cards Grid in CMS */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1.5rem' }}>
+                {categoryCards.map((card, idx) => (
+                  <div
+                    key={card.id || `category-card-admin-${idx}`}
+                    style={{
+                      backgroundColor: '#190F0C',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '3px',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    {/* Card Photo Preview */}
+                    <div style={{ position: 'relative', width: '100%', height: '170px', backgroundColor: '#0D0705' }}>
+                      {card.image_url ? (
+                        <Image src={card.image_url} alt={card.title || ''} fill sizes="350px" style={{ objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#7E6F67', fontSize: '0.75rem', padding: '1rem', textAlign: 'center', background: 'radial-gradient(circle at 65% 45%, rgba(68, 38, 30, 0.45) 0%, rgba(20, 12, 9, 0.95) 70%, #0D0705 100%)' }}>
+                          <span style={{ color: 'var(--color-gold-400)', fontWeight: 600, marginBottom: '0.25rem' }}>✦ Luxury Gradient</span>
+                          <span>No Image Uploaded</span>
+                        </div>
+                      )}
+                      <div style={{ position: 'absolute', top: '8px', left: '8px', padding: '0.2rem 0.5rem', backgroundColor: 'rgba(0,0,0,0.85)', color: 'var(--color-gold-400)', fontSize: '0.65rem', fontWeight: 700, borderRadius: '2px', letterSpacing: '0.08em' }}>
+                        CARD 0{idx + 1} · {card.title || 'CATEGORY'}
+                      </div>
+                      {card.id?.startsWith('default-') && (
+                        <div style={{ position: 'absolute', top: '8px', right: '8px', padding: '0.2rem 0.5rem', backgroundColor: 'rgba(200, 162, 101, 0.2)', border: '1px solid var(--border-gold)', color: 'var(--color-gold-400)', fontSize: '0.6rem', fontWeight: 600, borderRadius: '2px' }}>
+                          Default Preset
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Details */}
+                    <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <div style={{ fontSize: '0.65rem', color: 'var(--color-gold-400)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.25rem' }}>
+                        {card.subtitle || `CATEGORY 0${idx + 1}`}
+                      </div>
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: '#FFFFFF', margin: '0 0 0.35rem 0' }}>
+                        {card.title}
+                      </h3>
+                      {card.title_ar && (
+                        <div style={{ fontSize: '0.85rem', color: '#D8C7B2', marginBottom: '0.5rem', direction: 'rtl', textAlign: 'left' }}>
+                          {card.title_ar}
+                        </div>
+                      )}
+                      <p style={{ fontSize: '0.75rem', color: '#9E8E85', lineHeight: 1.4, margin: '0 0 1rem 0', flex: 1 }}>
+                        {card.description}
+                      </p>
+
+                      <div style={{ fontSize: '0.7rem', color: 'var(--color-gold-400)', marginBottom: '1rem', fontWeight: 600 }}>
+                        Link: {card.cta_link || '/categories'}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '0.85rem', marginTop: 'auto' }}>
+                        <button
+                          onClick={() => openEditModal(card, `Edit ${card.title || 'Category'} Card`)}
+                          style={{
+                            flex: 1,
+                            padding: '0.6rem',
+                            backgroundColor: 'var(--color-gold-400)',
+                            color: 'var(--color-espresso-950)',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            border: 'none',
+                            borderRadius: '2px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.4rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Edit2 size={13} />
+                          <span>Edit Image & Details</span>
+                        </button>
+
+                        {!card.id?.startsWith('default-') && (
+                          <button
+                            onClick={() => handleDeleteBanner(card.id)}
+                            style={{ padding: '0.6rem 0.8rem', backgroundColor: 'transparent', color: '#E05A47', border: '1px solid rgba(224,90,71,0.2)', borderRadius: '2px', cursor: 'pointer' }}
+                            title="Delete Card"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* STEP 3: FRAGRANCE SECTION ("SCENTS THAT STAY") */}
           {/* ========================================================================= */}
           {(activeStepTab === 'all' || activeStepTab === 'fragrance') && fragranceSection && (
             <div style={{ backgroundColor: '#140C09', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '4px', padding: '2rem' }}>
@@ -526,7 +725,7 @@ export default function AdminBannersPage() {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.65rem', padding: '0.2rem 0.6rem', backgroundColor: '#221510', color: 'var(--color-gold-400)', fontWeight: 800, borderRadius: '2px', border: '1px solid var(--border-gold)' }}>
-                      STEP 2 · FRAGRANCE EDITORIAL
+                      STEP 3 · FRAGRANCE EDITORIAL
                     </span>
                     <span style={{ fontSize: '0.8rem', color: '#9E8E85' }}>Homepage Section 2</span>
                   </div>
@@ -682,7 +881,7 @@ export default function AdminBannersPage() {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.65rem', padding: '0.2rem 0.6rem', backgroundColor: '#221510', color: 'var(--color-gold-400)', fontWeight: 800, borderRadius: '2px', border: '1px solid var(--border-gold)' }}>
-                      STEP 3 · MAKEUP SHOWCASE
+                      STEP 4 · MAKEUP SHOWCASE
                     </span>
                     <span style={{ fontSize: '0.8rem', color: '#9E8E85' }}>Homepage Section 3</span>
                   </div>
@@ -828,7 +1027,7 @@ export default function AdminBannersPage() {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.65rem', padding: '0.2rem 0.6rem', backgroundColor: '#221510', color: 'var(--color-gold-400)', fontWeight: 800, borderRadius: '2px', border: '1px solid var(--border-gold)' }}>
-                      STEP 4 · SKINCARE RITUAL
+                      STEP 5 · SKINCARE RITUAL
                     </span>
                     <span style={{ fontSize: '0.8rem', color: '#9E8E85' }}>Homepage Section 4</span>
                   </div>
@@ -897,7 +1096,7 @@ export default function AdminBannersPage() {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.65rem', padding: '0.2rem 0.6rem', backgroundColor: '#221510', color: 'var(--color-gold-400)', fontWeight: 800, borderRadius: '2px', border: '1px solid var(--border-gold)' }}>
-                      STEP 5 · TOP ANNOUNCEMENT BAR
+                      STEP 6 · TOP ANNOUNCEMENT BAR
                     </span>
                     <span style={{ fontSize: '0.8rem', color: '#9E8E85' }}>Header Ribbon</span>
                   </div>
@@ -969,26 +1168,26 @@ export default function AdminBannersPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', color: '#9E8E85', marginBottom: '0.35rem', fontWeight: 600 }}>
-                    Headline / Title (English) *
+                    {sectionType === 'shop_by_category' ? 'Category Name (English) *' : 'Headline / Title (English) *'}
                   </label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. BEAUTY AFTER DARK"
+                    placeholder={sectionType === 'shop_by_category' ? 'e.g. FRAGRANCE' : 'e.g. BEAUTY AFTER DARK'}
                     style={{ width: '100%', padding: '0.75rem', backgroundColor: '#190F0C', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF', borderRadius: '2px', fontSize: '0.85rem' }}
                   />
                 </div>
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', color: '#9E8E85', marginBottom: '0.35rem', fontWeight: 600 }}>
-                    Headline / Title (Arabic / بالعربية)
+                    {sectionType === 'shop_by_category' ? 'Category Name (Arabic / بالعربية)' : 'Headline / Title (Arabic / بالعربية)'}
                   </label>
                   <input
                     type="text"
                     value={titleAr}
                     onChange={(e) => setTitleAr(e.target.value)}
-                    placeholder="e.g. الجمال بعد الغروب"
+                    placeholder={sectionType === 'shop_by_category' ? 'e.g. العطور' : 'e.g. الجمال بعد الغروب'}
                     dir="rtl"
                     style={{ width: '100%', padding: '0.75rem', backgroundColor: '#190F0C', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF', borderRadius: '2px', fontSize: '0.85rem' }}
                   />

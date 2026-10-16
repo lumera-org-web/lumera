@@ -1,5 +1,6 @@
 import React from 'react';
 import { HeroBanner } from '@/components/home/HeroBanner';
+import { ShopByCategorySection } from '@/components/home/ShopByCategorySection';
 import { NewArrivalsSection } from '@/components/home/NewArrivalsSection';
 import { FragranceSection } from '@/components/home/FragranceSection';
 import { MakeupSection } from '@/components/home/MakeupSection';
@@ -29,7 +30,10 @@ export default async function HomePage() {
       {/* 1. Cinematic Hero Banner */}
       <HeroBanner banners={heroBanners} />
 
-      {/* 2. New Arrivals Horizontal Showcase with Warm Light Background */}
+      {/* 2. Shop By Category Showcase Cards */}
+      <ShopByCategorySection banners={banners} />
+
+      {/* 3. New Arrivals Horizontal Showcase with Warm Light Background */}
       <NewArrivalsSection products={newArrivalProducts} />
 
       {/* 3. Fragrance Section with Arched Pills */}

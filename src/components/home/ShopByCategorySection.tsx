@@ -73,28 +73,10 @@ export const ShopByCategorySection: React.FC<ShopByCategorySectionProps> = ({ ba
 
       <div className="container-lumera relative z-10">
         {/* Section Header Bar */}
-        <div className="mb-6 flex items-center justify-between gap-4 md:mb-8">
+        <div className="mb-6 md:mb-8">
           <h2 className="font-serif text-xl sm:text-2xl md:text-[1.65rem] font-semibold tracking-[0.16em] uppercase text-[#E8CCA4]">
             {locale === 'ar' ? 'تسوق حسب الفئة' : 'SHOP BY CATEGORY'}
           </h2>
-
-          <Link
-            href="/categories"
-            className="group inline-flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-[0.12em] uppercase text-gold-400 hover:text-gold-300 transition-colors"
-          >
-            <span>{locale === 'ar' ? 'عرض الكل' : 'VIEW ALL'}</span>
-            {isRtl ? (
-              <ArrowLeft
-                size={15}
-                className="transition-transform duration-300 group-hover:-translate-x-1"
-              />
-            ) : (
-              <ArrowRight
-                size={15}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            )}
-          </Link>
         </div>
 
         {/* 3 Category Cards Grid */}

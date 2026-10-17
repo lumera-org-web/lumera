@@ -33,11 +33,22 @@ export default async function CategoryPage({
   const { slug } = await params;
   const search = await searchParams;
   const sort = (search.sort as any) || 'featured';
+  const brand = (search.brand as string) || undefined;
+  const minPrice = search.minPrice ? Number(search.minPrice) : undefined;
+  const maxPrice = search.maxPrice ? Number(search.maxPrice) : undefined;
+  const minRating = search.rating ? Number(search.rating) : undefined;
+  const availability = (search.availability as string) || undefined;
+  const inStock = availability === 'in_stock' ? true : availability === 'out_of_stock' ? false : undefined;
 
   const [category, { products, total }] = await Promise.all([
     getCategoryBySlug(slug),
     getProducts({
       categorySlug: slug,
+      brandSlug: brand,
+      minPrice,
+      maxPrice,
+      minRating,
+      inStock,
       sort,
     }),
   ]);

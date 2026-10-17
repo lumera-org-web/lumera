@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MobileNavigation } from '@/components/layout/MobileNavigation';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import { CartToast } from '@/components/cart/CartToast';
 import { LuxuryPreloader } from '@/components/layout/LuxuryPreloader';
 import { Banner, Category } from '@/types';
 
@@ -38,6 +39,7 @@ export const StorefrontShell: React.FC<StorefrontShellProps> = ({
       <Footer />
       <MobileNavigation />
       <CartDrawer />
+      <CartToast />
     </>
   );
 };

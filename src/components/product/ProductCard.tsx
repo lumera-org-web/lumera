@@ -72,6 +72,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       slug: product.slug,
       price: product.price,
       imageUrl: primaryUrl,
+      size: product.variants?.[0]?.size || (product.category?.slug === 'fragrance' || product.category_id === 'c1000000-0000-0000-0000-000000000001' ? '100ml' : undefined),
       quantity: 1,
     });
 

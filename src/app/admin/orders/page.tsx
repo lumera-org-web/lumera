@@ -4,8 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { Package, Truck, CheckCircle2, Clock, Send } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { formatPrice } from '@/utils/formatters';
+import { useAdminToast } from '@/components/admin/AdminToast';
 
 export default function AdminOrdersPage() {
+  const { showToast } = useAdminToast();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -88,6 +90,7 @@ export default function AdminOrdersPage() {
         }).catch((e) => console.error('[Brevo payment email error]', e));
       }
 
+      showToast('Order status updated successfully');
       await loadOrders();
     } catch (err: any) {
       alert(err.message);
@@ -120,6 +123,7 @@ export default function AdminOrdersPage() {
         }),
       }).catch((e) => console.error('[Brevo payment email error]', e));
 
+      showToast('Payment status updated successfully');
       await loadOrders();
     } catch (err: any) {
       alert(err.message);

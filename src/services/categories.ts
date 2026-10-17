@@ -11,13 +11,13 @@ export async function getCategories(): Promise<Category[]> {
       .order('display_order', { ascending: true });
 
     if (error) {
-      console.error('[getCategories error]', error);
+      console.warn('[getCategories warning]', error?.message || error?.details || error);
       return [];
     }
 
     return (data as Category[]) || [];
-  } catch (err) {
-    console.error('[getCategories exception]', err);
+  } catch (err: any) {
+    console.warn('[getCategories exception]', err?.message || err);
     return [];
   }
 }

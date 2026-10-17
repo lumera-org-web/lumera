@@ -2,12 +2,23 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import { Plus, Upload, Trash2, Edit2, Sparkles, RefreshCw, X, Check, Search, Filter, ArrowUpRight } from 'lucide-react';
+import { Plus, Upload, Trash2, Edit2, RefreshCw, X, Check, Search, Filter, ArrowUpRight } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { Product, Category, Brand } from '@/types';
 import { formatPrice } from '@/utils/formatters';
+import { useAdminConfirm } from '@/components/admin/ConfirmModal';
+import { useAdminToast } from '@/components/admin/AdminToast';
+
+interface VariantInput {
+  id?: string;
+  size: string;
+  price: string;
+  compare_at_price?: string;
+}
 
 export default function AdminProductsPage() {
+  const { confirm } = useAdminConfirm();
+  const { showToast } = useAdminToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -30,6 +41,8 @@ export default function AdminProductsPage() {
   const [comparePrice, setComparePrice] = useState('');
   const [sku, setSku] = useState('');
   const [stock, setStock] = useState('25');
+  const [isInStock, setIsInStock] = useState(true);
+  const [variants, setVariants] = useState<VariantInput[]>([]);
   const [shortDesc, setShortDesc] = useState('');
   const [description, setDescription] = useState('');
   const [notesTop, setNotesTop] = useState('');
@@ -51,7 +64,7 @@ export default function AdminProductsPage() {
       const [prodRes, catRes, brandRes] = await Promise.all([
         supabase
           .from('products')
-          .select('*, brand:brands(*), category:categories(*), images:product_images(*)')
+          .select('*, brand:brands(*), category:categories(*), images:product_images(*), variants:product_variants(*)')
           .order('created_at', { ascending: false }),
         supabase.from('categories').select('*').order('name'),
         supabase.from('brands').select('*').order('name'),
@@ -82,6 +95,11 @@ export default function AdminProductsPage() {
     setComparePrice('');
     setSku(`LUM-${Math.floor(1000 + Math.random() * 9000)}`);
     setStock('35');
+    setIsInStock(true);
+    setVariants([
+      { size: '50ml', price: '' },
+      { size: '100ml', price: '' },
+    ]);
     setShortDesc('');
     setDescription('');
     setNotesTop('');
@@ -107,6 +125,21 @@ export default function AdminProductsPage() {
     setComparePrice(p.compare_at_price ? p.compare_at_price.toString() : '');
     setSku(p.sku || '');
     setStock(p.stock.toString());
+    setIsInStock(p.stock > 0);
+
+    if (p.variants && p.variants.length > 0) {
+      setVariants(
+        p.variants.map((v) => ({
+          id: v.id,
+          size: v.size || v.title || '',
+          price: v.price ? v.price.toString() : '',
+          compare_at_price: v.compare_at_price ? v.compare_at_price.toString() : '',
+        }))
+      );
+    } else {
+      setVariants([]);
+    }
+
     setShortDesc(p.short_description || '');
     setDescription(p.description || '');
 
@@ -143,6 +176,11 @@ export default function AdminProductsPage() {
       setPrice('320.00');
       setComparePrice('380.00');
       setStock('45');
+      setIsInStock(true);
+      setVariants([
+        { size: '50ml', price: '240.00' },
+        { size: '100ml', price: '320.00' },
+      ]);
       setIsBestseller(true);
       setIsTrending(true);
       setNotesTop('Pink Pepper, Cardamom, Bergamot');
@@ -160,6 +198,11 @@ export default function AdminProductsPage() {
       setPrice('165.00');
       setComparePrice('195.00');
       setStock('60');
+      setIsInStock(true);
+      setVariants([
+        { size: '30ml', price: '125.00' },
+        { size: '50ml', price: '165.00' },
+      ]);
       setIsNew(true);
       setIsTrending(true);
       setNotesTop('');
@@ -177,6 +220,10 @@ export default function AdminProductsPage() {
       setPrice('145.00');
       setComparePrice('170.00');
       setStock('50');
+      setIsInStock(true);
+      setVariants([
+        { size: 'Standard (3.5g)', price: '145.00' },
+      ]);
       setIsTrending(true);
       setNotesTop('');
       setNotesMiddle('');
@@ -223,6 +270,7 @@ export default function AdminProductsPage() {
 
     try {
       const supabase = createClient();
+      const finalStock = isInStock ? Math.max(1, parseInt(stock, 10) || 25) : 0;
 
       const productPayload: any = {
         name,
@@ -233,7 +281,7 @@ export default function AdminProductsPage() {
         price: parseFloat(price),
         compare_at_price: comparePrice ? parseFloat(comparePrice) : null,
         sku: sku || `LUM-${Date.now().toString().slice(-4)}`,
-        stock: parseInt(stock, 10) || 0,
+        stock: finalStock,
         short_description: shortDesc,
         description,
         is_trending: isTrending,
@@ -296,8 +344,28 @@ export default function AdminProductsPage() {
         }
       }
 
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      // Save / Update Size Variants
+      if (targetId) {
+        await supabase.from('product_variants').delete().eq('product_id', targetId);
+
+        const validVariants = variants
+          .filter((v) => v.size && v.size.trim().length > 0)
+          .map((v, idx) => ({
+            product_id: targetId,
+            title: `${name} - ${v.size.trim()}`,
+            size: v.size.trim(),
+            price: parseFloat(v.price) || parseFloat(price) || 0,
+            compare_at_price: v.compare_at_price ? parseFloat(v.compare_at_price) : null,
+            stock: finalStock,
+            display_order: idx + 1,
+          }));
+
+        if (validVariants.length > 0) {
+          await supabase.from('product_variants').insert(validVariants);
+        }
+      }
+
+      showToast(editingId ? 'Product updated successfully' : 'Product created successfully');
       setShowModal(false);
       await loadData();
     } catch (err: any) {
@@ -305,30 +373,77 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleDeleteProduct = async (id: string) => {
-    if (!confirm('Are you sure you want to remove this product?')) return;
-    try {
-      const supabase = createClient();
-      await supabase.from('products').delete().eq('id', id);
-      await loadData();
-    } catch (err: any) {
-      alert(err.message);
-    }
+  const handleDeleteProduct = (id: string, productName?: string) => {
+    confirm({
+      title: 'Delete Product',
+      message: `Are you sure you want to delete ${productName ? `"${productName}"` : 'this product'}? All variants, inventory, and images will be permanently removed.`,
+      confirmText: 'Delete Product',
+      variant: 'danger',
+      iconType: 'trash',
+      onConfirm: async () => {
+        try {
+          const supabase = createClient();
+          await supabase.from('products').delete().eq('id', id);
+          showToast('Product deleted successfully');
+          await loadData();
+        } catch (err: any) {
+          alert(err.message);
+        }
+      },
+    });
   };
 
-  const handlePopulateDefaultProducts = async () => {
-    if (!confirm('Populate all 9 reference products (Lattafa Khamrah, YSL Libre, Dior, Amouage, Medicube, etc.) into Supabase?')) return;
-    setSeeding(true);
-    try {
-      const res = await fetch('/api/admin/seed', { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      await loadData();
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setSeeding(false);
-    }
+  const handlePopulateDefaultProducts = () => {
+    confirm({
+      title: 'Populate Reference Products',
+      message: 'Populate all 9 reference products (Lattafa Khamrah, YSL Libre, Dior, Amouage, Medicube, etc.) into Supabase?',
+      confirmText: 'Populate Products',
+      variant: 'primary',
+      iconType: 'warning',
+      onConfirm: async () => {
+        setSeeding(true);
+        try {
+          const res = await fetch('/api/admin/seed', { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          showToast('Default products populated successfully');
+          await loadData();
+        } catch (err: any) {
+          alert(err.message);
+        } finally {
+          setSeeding(false);
+        }
+      },
+    });
+  };
+
+  const handleRemoveVariant = (idx: number, sizeName?: string) => {
+    confirm({
+      title: 'Remove Size Variant',
+      message: `Are you sure you want to remove the ${sizeName ? `"${sizeName}"` : ''} variant from this product?`,
+      confirmText: 'Remove Variant',
+      variant: 'danger',
+      iconType: 'trash',
+      onConfirm: () => {
+        setVariants(variants.filter((_, i) => i !== idx));
+        showToast('Size variant removed');
+      },
+    });
+  };
+
+  const handleRemovePhoto = () => {
+    confirm({
+      title: 'Remove Photo',
+      message: 'Are you sure you want to remove this product photo?',
+      confirmText: 'Remove Photo',
+      variant: 'danger',
+      iconType: 'trash',
+      onConfirm: () => {
+        setUploadedImageUrl('');
+        setCloudinaryPublicId('');
+        showToast('Product photo removed');
+      },
+    });
   };
 
   const filteredProducts = useMemo(() => {
@@ -380,7 +495,7 @@ export default function AdminProductsPage() {
               cursor: 'pointer',
             }}
           >
-            {seeding ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
+            {seeding && <RefreshCw size={14} className="animate-spin" />}
             <span>1-Click Load Reference Products</span>
           </button>
 
@@ -390,13 +505,6 @@ export default function AdminProductsPage() {
           </button>
         </div>
       </div>
-
-      {saveSuccess && (
-        <div style={{ padding: '1rem 1.5rem', backgroundColor: 'rgba(62, 237, 139, 0.12)', border: '1px solid #3EED8B', color: '#B4F8D3', borderRadius: '3px', marginBottom: '2rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <Check size={18} />
-          <span>Product updated successfully! The storefront UI has updated immediately.</span>
-        </div>
-      )}
 
       {/* Filter / Search Bar */}
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
@@ -466,7 +574,7 @@ export default function AdminProductsPage() {
           </p>
           {products.length === 0 && (
             <button onClick={handlePopulateDefaultProducts} className="btn-lumera-primary">
-              <Sparkles size={15} /> Populate Reference Products Now
+              Populate Reference Products Now
             </button>
           )}
         </div>
@@ -514,8 +622,27 @@ export default function AdminProductsPage() {
                           {formatPrice(p.compare_at_price)}
                         </div>
                       )}
+                      {p.variants && p.variants.length > 0 && (
+                        <div style={{ fontSize: '0.675rem', color: 'var(--color-gold-400)', marginTop: '0.3rem', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                          {p.variants.map((v) => (
+                            <span key={v.id || v.size}>{v.size}: {formatPrice(v.price)}</span>
+                          ))}
+                        </div>
+                      )}
                     </td>
-                    <td style={{ padding: '1rem 1rem', color: p.stock > 0 ? '#3EED8B' : '#E05A47' }}>{p.stock} units</td>
+                    <td style={{ padding: '1rem 1rem' }}>
+                      {p.stock > 0 ? (
+                        <span style={{ color: '#3EED8B', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.8rem' }}>
+                          <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#3EED8B' }} />
+                          {p.stock} (In Stock)
+                        </span>
+                      ) : (
+                        <span style={{ color: '#E05A47', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.8rem' }}>
+                          <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#E05A47' }} />
+                          Out of Stock
+                        </span>
+                      )}
+                    </td>
                     <td style={{ padding: '1rem 1rem' }}>
                       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
                         {p.is_trending && <span className="badge-lumera badge-trending">TRENDING</span>}
@@ -547,7 +674,7 @@ export default function AdminProductsPage() {
                         </button>
 
                         <button
-                          onClick={() => handleDeleteProduct(p.id)}
+                          onClick={() => handleDeleteProduct(p.id, p.name)}
                           style={{ color: '#E05A47', padding: '0.45rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
                           title="Delete Product"
                         >
@@ -612,6 +739,29 @@ export default function AdminProductsPage() {
                   {uploadedImageUrl ? (
                     <div style={{ position: 'relative', width: '80px', height: '100px', borderRadius: '2px', overflow: 'hidden', backgroundColor: '#000', border: '1px solid var(--border-gold)' }}>
                       <Image src={uploadedImageUrl} alt="" fill sizes="80px" style={{ objectFit: 'cover' }} />
+                      <button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        style={{
+                          position: 'absolute',
+                          top: '4px',
+                          right: '4px',
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(224, 90, 71, 0.9)',
+                          color: '#fff',
+                          border: 'none',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 10,
+                        }}
+                        title="Remove Photo"
+                      >
+                        <X size={12} />
+                      </button>
                     </div>
                   ) : (
                     <div style={{ width: '80px', height: '100px', borderRadius: '2px', border: '1px dashed rgba(255, 255, 255, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6A554A', fontSize: '0.7rem' }}>
@@ -679,20 +829,228 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Price & Compare Price & Stock */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+              {/* Price & Compare Price */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', color: '#9E8E85', marginBottom: '0.35rem', fontWeight: 600 }}>Price (SAR) *</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', color: '#9E8E85', marginBottom: '0.35rem', fontWeight: 600 }}>Default Base Price (SAR) *</label>
                   <input required type="number" step="0.01" placeholder="219" value={price} onChange={(e) => setPrice(e.target.value)} style={{ width: '100%', padding: '0.75rem', backgroundColor: '#190F0C', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF', borderRadius: '2px', fontSize: '0.85rem' }} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', color: '#9E8E85', marginBottom: '0.35rem', fontWeight: 600 }}>Compare Price (SAR)</label>
                   <input type="number" step="0.01" placeholder="260" value={comparePrice} onChange={(e) => setComparePrice(e.target.value)} style={{ width: '100%', padding: '0.75rem', backgroundColor: '#190F0C', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF', borderRadius: '2px', fontSize: '0.85rem' }} />
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', color: '#9E8E85', marginBottom: '0.35rem', fontWeight: 600 }}>Stock Quantity</label>
-                  <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} style={{ width: '100%', padding: '0.75rem', backgroundColor: '#190F0C', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF', borderRadius: '2px', fontSize: '0.85rem' }} />
+              </div>
+
+              {/* Stock Status Buttons: Stock In & Stock Out */}
+              <div style={{ padding: '1.25rem', backgroundColor: '#190F0C', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '3px' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--color-gold-400)', marginBottom: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Inventory Stock Status
+                </label>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsInStock(true);
+                      if (!stock || parseInt(stock, 10) <= 0) setStock('25');
+                    }}
+                    style={{
+                      padding: '0.6rem 1.4rem',
+                      borderRadius: '2px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      border: isInStock ? '1px solid #3EED8B' : '1px solid rgba(255, 255, 255, 0.1)',
+                      backgroundColor: isInStock ? 'rgba(62, 237, 139, 0.16)' : 'transparent',
+                      color: isInStock ? '#3EED8B' : '#9E8E85',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <Check size={15} />
+                    <span>STOCK IN (IN STOCK)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsInStock(false);
+                      setStock('0');
+                    }}
+                    style={{
+                      padding: '0.6rem 1.4rem',
+                      borderRadius: '2px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      border: !isInStock ? '1px solid #E05A47' : '1px solid rgba(255, 255, 255, 0.1)',
+                      backgroundColor: !isInStock ? 'rgba(224, 90, 71, 0.16)' : 'transparent',
+                      color: !isInStock ? '#E05A47' : '#9E8E85',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <X size={15} />
+                    <span>STOCK OUT (OUT OF STOCK)</span>
+                  </button>
                 </div>
+
+                <div style={{ maxWidth: '280px' }}>
+                  <label style={{ display: 'block', fontSize: '0.725rem', color: '#9E8E85', marginBottom: '0.35rem', fontWeight: 600 }}>
+                    Stock Units Available
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={stock}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setStock(val);
+                      setIsInStock((parseInt(val, 10) || 0) > 0);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem',
+                      backgroundColor: '#130A08',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                      color: '#FFFFFF',
+                      borderRadius: '2px',
+                      fontSize: '0.85rem',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Size Variants & Custom Pricing Field */}
+              <div style={{ padding: '1.25rem', backgroundColor: '#1A0F0B', border: '1px solid rgba(200, 162, 101, 0.28)', borderRadius: '3px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--color-gold-400)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block' }}>
+                      Product Sizes & Custom Pricing
+                    </span>
+                    <span style={{ fontSize: '0.7rem', color: '#9E8E85' }}>
+                      Add sizes (e.g. 50ml, 100ml) with their individual prices. Storefront will dynamically show these options.
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setVariants([...variants, { size: '', price: price || '' }])}
+                    style={{
+                      padding: '0.45rem 0.95rem',
+                      backgroundColor: 'rgba(200, 162, 101, 0.15)',
+                      border: '1px solid var(--border-gold)',
+                      color: 'var(--color-gold-400)',
+                      borderRadius: '2px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Plus size={13} />
+                    <span>Add Size Variant</span>
+                  </button>
+                </div>
+
+                {variants.length === 0 ? (
+                  <div style={{ padding: '1rem', textAlign: 'center', backgroundColor: '#130A08', borderRadius: '2px', border: '1px dashed rgba(255, 255, 255, 0.1)', color: '#7E6F67', fontSize: '0.75rem' }}>
+                    No custom size variants added yet. Base price ({formatPrice(parseFloat(price) || 0)}) will be used. Click &quot;Add Size Variant&quot; to define custom sizes like 50ml, 100ml.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {variants.map((v, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '1.5fr 1.5fr 40px',
+                          gap: '0.75rem',
+                          alignItems: 'center',
+                          backgroundColor: '#130A08',
+                          padding: '0.75rem 0.9rem',
+                          borderRadius: '2px',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                        }}
+                      >
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.675rem', color: '#9E8E85', marginBottom: '0.25rem', textTransform: 'uppercase', fontWeight: 600 }}>
+                            Size (e.g. 50ml, 100ml)
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 50ml"
+                            value={v.size}
+                            onChange={(e) => {
+                              const next = [...variants];
+                              next[idx].size = e.target.value;
+                              setVariants(next);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '0.55rem',
+                              backgroundColor: '#190F0C',
+                              border: '1px solid rgba(255, 255, 255, 0.12)',
+                              color: '#FFFFFF',
+                              borderRadius: '2px',
+                              fontSize: '0.85rem',
+                            }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.675rem', color: '#9E8E85', marginBottom: '0.25rem', textTransform: 'uppercase', fontWeight: 600 }}>
+                            Price for this size (SAR)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder={price || '0.00'}
+                            value={v.price}
+                            onChange={(e) => {
+                              const next = [...variants];
+                              next[idx].price = e.target.value;
+                              setVariants(next);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '0.55rem',
+                              backgroundColor: '#190F0C',
+                              border: '1px solid rgba(255, 255, 255, 0.12)',
+                              color: '#FFFFFF',
+                              borderRadius: '2px',
+                              fontSize: '0.85rem',
+                            }}
+                          />
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveVariant(idx, v.size)}
+                          style={{
+                            marginTop: '1.15rem',
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#7E6F67',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                          title="Remove Size"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Badges Toggle */}

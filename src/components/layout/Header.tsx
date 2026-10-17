@@ -1,14 +1,26 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Search, User, Heart, ShoppingBag, Menu, X, ArrowRight } from 'lucide-react';
+import { Search, User, Heart, ShoppingBag, Menu, X, ArrowRight, RefreshCw } from 'lucide-react';
 import { Logo } from './Logo';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
 import { Category } from '@/types';
+import { formatPrice } from '@/utils/formatters';
+
+interface SearchProduct {
+  id: string;
+  name: string;
+  name_ar?: string | null;
+  slug: string;
+  price: number;
+  compare_at_price?: number | null;
+  image_url?: string | null;
+}
 
 interface HeaderProps {
   categories?: Category[];
@@ -111,6 +123,9 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchProduct[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -120,10 +135,55 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on page navigation
+  const handleCloseSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchResults([]);
+    setHasSearched(false);
+  };
+
+  // Live Search Effect (Debounced 200ms, max 4 items)
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q) {
+      setSearchResults([]);
+      setIsSearching(false);
+      setHasSearched(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, {
+          signal: controller.signal,
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setSearchResults(data.products || []);
+          setHasSearched(true);
+        }
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          setSearchResults([]);
+          setHasSearched(true);
+        }
+      } finally {
+        setIsSearching(false);
+      }
+    }, 200);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [searchQuery]);
+
+  // Close mobile menu and search on page navigation
   useEffect(() => {
     setMobileMenuOpen(false);
-    setSearchOpen(false);
+    handleCloseSearch();
   }, [pathname]);
 
   const navLinks = [
@@ -223,8 +283,8 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
 
         {/* Search Bar Flyout */}
         {searchOpen && (
-          <div className="animate-fade-in border-t border-white/[0.08] bg-[#160E0B] py-4">
-            <div className="container-lumera">
+          <div className="animate-fade-in border-t border-white/[0.08] bg-[#160E0B] py-3 md:py-4">
+            <div className="container-lumera mx-auto max-w-[760px] px-3 md:px-4">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -232,31 +292,144 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
                     window.location.href = `/shop?search=${encodeURIComponent(searchQuery.trim())}`;
                   }
                 }}
-                className="flex items-center gap-3 rounded-[2px] border border-gold-400/30 bg-[#1F140F] px-4 py-[0.65rem]"
+                className="flex items-center gap-2 rounded-[2px] border border-gold-400/30 bg-[#1F140F] px-3 py-2 md:py-2.5 transition-colors focus-within:border-gold-400/80"
               >
-                <Search size={18} className="text-gold-400" />
+                <Search size={16} className="text-gold-400 shrink-0" />
                 <input
                   type="text"
                   placeholder={t('nav.search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
-                  className="flex-1 border-none bg-transparent font-sans text-[0.85rem] text-white outline-none placeholder:text-[#9E8E85]"
+                  className="flex-1 min-w-0 border-none bg-transparent font-sans text-[0.8rem] md:text-[0.85rem] text-white outline-none placeholder:text-[#9E8E85]"
                 />
+                {isSearching && (
+                  <RefreshCw size={13} className="animate-spin text-gold-400 shrink-0" />
+                )}
+                {searchQuery && !isSearching && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear search input"
+                    className="p-1 text-[#9E8E85] transition-colors hover:text-white shrink-0"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
                 <button
                   type="submit"
-                  className="text-[0.75rem] font-semibold uppercase tracking-[0.12em] text-gold-400"
+                  aria-label="Search Catalog"
+                  className="p-1 text-gold-400 transition-colors hover:text-gold-300 shrink-0"
                 >
-                  <ArrowRight size={18} />
+                  <ArrowRight size={16} />
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSearchOpen(false)}
-                  className="ml-2 text-[#9E8E85] transition-colors hover:text-white"
+                  onClick={handleCloseSearch}
+                  aria-label="Close Search"
+                  className="ml-1 p-1 text-[#9E8E85] transition-colors hover:text-white shrink-0"
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </form>
+
+              {/* Related Live Search Items (Max 4, Very Small, Mobile Responsive) */}
+              {searchQuery.trim().length > 0 && (
+                <div className="mt-2 overflow-hidden rounded-[2px] border border-white/[0.08] bg-[#190F0C] shadow-2xl animate-fade-in">
+                  {searchResults.length > 0 ? (
+                    <div>
+                      <div className="flex items-center justify-between border-b border-white/[0.05] bg-white/[0.02] px-3 py-1.5">
+                        <span className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[#9E8E85]">
+                          {locale === 'ar' ? 'المنتجات المقترحة' : 'Suggested Products'}
+                        </span>
+                        <span className="text-[0.6rem] font-medium text-gold-400/90">
+                          {searchResults.length} {locale === 'ar' ? 'عناصر' : 'items'}
+                        </span>
+                      </div>
+
+                      <div className="divide-y divide-white/[0.04]">
+                        {searchResults.map((product) => (
+                          <Link
+                            key={product.id}
+                            href={`/product/${product.slug}`}
+                            onClick={handleCloseSearch}
+                            className="group flex items-center gap-2.5 px-3 py-1.5 transition-colors hover:bg-white/[0.04] active:bg-white/[0.08]"
+                          >
+                            {/* Very Small Thumbnail (36x36) */}
+                            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-[2px] border border-white/[0.08] bg-[#120A07]">
+                              {product.image_url ? (
+                                <Image
+                                  src={product.image_url}
+                                  alt={product.name}
+                                  fill
+                                  sizes="36px"
+                                  className="object-cover transition-transform duration-200 group-hover:scale-105"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center text-[0.6rem] text-[#9E8E85]">
+                                  L
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Product Info (Compact) */}
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-[0.75rem] md:text-[0.78rem] font-medium text-[#EAE2DC] transition-colors group-hover:text-gold-400">
+                                {locale === 'ar' && product.name_ar ? product.name_ar : product.name}
+                              </p>
+                              <div className="mt-[1px] flex items-center gap-2">
+                                <span className="text-[0.7rem] font-bold text-gold-400">
+                                  {formatPrice(product.price)}
+                                </span>
+                                {product.compare_at_price && product.compare_at_price > product.price && (
+                                  <span className="text-[0.62rem] text-[#9E8E85] line-through">
+                                    {formatPrice(product.compare_at_price)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Tiny Arrow */}
+                            <ArrowRight
+                              size={13}
+                              className="shrink-0 text-[#9E8E85] transition-all group-hover:translate-x-0.5 group-hover:text-gold-400"
+                            />
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* Footer: View All Results */}
+                      <Link
+                        href={`/shop?search=${encodeURIComponent(searchQuery.trim())}`}
+                        onClick={handleCloseSearch}
+                        className="flex items-center justify-between border-t border-white/[0.06] bg-gold-400/[0.03] px-3 py-1.5 md:py-2 text-[0.7rem] font-medium tracking-[0.05em] text-gold-400 transition-colors hover:bg-gold-400/[0.08]"
+                      >
+                        <span className="truncate pr-2">
+                          {locale === 'ar'
+                            ? `عرض جميع النتائج لـ "${searchQuery.trim()}"`
+                            : `View all results for "${searchQuery.trim()}"`}
+                        </span>
+                        <ArrowRight size={13} className="shrink-0" />
+                      </Link>
+                    </div>
+                  ) : hasSearched && !isSearching ? (
+                    <div className="px-3 py-2.5 text-center">
+                      <p className="text-[0.72rem] text-[#9E8E85]">
+                        {locale === 'ar'
+                          ? `لم يتم العثور على منتجات مطابقة لـ "${searchQuery.trim()}"`
+                          : `No products matching "${searchQuery.trim()}"`}
+                      </p>
+                      <Link
+                        href="/shop"
+                        onClick={handleCloseSearch}
+                        className="mt-1 inline-block text-[0.68rem] text-gold-400 hover:underline"
+                      >
+                        {locale === 'ar' ? 'تصفح جميع المنتجات ←' : 'Browse catalog →'}
+                      </Link>
+                    </div>
+                  ) : null}
+                </div>
+              )}
             </div>
           </div>
         )}

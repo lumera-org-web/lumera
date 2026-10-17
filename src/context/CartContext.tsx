@@ -3,9 +3,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CartItem } from '@/types';
 
+export interface CartToastData {
+  id: string;
+  productId: string;
+  name: string;
+  brandName?: string;
+  price: number;
+  imageUrl?: string;
+  size?: string;
+  quantity: number;
+}
+
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, 'id'>) => void;
+  addItem: (item: Omit<CartItem, 'id'>, options?: { openDrawer?: boolean; showToast?: boolean }) => void;
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -16,6 +27,9 @@ interface CartContextType {
   isDrawerOpen: boolean;
   openDrawer: () => void;
   closeDrawer: () => void;
+  toast: CartToastData | null;
+  showToast: (data: CartToastData) => void;
+  hideToast: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -24,6 +38,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [items, setItems] = useState<CartItem[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [toast, setToast] = useState<CartToastData | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -43,8 +58,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [items, isMounted]);
 
-  const addItem = (item: Omit<CartItem, 'id'>) => {
-    const id = `${item.productId}_${item.variantId || 'default'}`;
+  const showToast = (data: CartToastData) => {
+    setToast(data);
+  };
+
+  const hideToast = () => {
+    setToast(null);
+  };
+
+  const addItem = (
+    item: Omit<CartItem, 'id'>,
+    options?: { openDrawer?: boolean; showToast?: boolean }
+  ) => {
+    const id = `${item.productId}_${item.variantId || item.size || 'default'}`;
     setItems((prev) => {
       const existing = prev.find((i) => i.id === id);
       if (existing) {
@@ -54,7 +80,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return [...prev, { ...item, id }];
     });
-    setIsDrawerOpen(true);
+
+    if (options?.openDrawer) {
+      setIsDrawerOpen(true);
+    }
+
+    if (options?.showToast !== false) {
+      setToast({
+        id: `${id}_${Date.now()}`,
+        productId: item.productId,
+        name: item.name,
+        brandName: item.brandName,
+        price: item.price,
+        imageUrl: item.imageUrl,
+        size: item.size,
+        quantity: item.quantity,
+      });
+    }
   };
 
   const removeItem = (itemId: string) => {
@@ -96,6 +138,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isDrawerOpen,
         openDrawer: () => setIsDrawerOpen(true),
         closeDrawer: () => setIsDrawerOpen(false),
+        toast,
+        showToast,
+        hideToast,
       }}
     >
       {children}

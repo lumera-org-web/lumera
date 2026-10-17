@@ -399,8 +399,25 @@ export async function POST(req: NextRequest) {
 
     await supabase.from('products').upsert(products, { onConflict: 'id' });
 
-    // 5. PRODUCT IMAGES (Optional - User uploads authentic images via Cloudinary)
-    // No unsplash placeholders populated
+    // 5. PRODUCT VARIANTS (Sizes with authentic prices)
+    const productVariants = [
+      // Khamrah
+      { id: 'v1000000-0000-0000-0000-000000000001', product_id: 'p1000000-0000-0000-0000-000000000001', title: 'Khamrah EDP - 50ml', size: '50ml', price: 169.00, compare_at_price: 199.00, stock: 30, display_order: 1 },
+      { id: 'v1000000-0000-0000-0000-000000000002', product_id: 'p1000000-0000-0000-0000-000000000001', title: 'Khamrah EDP - 100ml', size: '100ml', price: 219.00, compare_at_price: 260.00, stock: 50, display_order: 2 },
+      // Libre
+      { id: 'v1000000-0000-0000-0000-000000000003', product_id: 'p1000000-0000-0000-0000-000000000002', title: 'Libre EDP - 50ml', size: '50ml', price: 389.00, compare_at_price: 430.00, stock: 20, display_order: 1 },
+      { id: 'v1000000-0000-0000-0000-000000000004', product_id: 'p1000000-0000-0000-0000-000000000002', title: 'Libre EDP - 100ml', size: '100ml', price: 499.00, compare_at_price: 550.00, stock: 35, display_order: 2 },
+      // Miss Dior
+      { id: 'v1000000-0000-0000-0000-000000000005', product_id: 'p1000000-0000-0000-0000-000000000003', title: 'Miss Dior EDP - 50ml', size: '50ml', price: 379.00, compare_at_price: 410.00, stock: 25, display_order: 1 },
+      { id: 'v1000000-0000-0000-0000-000000000006', product_id: 'p1000000-0000-0000-0000-000000000003', title: 'Miss Dior EDP - 100ml', size: '100ml', price: 479.00, compare_at_price: 520.00, stock: 40, display_order: 2 },
+      // Guidance
+      { id: 'v1000000-0000-0000-0000-000000000007', product_id: 'p1000000-0000-0000-0000-000000000004', title: 'Guidance EDP - 50ml', size: '50ml', price: 899.00, compare_at_price: 990.00, stock: 15, display_order: 1 },
+      { id: 'v1000000-0000-0000-0000-000000000008', product_id: 'p1000000-0000-0000-0000-000000000004', title: 'Guidance EDP - 100ml', size: '100ml', price: 1299.00, compare_at_price: 1400.00, stock: 20, display_order: 2 },
+      // Skincare Zero Pore Pads
+      { id: 'v1000000-0000-0000-0000-000000000009', product_id: 'p1000000-0000-0000-0000-000000000005', title: 'Zero Pore Pads - 70 Pads', size: '70 Pads', price: 149.00, compare_at_price: 175.00, stock: 80, display_order: 1 },
+    ];
+
+    await supabase.from('product_variants').upsert(productVariants, { onConflict: 'id' });
 
     return NextResponse.json({
       success: true,

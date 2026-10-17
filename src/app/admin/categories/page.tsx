@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Plus, Upload, Trash2, Edit2, X, Check, RefreshCw, Sparkles, Layers } from 'lucide-react';
+import { Plus, Upload, Trash2, Edit2, X, Check, RefreshCw, Layers } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { Category } from '@/types';
+import { useAdminConfirm } from '@/components/admin/ConfirmModal';
+import { useAdminToast } from '@/components/admin/AdminToast';
 
 export default function AdminCategoriesPage() {
+  const { confirm } = useAdminConfirm();
+  const { showToast } = useAdminToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -126,8 +130,7 @@ export default function AdminCategoriesPage() {
         if (error) throw error;
       }
 
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      showToast(editingId ? 'Category updated successfully' : 'Category created successfully');
       setShowModal(false);
       await loadCategories();
     } catch (err: any) {
@@ -135,30 +138,48 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  const handleDeleteCategory = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this category?')) return;
-    try {
-      const supabase = createClient();
-      await supabase.from('categories').delete().eq('id', id);
-      await loadCategories();
-    } catch (err: any) {
-      alert(err.message);
-    }
+  const handleDeleteCategory = (id: string, categoryName?: string) => {
+    confirm({
+      title: 'Delete Category',
+      message: `Are you sure you want to delete ${categoryName ? `"${categoryName}"` : 'this category'}? Products associated with this category may become uncategorized.`,
+      confirmText: 'Delete Category',
+      variant: 'danger',
+      iconType: 'trash',
+      onConfirm: async () => {
+        try {
+          const supabase = createClient();
+          await supabase.from('categories').delete().eq('id', id);
+          showToast('Category deleted successfully');
+          await loadCategories();
+        } catch (err: any) {
+          alert(err.message);
+        }
+      },
+    });
   };
 
-  const handleSeedCategories = async () => {
-    if (!confirm('Populate all default categories & subcategories into Supabase?')) return;
-    setSeeding(true);
-    try {
-      const res = await fetch('/api/admin/seed', { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      await loadCategories();
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setSeeding(false);
-    }
+  const handleSeedCategories = () => {
+    confirm({
+      title: 'Populate Default Categories',
+      message: 'Populate all default categories & subcategories into Supabase?',
+      confirmText: 'Populate Categories',
+      variant: 'primary',
+      iconType: 'warning',
+      onConfirm: async () => {
+        setSeeding(true);
+        try {
+          const res = await fetch('/api/admin/seed', { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          showToast('Default categories populated successfully');
+          await loadCategories();
+        } catch (err: any) {
+          alert(err.message);
+        } finally {
+          setSeeding(false);
+        }
+      },
+    });
   };
 
   const mainCategories = categories.filter((c) => !c.parent_id);
@@ -197,7 +218,7 @@ export default function AdminCategoriesPage() {
               cursor: 'pointer',
             }}
           >
-            {seeding ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
+            {seeding && <RefreshCw size={14} className="animate-spin" />}
             <span>1-Click Load Categories</span>
           </button>
 
@@ -207,13 +228,6 @@ export default function AdminCategoriesPage() {
           </button>
         </div>
       </div>
-
-      {saveSuccess && (
-        <div style={{ padding: '1rem 1.5rem', backgroundColor: 'rgba(62, 237, 139, 0.12)', border: '1px solid #3EED8B', color: '#B4F8D3', borderRadius: '3px', marginBottom: '2rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <Check size={18} />
-          <span>Category updated successfully!</span>
-        </div>
-      )}
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: '4rem', color: '#9E8E85' }}>
@@ -228,7 +242,7 @@ export default function AdminCategoriesPage() {
             Click &quot;1-Click Load Categories&quot; to populate all reference categories (Fragrance, Makeup, Skincare, Arabian, Floral, Lips, etc.).
           </p>
           <button onClick={handleSeedCategories} className="btn-lumera-primary">
-            <Sparkles size={15} /> Populate Reference Categories
+            Populate Reference Categories
           </button>
         </div>
       ) : (
@@ -265,7 +279,7 @@ export default function AdminCategoriesPage() {
                       <span>Edit</span>
                     </button>
                     <button
-                      onClick={() => handleDeleteCategory(cat.id)}
+                      onClick={() => handleDeleteCategory(cat.id, cat.name)}
                       style={{ color: '#E05A47', padding: '0.4rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     >
                       <Trash2 size={16} />
@@ -314,7 +328,7 @@ export default function AdminCategoriesPage() {
                         <span>Edit</span>
                       </button>
                       <button
-                        onClick={() => handleDeleteCategory(sub.id)}
+                        onClick={() => handleDeleteCategory(sub.id, sub.name)}
                         style={{ color: '#E05A47', padding: '0.4rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
                       >
                         <Trash2 size={16} />

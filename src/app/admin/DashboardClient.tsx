@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Package, ShoppingCart, Image as ImageIcon, Layers, Plus, Sparkles, Check, RefreshCw, ArrowRight } from 'lucide-react';
+import { Package, ShoppingCart, Image as ImageIcon, Layers, Plus, Check, RefreshCw, ArrowRight } from 'lucide-react';
 import { formatPrice } from '@/utils/formatters';
+import { useAdminConfirm } from '@/components/admin/ConfirmModal';
+import { useAdminToast } from '@/components/admin/AdminToast';
 
 interface DashboardClientProps {
   initialProductCount: number;
@@ -20,6 +22,8 @@ export const DashboardClient: React.FC<DashboardClientProps> = ({
   initialBannerCount,
   recentOrders,
 }) => {
+  const { confirm } = useAdminConfirm();
+  const { showToast } = useAdminToast();
   const [productCount, setProductCount] = useState(initialProductCount);
   const [categoryCount, setCategoryCount] = useState(initialCategoryCount);
   const [orderCount, setOrderCount] = useState(initialOrderCount);
@@ -29,25 +33,33 @@ export const DashboardClient: React.FC<DashboardClientProps> = ({
   const [seedSuccess, setSeedSuccess] = useState(false);
   const [seedError, setSeedError] = useState('');
 
-  const handlePopulateAll = async () => {
-    if (!confirm('This will populate all default brands, categories, hero banners, and reference products (Lattafa, YSL, Dior, Amouage, Medicube, etc.) into Supabase. Proceed?')) return;
+  const handlePopulateAll = () => {
+    confirm({
+      title: 'Seed Store Data',
+      message: 'This will populate all default brands, categories, hero banners, and reference products (Lattafa, YSL, Dior, Amouage, Medicube, etc.) into Supabase. Proceed?',
+      confirmText: 'Seed Store Data',
+      variant: 'primary',
+      iconType: 'warning',
+      onConfirm: async () => {
+        setSeeding(true);
+        setSeedError('');
+        try {
+          const res = await fetch('/api/admin/seed', { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to populate data');
 
-    setSeeding(true);
-    setSeedError('');
-    try {
-      const res = await fetch('/api/admin/seed', { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to populate data');
-
-      setProductCount(data.stats.products);
-      setCategoryCount(data.stats.categories);
-      setBannerCount(data.stats.banners);
-      setSeedSuccess(true);
-    } catch (err: any) {
-      setSeedError(err.message || 'Error seeding database');
-    } finally {
-      setSeeding(false);
-    }
+          setProductCount(data.stats.products);
+          setCategoryCount(data.stats.categories);
+          setBannerCount(data.stats.banners);
+          setSeedSuccess(true);
+          showToast('Storefront content populated successfully');
+        } catch (err: any) {
+          setSeedError(err.message || 'Error seeding database');
+        } finally {
+          setSeeding(false);
+        }
+      },
+    });
   };
 
   const stats = [
@@ -100,7 +112,7 @@ export const DashboardClient: React.FC<DashboardClientProps> = ({
               </>
             ) : (
               <>
-                <Sparkles size={15} /> 1-Click Populate Storefront Content
+                1-Click Populate Storefront Content
               </>
             )}
           </button>
@@ -155,7 +167,6 @@ export const DashboardClient: React.FC<DashboardClientProps> = ({
             className="btn-lumera-primary"
             style={{ padding: '0.85rem 1.75rem', fontWeight: 700 }}
           >
-            <Sparkles size={16} />
             <span>Populate All Default Data Now</span>
           </button>
         </div>

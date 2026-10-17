@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Plus, Upload, Trash2, Edit2, X, Check, RefreshCw, Sparkles, Layers, Sliders, Eye } from 'lucide-react';
+import { Plus, Upload, Trash2, Edit2, X, Check, RefreshCw, Layers, Sliders, Eye } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { Banner, Category } from '@/types';
+import { useAdminConfirm } from '@/components/admin/ConfirmModal';
+import { useAdminToast } from '@/components/admin/AdminToast';
 
 export default function AdminBannersPage() {
+  const { confirm } = useAdminConfirm();
+  const { showToast } = useAdminToast();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -315,8 +319,7 @@ export default function AdminBannersPage() {
         if (error) throw error;
       }
 
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      showToast('Banner section saved successfully');
       setShowModal(false);
       await loadData();
     } catch (err: any) {
@@ -324,15 +327,24 @@ export default function AdminBannersPage() {
     }
   };
 
-  const handleDeleteBanner = async (id: string) => {
-    if (!confirm('Are you sure you want to remove this banner?')) return;
-    try {
-      const supabase = createClient();
-      await supabase.from('banners').delete().eq('id', id);
-      await loadData();
-    } catch (err: any) {
-      alert(err.message);
-    }
+  const handleDeleteBanner = (id: string, bannerTitle?: string) => {
+    confirm({
+      title: 'Delete Banner',
+      message: `Are you sure you want to remove ${bannerTitle ? `"${bannerTitle}"` : 'this banner'} from your storefront?`,
+      confirmText: 'Delete Banner',
+      variant: 'danger',
+      iconType: 'trash',
+      onConfirm: async () => {
+        try {
+          const supabase = createClient();
+          await supabase.from('banners').delete().eq('id', id);
+          showToast('Banner removed successfully');
+          await loadData();
+        } catch (err: any) {
+          alert(err.message);
+        }
+      },
+    });
   };
 
   // Open Category Modal (for Fragrance arched family or Makeup panel)
@@ -387,8 +399,7 @@ export default function AdminBannersPage() {
 
       if (error) throw error;
 
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      showToast('Category image updated successfully');
       setShowCatModal(false);
       await loadData();
     } catch (err: any) {
@@ -412,13 +423,6 @@ export default function AdminBannersPage() {
           Manage and upload authentic Cloudinary images for all 5 homepage sections in exact visual order. When an image is not uploaded yet, a luxury ambient dark radial gradient displays seamlessly with zero broken images.
         </p>
       </div>
-
-      {saveSuccess && (
-        <div style={{ padding: '1rem 1.5rem', backgroundColor: 'rgba(200, 162, 101, 0.15)', border: '1px solid var(--border-gold)', color: 'var(--color-gold-400)', borderRadius: '2px', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.85rem' }}>
-          <Check size={18} />
-          <span>Section saved successfully! Live storefront updated.</span>
-        </div>
-      )}
 
       {/* Navigation Filter Tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
@@ -577,7 +581,7 @@ export default function AdminBannersPage() {
 
                         {heroSlides.length > 1 && (
                           <button
-                            onClick={() => handleDeleteBanner(slide.id)}
+                            onClick={() => handleDeleteBanner(slide.id, slide.title || `Hero Slide 0${idx + 1}`)}
                             style={{ padding: '0.6rem 0.8rem', backgroundColor: 'transparent', color: '#E05A47', border: '1px solid rgba(224,90,71,0.2)', borderRadius: '2px', cursor: 'pointer' }}
                             title="Delete Slide"
                           >
@@ -701,7 +705,7 @@ export default function AdminBannersPage() {
 
                         {!card.id?.startsWith('default-') && (
                           <button
-                            onClick={() => handleDeleteBanner(card.id)}
+                            onClick={() => handleDeleteBanner(card.id, card.title || 'Promo Card')}
                             style={{ padding: '0.6rem 0.8rem', backgroundColor: 'transparent', color: '#E05A47', border: '1px solid rgba(224,90,71,0.2)', borderRadius: '2px', cursor: 'pointer' }}
                             title="Delete Card"
                           >

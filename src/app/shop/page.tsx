@@ -19,6 +19,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const query = (search.search as string) || '';
   const sort = (search.sort as any) || 'featured';
 
+  const brand = (search.brand as string) || undefined;
+  const minPrice = search.minPrice ? Number(search.minPrice) : undefined;
+  const maxPrice = search.maxPrice ? Number(search.maxPrice) : undefined;
+  const minRating = search.rating ? Number(search.rating) : undefined;
+  const availability = (search.availability as string) || undefined;
+  const inStock = availability === 'in_stock' ? true : availability === 'out_of_stock' ? false : undefined;
+
   let products = [];
   let total = 0;
 
@@ -30,6 +37,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       isTrending: filter === 'trending',
       isNew: filter === 'new',
       isBestseller: filter === 'bestseller',
+      brandSlug: brand,
+      minPrice,
+      maxPrice,
+      minRating,
+      inStock,
       sort,
     });
     products = res.products;

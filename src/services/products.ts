@@ -10,6 +10,8 @@ export interface ProductFilterOptions {
   isFeatured?: boolean;
   minPrice?: number;
   maxPrice?: number;
+  minRating?: number;
+  inStock?: boolean;
   sort?: 'featured' | 'price_asc' | 'price_desc' | 'newest' | 'rating';
   limit?: number;
   offset?: number;
@@ -71,6 +73,17 @@ export async function getProducts(options: ProductFilterOptions = {}): Promise<{
       query = query.lte('price', options.maxPrice);
     }
 
+    if (options.minRating !== undefined) {
+      query = query.gte('rating', options.minRating);
+    }
+    if (options.inStock !== undefined) {
+      if (options.inStock) {
+        query = query.gt('stock', 0);
+      } else {
+        query = query.lte('stock', 0);
+      }
+    }
+
     // Sorting
     switch (options.sort) {
       case 'price_asc':
@@ -98,7 +111,7 @@ export async function getProducts(options: ProductFilterOptions = {}): Promise<{
     const { data, count, error } = await query;
 
     if (error) {
-      console.error('[getProducts error]', error);
+      console.warn('[getProducts warning]', error?.message || error?.details || error);
       return { products: [], total: 0 };
     }
 
@@ -106,8 +119,8 @@ export async function getProducts(options: ProductFilterOptions = {}): Promise<{
       products: (data as Product[]) || [],
       total: count || 0,
     };
-  } catch (err) {
-    console.error('[getProducts exception]', err);
+  } catch (err: any) {
+    console.warn('[getProducts exception]', err?.message || err);
     return { products: [], total: 0 };
   }
 }
@@ -131,8 +144,8 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     }
 
     return data as Product;
-  } catch (err) {
-    console.error('[getProductBySlug exception]', err);
+  } catch (err: any) {
+    console.warn('[getProductBySlug exception]', err?.message || err);
     return null;
   }
 }
@@ -156,8 +169,8 @@ export async function getNewArrivals(limit: number = 10): Promise<Product[]> {
     // Secondary fallback: fetch any active products
     const anyRes = await getProducts({ limit });
     return anyRes.products || [];
-  } catch (err) {
-    console.error('[getNewArrivals exception]', err);
+  } catch (err: any) {
+    console.warn('[getNewArrivals exception]', err?.message || err);
     return [];
   }
 }

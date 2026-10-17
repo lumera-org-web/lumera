@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Check, RefreshCw, Sliders, ShieldCheck, Phone, Mail, MapPin, Truck } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
+import { useAdminToast } from '@/components/admin/AdminToast';
 
 export default function AdminSettingsPage() {
+  const { showToast } = useAdminToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -109,8 +111,7 @@ export default function AdminSettingsPage() {
         })
       );
 
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      showToast('Store settings saved successfully');
     } catch (err: any) {
       alert(`Error saving settings: ${err.message}`);
     } finally {
@@ -128,13 +129,6 @@ export default function AdminSettingsPage() {
           Configure live announcement bar ribbons, Saudi shipping rules, and Jeddah concierge contact details.
         </p>
       </div>
-
-      {success && (
-        <div style={{ padding: '1rem 1.5rem', backgroundColor: 'rgba(62, 237, 139, 0.12)', border: '1px solid #3EED8B', color: '#B4F8D3', borderRadius: '3px', marginBottom: '2rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <Check size={18} />
-          <span>Store settings saved successfully! All storefront updates are now live.</span>
-        </div>
-      )}
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: '4rem', color: '#9E8E85' }}>

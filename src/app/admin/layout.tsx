@@ -6,8 +6,12 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Layers, Image as ImageIcon, ShoppingCart, ExternalLink, Lock, LogOut, Sliders } from 'lucide-react';
 import { Logo } from '@/components/layout/Logo';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+import { AdminConfirmProvider, useAdminConfirm } from '@/components/admin/ConfirmModal';
+import { AdminToastProvider } from '@/components/admin/AdminToast';
+
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { confirm } = useAdminConfirm();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -48,9 +52,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('lumera_admin_auth');
-    setIsAuthenticated(false);
+  const handleLogoutClick = () => {
+    confirm({
+      title: 'Sign Out of Admin Portal',
+      message: 'Are you sure you want to sign out and lock the admin panel? You will need your admin password to log in again.',
+      confirmText: 'Sign Out',
+      cancelText: 'Stay Logged In',
+      variant: 'danger',
+      iconType: 'logout',
+      onConfirm: () => {
+        sessionStorage.removeItem('lumera_admin_auth');
+        setIsAuthenticated(false);
+      },
+    });
   };
 
   // Checking session
@@ -168,7 +182,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
 
           <button
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className="flex cursor-pointer items-center gap-2 border-none bg-transparent p-0 text-[0.75rem] text-[#E05A47] transition-opacity hover:opacity-80"
           >
             <LogOut size={15} />
@@ -182,5 +196,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {children}
       </main>
     </div>
+  );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AdminConfirmProvider>
+      <AdminToastProvider>
+        <AdminLayoutInner>{children}</AdminLayoutInner>
+      </AdminToastProvider>
+    </AdminConfirmProvider>
   );
 }

@@ -8,22 +8,34 @@ const supabaseKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   "";
 
+const getSupabaseCredentials = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || supabaseUrl || "";
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    supabaseKey ||
+    "";
+  return { url, key };
+};
+
 /**
  * Direct public client for reads (products, categories, banners)
  * Does NOT touch cookies, allowing static optimization and ISR without DYNAMIC_SERVER_USAGE warnings.
  */
 export const getPublicClient = () => {
-  return createSupabaseClient(supabaseUrl, supabaseKey);
+  const { url, key } = getSupabaseCredentials();
+  return createSupabaseClient(url, key);
 };
 
 /**
  * Contextual server client with cookies for session management and user operations.
  */
 export const createClient = async () => {
+  const { url, key } = getSupabaseCredentials();
   try {
     const cookieStore = await cookies();
 
-    return createServerClient(supabaseUrl, supabaseKey, {
+    return createServerClient(url, key, {
       cookies: {
         getAll() {
           return cookieStore.getAll();

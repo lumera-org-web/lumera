@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, Truck, Lock, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useCustomerAuth } from '@/context/CustomerAuthContext';
 import { formatPrice } from '@/utils/formatters';
 
 const SAUDI_CITIES = [
@@ -29,6 +30,7 @@ const SAUDI_CITIES = [
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, shippingFee, total, clearCart } = useCart();
+  const { customer } = useCustomerAuth();
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -44,6 +46,17 @@ export default function CheckoutPage() {
   const [postalCode, setPostalCode] = useState('');
   const [saveAddress, setSaveAddress] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple_pay' | 'tabby' | 'tamara' | 'stc_pay' | 'cod'>('card');
+
+  useEffect(() => {
+    if (customer) {
+      if (customer.email) setEmail(customer.email);
+      if (customer.name) setFullName(customer.name);
+      if (customer.phone) setPhone(customer.phone);
+      if (customer.shipping_address?.address) setAddress(customer.shipping_address.address);
+      if (customer.shipping_address?.city) setCity(customer.shipping_address.city);
+      if (customer.shipping_address?.postalCode) setPostalCode(customer.shipping_address.postalCode);
+    }
+  }, [customer]);
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();

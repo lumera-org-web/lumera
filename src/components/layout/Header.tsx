@@ -4,11 +4,12 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Search, User, Heart, ShoppingBag, Menu, X, ArrowRight, RefreshCw } from 'lucide-react';
+import { Search, User, Heart, ShoppingBag, Menu, X, ArrowRight, RefreshCw, LogOut } from 'lucide-react';
 import { Logo } from './Logo';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useLocale } from '@/context/LocaleContext';
+import { useCustomerAuth } from '@/context/CustomerAuthContext';
 import { Category } from '@/types';
 import { formatPrice } from '@/utils/formatters';
 
@@ -118,9 +119,11 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
   const { itemCount, openDrawer } = useCart();
   const { wishlistCount } = useWishlist();
   const { locale, t } = useLocale();
+  const { customer, logout } = useCustomerAuth();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchProduct[]>([]);
@@ -242,14 +245,66 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
               <Search size={20} strokeWidth={1.5} />
             </button>
 
-            {/* Account Icon (Desktop) */}
-            <Link
-              href="/account"
-              aria-label={t('nav.account')}
-              className="hidden items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400 min-[992px]:flex"
+            {/* Account Icon & Flyout (Desktop) */}
+            <div
+              className="relative hidden items-center min-[992px]:flex"
+              onMouseEnter={() => setAccountMenuOpen(true)}
+              onMouseLeave={() => setAccountMenuOpen(false)}
             >
-              <User size={20} strokeWidth={1.5} />
-            </Link>
+              <Link
+                href="/account"
+                aria-label={t('nav.account')}
+                className="flex items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400"
+              >
+                <div className="relative flex items-center">
+                  <User size={20} strokeWidth={1.5} />
+                  {customer && (
+                    <span className="absolute -top-[1px] -right-[1px] h-[7px] w-[7px] rounded-full bg-gold-400 ring-2 ring-[#140C09]" />
+                  )}
+                </div>
+              </Link>
+
+              {/* Luxury Account Flyout Dropdown */}
+              {customer && accountMenuOpen && (
+                <div className="absolute right-0 top-full pt-2 z-50">
+                  <div className="w-56 rounded-[2px] border border-white/[0.08] bg-[#190F0C] p-3 shadow-2xl backdrop-blur-md">
+                    <div className="border-b border-white/[0.06] pb-2 mb-2 px-1">
+                      <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-gold-400">
+                        LUMÉRA Privé
+                      </span>
+                      <p className="truncate text-[0.8rem] font-medium text-white">
+                        {customer.name}
+                      </p>
+                      <p className="truncate text-[0.68rem] text-[#9E8E85]">
+                        {customer.email}
+                      </p>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Link
+                        href="/account"
+                        onClick={() => setAccountMenuOpen(false)}
+                        className="flex items-center justify-between rounded-[2px] px-2 py-1.5 text-[0.75rem] text-[#D8C7B2] hover:bg-white/[0.04] hover:text-white"
+                      >
+                        <span>My Orders &amp; Profile</span>
+                        <ArrowRight size={12} className="text-gold-400" />
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccountMenuOpen(false);
+                          logout();
+                        }}
+                        className="flex w-full items-center justify-between rounded-[2px] px-2 py-1.5 text-[0.75rem] text-[#FF8E78] hover:bg-white/[0.04]"
+                      >
+                        <span>Sign Out</span>
+                        <LogOut size={12} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Wishlist Icon */}
             <Link
@@ -475,6 +530,24 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
             <div className="border-t border-white/[0.08] pt-6">
               <div className="flex flex-col gap-4">
                 <Link
+                  href="/account"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between text-[0.85rem] text-[#D8C7B2] transition-colors hover:text-gold-400"
+                >
+                  <div className="flex items-center gap-3">
+                    <User size={18} className="text-gold-400" />
+                    <span>
+                      {customer ? `Account (${customer.name.split(' ')[0]})` : 'Sign In / Register'}
+                    </span>
+                  </div>
+                  {customer && (
+                    <span className="rounded bg-gold-400/10 px-1.5 py-0.5 text-[0.6rem] uppercase tracking-wider text-gold-400">
+                      Privé
+                    </span>
+                  )}
+                </Link>
+
+                <Link
                   href="/wishlist"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-3 text-[0.85rem] text-[#D8C7B2] transition-colors hover:text-gold-400"
@@ -484,6 +557,20 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
                     {t('nav.wishlist')} ({wishlistCount})
                   </span>
                 </Link>
+
+                {customer && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="flex items-center gap-3 border-t border-white/[0.04] pt-2 text-left text-[0.82rem] text-[#FF8E78] hover:underline"
+                  >
+                    <LogOut size={16} />
+                    <span>Sign Out</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

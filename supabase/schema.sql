@@ -244,3 +244,45 @@ CREATE POLICY "Service role full access to banners" ON public.banners FOR ALL US
 CREATE POLICY "Service role full access to reviews" ON public.reviews FOR ALL USING (true);
 CREATE POLICY "Service role full access to orders" ON public.orders FOR ALL USING (true);
 CREATE POLICY "Service role full access to order_items" ON public.order_items FOR ALL USING (true);
+
+-- ------------------------------------------------------------
+-- 12. CUSTOMERS & AUTHENTICATION
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.customers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone TEXT,
+    password_hash TEXT NOT NULL,
+    salt TEXT NOT NULL,
+    shipping_address JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.customer_otps (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email TEXT NOT NULL,
+    code_hash TEXT NOT NULL,
+    purpose TEXT NOT NULL, -- 'reset_password', 'verify_email'
+    attempts INT DEFAULT 0,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT unique_email_purpose UNIQUE (email, purpose)
+);
+
+CREATE INDEX IF NOT EXISTS idx_customers_email ON public.customers(email);
+CREATE INDEX IF NOT EXISTS idx_customer_otps_lookup ON public.customer_otps(email, purpose);
+
+ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.customer_otps ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can select customer" ON public.customers FOR SELECT USING (true);
+CREATE POLICY "Public can insert customer" ON public.customers FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public can update customer" ON public.customers FOR UPDATE USING (true);
+CREATE POLICY "Public can select otps" ON public.customer_otps FOR SELECT USING (true);
+CREATE POLICY "Public can insert otps" ON public.customer_otps FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public can update otps" ON public.customer_otps FOR UPDATE USING (true);
+CREATE POLICY "Public can delete otps" ON public.customer_otps FOR DELETE USING (true);
+

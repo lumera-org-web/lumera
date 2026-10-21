@@ -527,3 +527,154 @@ export async function sendShippingEmail(order: {
     order_status: 'shipped',
   });
 }
+
+/**
+ * 4. Sends Password Reset OTP Verification Email to Customer
+ */
+export async function sendPasswordResetOtpEmail({
+  email,
+  name,
+  otp,
+}: {
+  email: string;
+  name?: string;
+  otp: string;
+}) {
+  const customerName = name || 'Valued Client';
+  const body = `
+    <p style="font-size: 16px; line-height: 1.6; margin-top: 0; color: #FFFFFF;">
+      Dear ${customerName},
+    </p>
+    <p style="font-size: 15px; line-height: 1.6; color: #E3D9D2;">
+      We received a request to access or reset the password for your <strong style="color: #DEC197;">LUMÉRA</strong> account.
+      Please utilize the one-time security code below to proceed:
+    </p>
+
+    <!-- OTP Code Display Card -->
+    <div style="margin: 28px 0; padding: 24px 20px; background: #1A100C; border: 1px solid #C8A265; border-radius: 4px; text-align: center;">
+      <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #9E8E85; display: block; margin-bottom: 8px;">
+        Security Verification Code (OTP)
+      </span>
+      <div style="font-family: 'Courier New', Courier, monospace; font-size: 38px; font-weight: 700; letter-spacing: 10px; color: #DEC197; text-shadow: 0 0 10px rgba(200, 162, 101, 0.4); margin: 6px 0;">
+        ${otp}
+      </div>
+      <p style="font-size: 12px; color: #D8C7B2; margin: 10px 0 0 0;">
+        ⏱ Valid for the next <strong style="color: #FFFFFF;">10 minutes</strong>. Do not disclose this code to anyone.
+      </p>
+    </div>
+
+    <div style="margin: 20px 0; padding: 14px 16px; background: #160D0A; border-left: 3px solid #C8A265; font-size: 13px; line-height: 1.6; color: #9E8E85;">
+      If you did not initiate this password recovery request, please disregard this email. Your password remains safe and unchanged. For urgent assistance, contact our Jeddah Concierge team.
+    </div>
+  `;
+
+  const html = wrapLuxuryEmail(body);
+
+  return sendBrevoEmail({
+    to: [{ email, name: customerName }],
+    subject: `${otp} is your LUMÉRA Security Verification Code`,
+    htmlContent: html,
+    textContent: `Your LUMÉRA Verification Code is: ${otp}. Valid for 10 minutes. If you did not request this, please ignore.`,
+  });
+}
+
+/**
+ * 5. Sends Password Reset Success Notification Email to Customer
+ */
+export async function sendPasswordResetSuccessEmail({
+  email,
+  name,
+}: {
+  email: string;
+  name?: string;
+}) {
+  const customerName = name || 'Valued Client';
+  const body = `
+    <div style="padding: 10px 14px; background: rgba(62, 237, 139, 0.12); border: 1px solid #3EED8B; border-radius: 3px; margin-bottom: 20px;">
+      <span style="font-size: 12px; font-weight: bold; color: #3EED8B; letter-spacing: 1px; text-transform: uppercase;">
+        ✓ PASSWORD SUCCESSFULLY UPDATED
+      </span>
+    </div>
+
+    <p style="font-size: 16px; line-height: 1.6; margin-top: 0; color: #FFFFFF;">
+      Dear ${customerName},
+    </p>
+    <p style="font-size: 15px; line-height: 1.6; color: #E3D9D2;">
+      This security alert confirms that the password for your <strong style="color: #DEC197;">LUMÉRA</strong> account has been successfully updated.
+    </p>
+
+    <div style="margin: 22px 0; padding: 16px; background: #1A100C; border: 1px solid rgba(255,255,255,0.08); border-radius: 3px;">
+      <p style="margin: 0; font-size: 13px; color: #9E8E85; line-height: 1.5;">
+        You can now sign in to your LUMÉRA account using your newly configured credentials to manage your orders and curated beauty selections.
+      </p>
+    </div>
+
+    <p style="font-size: 13px; color: #D8C7B2; line-height: 1.6;">
+      If you did not make this change, please contact our concierge immediately at <a href="mailto:concierge@lumera.sa" style="color: #DEC197;">concierge@lumera.sa</a> or on WhatsApp at +966 50 123 4567.
+    </p>
+  `;
+
+  const html = wrapLuxuryEmail(body);
+
+  return sendBrevoEmail({
+    to: [{ email, name: customerName }],
+    subject: `Security Alert: Your LUMÉRA Password Was Reset`,
+    htmlContent: html,
+  });
+}
+
+/**
+ * 6. Sends Welcome to LUMÉRA Privé Email
+ */
+export async function sendWelcomeCustomerEmail({
+  email,
+  name,
+}: {
+  email: string;
+  name?: string;
+}) {
+  const customerName = name || 'Valued Client';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lumera.sa';
+
+  const body = `
+    <div style="text-align: center; margin-bottom: 24px;">
+      <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: #DEC197; font-weight: 600;">
+        LUMÉRA PRIVÉ · WELCOME TO THE CIRCLE
+      </span>
+    </div>
+
+    <p style="font-size: 16px; line-height: 1.6; margin-top: 0; color: #FFFFFF;">
+      Ahlan wa Sahlan, ${customerName}.
+    </p>
+    <p style="font-size: 15px; line-height: 1.7; color: #E3D9D2;">
+      It is our distinct pleasure to welcome you to <strong style="color: #DEC197;">LUMÉRA</strong> — Saudi Arabia's premier destination for haute perfumery, rare Arabian formulations, and exceptional couture beauty.
+    </p>
+
+    <div style="margin: 24px 0; padding: 20px; background: #1A100C; border: 1px solid rgba(200, 162, 101, 0.25); border-radius: 4px;">
+      <h3 style="margin: 0 0 10px 0; font-size: 13px; color: #DEC197; text-transform: uppercase; letter-spacing: 1px;">
+        Privé Membership Privileges
+      </h3>
+      <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: #D8C7B2; line-height: 1.8;">
+        <li>Complimentary express delivery across Jeddah &amp; all Saudi provinces</li>
+        <li>Priority access to rare niche perfume drops &amp; limited releases</li>
+        <li>Bespoke beauty consultations with our Jeddah concierge artisans</li>
+        <li>Seamless order management and real-time shipment dispatch tracking</li>
+      </ul>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0 10px 0;">
+      <a href="${siteUrl}/shop" style="display: inline-block; padding: 13px 32px; background: #DEC197; color: #0D0705; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; border-radius: 2px;">
+        Explore Curated Collection
+      </a>
+    </div>
+  `;
+
+  const html = wrapLuxuryEmail(body);
+
+  return sendBrevoEmail({
+    to: [{ email, name: customerName }],
+    subject: `Welcome to LUMÉRA Privé — Saudi Haute Parfumerie`,
+    htmlContent: html,
+  });
+}
+

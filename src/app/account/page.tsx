@@ -4,32 +4,19 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   User,
-  Lock,
-  Mail,
-  Phone,
-  ShieldCheck,
-  Eye,
-  EyeOff,
   Package,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  LogOut,
-  MapPin,
   RotateCw,
   Search,
-  KeyRound,
   Sparkles,
   Truck,
-  ExternalLink,
-  ChevronRight,
-  Headphones,
+  LogOut,
+  ArrowRight,
 } from 'lucide-react';
 import { useCustomerAuth } from '@/context/CustomerAuthContext';
 import { useLocale } from '@/context/LocaleContext';
 import { formatPrice } from '@/utils/formatters';
 import { createClient } from '@/utils/supabase/client';
+import { SignOutConfirmModal } from '@/components/auth/SignOutConfirmModal';
 
 const SAUDI_CITIES = [
   'Jeddah',
@@ -55,39 +42,22 @@ export default function AccountPage() {
     customer,
     isLoading: authLoading,
     isAuthenticated,
-    login,
-    signup,
     logout,
-    sendForgotOtp,
-    resetPassword,
     updateProfile,
+    openAuthModal,
   } = useCustomerAuth();
   const { locale } = useLocale();
-
-  // Auth Card View Modes: 'signin' | 'signup' | 'forgot_request' | 'forgot_verify'
-  const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'forgot_request' | 'forgot_verify'>('signin');
-
-  // Form Fields
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-
-  // UI States
-  const [showPassword, setShowPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const [cooldown, setCooldown] = useState(0);
 
   // Authenticated Dashboard Active Tab: 'orders' | 'profile' | 'track_lookup'
   const [activeTab, setActiveTab] = useState<'orders' | 'profile' | 'track_lookup'>('orders');
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  // Automatically trigger login modal if visiting /account while unauthenticated
+  useEffect(() => {
+    if (!authLoading && (!isAuthenticated || !customer)) {
+      openAuthModal('signin');
+    }
+  }, [authLoading, isAuthenticated, customer, openAuthModal]);
 
   // Customer Orders List
   const [customerOrders, setCustomerOrders] = useState<any[]>([]);
@@ -109,14 +79,6 @@ export default function AccountPage() {
   const [lookupResult, setLookupResult] = useState<any>(null);
   const [lookupNotFound, setLookupNotFound] = useState(false);
 
-  // OTP Cooldown Timer Effect
-  useEffect(() => {
-    if (cooldown <= 0) return;
-    const interval = setInterval(() => {
-      setCooldown((prev) => Math.max(0, prev - 1));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [cooldown]);
 
   // Sync profile fields when customer logs in
   useEffect(() => {
@@ -147,127 +109,7 @@ export default function AccountPage() {
     }
   };
 
-  // Reset errors when switching modes
-  const switchAuthMode = (mode: 'signin' | 'signup' | 'forgot_request' | 'forgot_verify') => {
-    setAuthMode(mode);
-    setErrorMsg('');
-    setSuccessMsg('');
-  };
 
-  // Handle Sign In
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
-    setIsSubmitting(true);
-
-    const res = await login(email.trim(), password);
-    setIsSubmitting(false);
-
-    if (!res.success) {
-      setErrorMsg(res.error || 'Failed to sign in. Please verify your email and password.');
-    }
-  };
-
-  // Handle Sign Up
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
-
-    if (password !== confirmPassword) {
-      setErrorMsg('Passwords do not match. Please ensure both passwords match.');
-      return;
-    }
-
-    if (password.length < 6) {
-      setErrorMsg('Password must be at least 6 characters long.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    const res = await signup(name.trim(), email.trim(), phone.trim(), password);
-    setIsSubmitting(false);
-
-    if (!res.success) {
-      setErrorMsg(res.error || 'Registration failed. Please check your details.');
-    }
-  };
-
-  // Handle Forgot Password - Step 1: Send OTP via Brevo
-  const handleRequestOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) {
-      setErrorMsg('Please enter your email address.');
-      return;
-    }
-
-    setErrorMsg('');
-    setSuccessMsg('');
-    setIsSubmitting(true);
-
-    const res = await sendForgotOtp(email.trim());
-    setIsSubmitting(false);
-
-    if (!res.success) {
-      setErrorMsg(res.error || 'Failed to dispatch verification code.');
-    } else {
-      setSuccessMsg(res.message || 'Verification code sent to your email.');
-      setCooldown(60); // 60s cooldown before resend
-      setAuthMode('forgot_verify');
-    }
-  };
-
-  // Handle Forgot Password - Step 2: Verify OTP & Reset Password
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
-
-    if (!otp.trim()) {
-      setErrorMsg('Please enter the 6-digit verification code.');
-      return;
-    }
-
-    if (newPassword !== confirmNewPassword) {
-      setErrorMsg('New passwords do not match. Please verify.');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setErrorMsg('New password must be at least 6 characters long.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    const res = await resetPassword(email.trim(), otp.trim(), newPassword);
-    setIsSubmitting(false);
-
-    if (!res.success) {
-      setErrorMsg(res.error || 'Password reset failed. Invalid or expired code.');
-    } else {
-      setSuccessMsg('Your password has been successfully reset! Welcome back.');
-      // Auto-authenticated by resetPassword route
-    }
-  };
-
-  // Resend OTP
-  const handleResendOtp = async () => {
-    if (cooldown > 0) return;
-    setErrorMsg('');
-    setSuccessMsg('');
-    setIsSubmitting(true);
-
-    const res = await sendForgotOtp(email.trim());
-    setIsSubmitting(false);
-
-    if (res.success) {
-      setSuccessMsg('A new verification code has been dispatched to your email.');
-      setCooldown(60);
-    } else {
-      setErrorMsg(res.error || 'Failed to resend code.');
-    }
-  };
 
   // Handle Profile Update
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -728,6 +570,28 @@ export default function AccountPage() {
                   </button>
                 </div>
               </form>
+
+              {/* Account Session / Sign Out Section */}
+              <div className="mt-10 border-t border-white/[0.08] pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-[0.85rem] font-medium text-white">
+                    {locale === 'ar' ? 'جلسة الحساب' : 'Account Session'}
+                  </h4>
+                  <p className="text-[0.75rem] text-[#9E8E85]">
+                    {locale === 'ar'
+                      ? 'تسجيل الخروج من حسابك على هذا الجهاز'
+                      : 'Sign out of your LUMÉRA Privé account on this browser session.'}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowLogoutConfirm(true)}
+                  className="inline-flex items-center gap-2 rounded-[2px] border border-[#D64529]/40 bg-[#D64529]/10 px-4 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#FF8E78] transition-colors hover:bg-[#D64529]/25 hover:border-[#D64529]"
+                >
+                  <LogOut size={14} />
+                  <span>{locale === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -806,588 +670,53 @@ export default function AccountPage() {
             </div>
           )}
 
-        {/* Sign Out Confirmation Modal */}
-        {showLogoutConfirm && (
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in"
-            onClick={() => setShowLogoutConfirm(false)}
-          >
-            <div
-              className="w-full max-w-[420px] rounded-[4px] border border-white/[0.12] bg-[#190F0C] p-6 md:p-7 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#D64529]/15 text-[#FF8E78]">
-                <LogOut size={22} />
-              </div>
-
-              <h3 className="mb-1.5 font-serif text-lg font-medium text-white">
-                {locale === 'ar' ? 'تأكيد تسجيل الخروج' : 'Sign Out of LUMÉRA Privé?'}
-              </h3>
-              <p className="mb-6 text-[0.82rem] leading-relaxed text-[#9E8E85]">
-                {locale === 'ar'
-                  ? 'هل أنت متأكد من رغبتك في تسجيل الخروج؟ يمكنك تسجيل الدخول مجدداً في أي وقت للوصول إلى طلباتك وتفاصيلك المحفوظة.'
-                  : 'Are you sure you want to sign out of your account? You will need to sign in again to access your orders and saved details.'}
-              </p>
-
-              <div className="flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowLogoutConfirm(false)}
-                  className="rounded-[2px] border border-white/[0.12] bg-white/[0.04] px-4 py-2.5 text-[0.75rem] font-medium uppercase tracking-[0.08em] text-[#D8C7B2] transition-colors hover:bg-white/[0.08] hover:text-white"
-                >
-                  {locale === 'ar' ? 'إلغاء' : 'Cancel'}
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    setShowLogoutConfirm(false);
-                    await logout();
-                  }}
-                  className="rounded-[2px] bg-[#D64529] px-5 py-2.5 text-[0.75rem] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-[#E85539]"
-                >
-                  {locale === 'ar' ? 'نعم، تسجيل الخروج' : 'Yes, Sign Out'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Customer Sign Out Confirmation Modal */}
+        <SignOutConfirmModal
+          isOpen={showLogoutConfirm}
+          onClose={() => setShowLogoutConfirm(false)}
+          onConfirm={logout}
+          customerName={customer.name}
+        />
       </div>
     </div>
   );
 }
-
   // =========================================================================
-  // VIEW B: AUTHENTICATION GATEWAY (SIGN IN, SIGN UP, BREVO OTP FORGOT PASSWORD)
+  // VIEW B: UN-AUTHENTICATED GUEST ACCESS
   // =========================================================================
   return (
-    <div className="min-h-[85vh] bg-[#140C09] py-12 pb-24 max-[768px]:pb-[calc(6.5rem+env(safe-area-inset-bottom,0px))] max-[768px]:pt-6">
-      <div className="container-lumera mx-auto max-w-[540px]">
-        {/* Auth Mode Toggle Tabs (when in signin or signup mode) */}
-        {(authMode === 'signin' || authMode === 'signup') && (
-          <div className="mb-6 grid grid-cols-2 rounded-[3px] border border-white/[0.08] bg-[#190F0C] p-1">
-            <button
-              type="button"
-              onClick={() => switchAuthMode('signin')}
-              className={`rounded-[2px] py-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.12em] transition-all ${
-                authMode === 'signin'
-                  ? 'bg-gold-400 text-[#0D0705] shadow'
-                  : 'text-[#9E8E85] hover:text-white'
-              }`}
-            >
-              {locale === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
-            </button>
-            <button
-              type="button"
-              onClick={() => switchAuthMode('signup')}
-              className={`rounded-[2px] py-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.12em] transition-all ${
-                authMode === 'signup'
-                  ? 'bg-gold-400 text-[#0D0705] shadow'
-                  : 'text-[#9E8E85] hover:text-white'
-              }`}
-            >
-              {locale === 'ar' ? 'إنشاء حساب' : 'Create Account'}
-            </button>
-          </div>
-        )}
-
-        {/* Main Card */}
-        <div className="rounded-[4px] border border-white/[0.08] bg-[#190F0C] p-7 md:p-9 shadow-2xl">
-          {/* Notification Messages */}
-          {errorMsg && (
-            <div className="mb-5 flex items-start gap-2.5 rounded-[2px] border border-[#D64529]/40 bg-[#D64529]/10 p-3.5 text-[0.82rem] text-[#FF9E8C]">
-              <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#FF8E78]" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          {successMsg && (
-            <div className="mb-5 flex items-start gap-2.5 rounded-[2px] border border-[#3EED8B]/40 bg-[#3EED8B]/10 p-3.5 text-[0.82rem] text-[#71F2AD]">
-              <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-[#3EED8B]" />
-              <span>{successMsg}</span>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* 1. SIGN IN FORM */}
-          {/* ========================================================= */}
-          {authMode === 'signin' && (
-            <form onSubmit={handleSignIn} className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    required
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Mail size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-1.5 flex items-center justify-between">
-                  <label className="text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => switchAuthMode('forgot_request')}
-                    className="text-[0.72rem] text-gold-400 hover:underline"
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 pr-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Lock size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label="Toggle password visibility"
-                    className="absolute right-3.5 top-3.5 text-[#9E8E85] hover:text-white"
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-lumera-primary flex w-full items-center justify-center gap-2 py-3.5 text-[0.78rem] font-bold tracking-[0.14em]"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <RotateCw size={15} className="animate-spin text-[#0D0705]" />
-                      <span>Signing In...</span>
-                    </>
-                  ) : (
-                    <span>Sign In to LUMÉRA</span>
-                  )}
-                </button>
-              </div>
-
-              <div className="pt-3 text-center">
-                <p className="text-[0.8rem] text-[#9E8E85]">
-                  Don&apos;t have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => switchAuthMode('signup')}
-                    className="font-semibold text-gold-400 hover:underline"
-                  >
-                    Create Account
-                  </button>
-                </p>
-              </div>
-            </form>
-          )}
-
-          {/* ========================================================= */}
-          {/* 2. SIGN UP FORM */}
-          {/* ========================================================= */}
-          {authMode === 'signup' && (
-            <form onSubmit={handleSignUp} className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Noura Al-Saud"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <User size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    required
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Mail size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  Mobile Number (Saudi Format)
-                </label>
-                <div className="relative">
-                  <input
-                    type="tel"
-                    placeholder="+966 50 123 4567"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Phone size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  Create Password (Min 6 Characters)
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 pr-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Lock size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label="Toggle password visibility"
-                    className="absolute right-3.5 top-3.5 text-[#9E8E85] hover:text-white"
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Lock size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-lumera-primary flex w-full items-center justify-center gap-2 py-3.5 text-[0.78rem] font-bold tracking-[0.14em]"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <RotateCw size={15} className="animate-spin text-[#0D0705]" />
-                      <span>Creating Account...</span>
-                    </>
-                  ) : (
-                    <span>Join LUMÉRA Privé</span>
-                  )}
-                </button>
-              </div>
-
-              <div className="pt-2 text-center">
-                <p className="text-[0.8rem] text-[#9E8E85]">
-                  Already have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => switchAuthMode('signin')}
-                    className="font-semibold text-gold-400 hover:underline"
-                  >
-                    Sign In
-                  </button>
-                </p>
-              </div>
-            </form>
-          )}
-
-          {/* ========================================================= */}
-          {/* 3. FORGOT PASSWORD - STEP 1 (REQUEST BREVO OTP) */}
-          {/* ========================================================= */}
-          {authMode === 'forgot_request' && (
-            <form onSubmit={handleRequestOtp} className="space-y-4">
-              <div className="mb-2">
-                <h2 className="font-serif text-[1.15rem] font-medium text-white">
-                  {locale === 'ar' ? 'استعادة كلمة المرور' : 'Password Recovery'}
-                </h2>
-                <p className="text-[0.78rem] text-[#9E8E85]">
-                  {locale === 'ar'
-                    ? 'أدخل بريدك الإلكتروني وسنرسل لك رمز تحقق (OTP) عبر Brevo.'
-                    : 'Enter your registered email address to receive your 6-digit verification code.'}
-                </p>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  Registered Email Address
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    required
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Mail size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                </div>
-              </div>
-
-              <div className="rounded-[2px] border border-gold-400/20 bg-gold-400/[0.04] p-3 text-[0.76rem] text-[#C5B7AD] leading-relaxed">
-                An authentic 6-digit verification code will be sent to your email address via our Brevo transactional gateway.
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-lumera-primary flex w-full items-center justify-center gap-2 py-3.5 text-[0.78rem] font-bold tracking-[0.14em]"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <RotateCw size={15} className="animate-spin text-[#0D0705]" />
-                      <span>Sending Verification Code...</span>
-                    </>
-                  ) : (
-                    <span>Send Verification Code (OTP)</span>
-                  )}
-                </button>
-              </div>
-
-              <div className="pt-2 text-center">
-                <button
-                  type="button"
-                  onClick={() => switchAuthMode('signin')}
-                  className="text-[0.78rem] text-[#9E8E85] hover:text-white"
-                >
-                  ← Back to Sign In
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* ========================================================= */}
-          {/* 4. FORGOT PASSWORD - STEP 2 (VERIFY OTP & RESET PASSWORD) */}
-          {/* ========================================================= */}
-          {authMode === 'forgot_verify' && (
-            <form onSubmit={handleResetPassword} className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-center text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-gold-400">
-                  Enter 6-Digit Verification Code
-                </label>
-                <input
-                  type="text"
-                  required
-                  maxLength={6}
-                  placeholder="• • • • • •"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                  autoFocus
-                  className="w-full text-center tracking-[12px] font-mono text-[1.4rem] font-bold rounded-[2px] border border-gold-400/50 bg-[#130A08] py-3 text-gold-400 outline-none focus:border-gold-400 shadow-inner"
-                />
-                <p className="mt-1 text-center text-[0.72rem] text-[#9E8E85]">
-                  Valid for 10 minutes. Delivered to {email}.
-                </p>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  New Password (Min 6 Characters)
-                </label>
-                <div className="relative">
-                  <input
-                    type={showNewPassword ? 'text' : 'password'}
-                    required
-                    placeholder="••••••••"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 pr-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Lock size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    aria-label="Toggle password visibility"
-                    className="absolute right-3.5 top-3.5 text-[#9E8E85] hover:text-white"
-                  >
-                    {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-[#C5B7AD]">
-                  Confirm New Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showNewPassword ? 'text' : 'password'}
-                    required
-                    placeholder="••••••••"
-                    value={confirmNewPassword}
-                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    className="w-full rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-3 pl-10 text-[0.85rem] text-white outline-none transition-colors focus:border-gold-400"
-                  />
-                  <Lock size={16} className="absolute left-3.5 top-3.5 text-[#9E8E85]" />
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-lumera-primary flex w-full items-center justify-center gap-2 py-3.5 text-[0.78rem] font-bold tracking-[0.14em]"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <RotateCw size={15} className="animate-spin text-[#0D0705]" />
-                      <span>Verifying &amp; Resetting...</span>
-                    </>
-                  ) : (
-                    <span>Reset Password &amp; Sign In</span>
-                  )}
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 text-[0.76rem]">
-                <button
-                  type="button"
-                  onClick={handleResendOtp}
-                  disabled={cooldown > 0 || isSubmitting}
-                  className={`text-gold-400 hover:underline ${
-                    cooldown > 0 ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                >
-                  {cooldown > 0 ? `Resend Code (${cooldown}s)` : 'Resend Code via Brevo'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => switchAuthMode('forgot_request')}
-                  className="text-[#9E8E85] hover:text-white"
-                >
-                  Change Email
-                </button>
-              </div>
-            </form>
-          )}
+    <div className="min-h-[75vh] flex items-center justify-center py-16 px-4 bg-[#140C09]">
+      <div className="mx-auto max-w-md w-full text-center rounded-[4px] border border-white/[0.08] bg-[#190F0C] p-8 md:p-10 shadow-2xl">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-gold-400/30 bg-gold-400/10 text-gold-400 shadow-[0_0_20px_rgba(200,162,101,0.2)]">
+          <Sparkles size={24} />
         </div>
+        <span className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-gold-400 font-sans">
+          LUMÉRA PRIVÉ
+        </span>
+        <h1 className="font-serif text-2xl font-medium text-white mt-1 mb-3">
+          {locale === 'ar' ? 'بوابة أعضاء لوميرا بريفيه' : 'Exclusive Member Access'}
+        </h1>
+        <p className="text-[0.84rem] text-[#9E8E85] leading-relaxed mb-6">
+          {locale === 'ar'
+            ? 'قم بتسجيل الدخول للاطلاع على سجل طلباتك، وتفاصيل الشحن السريع في المملكة، وتجربة التسوق الفاخرة المخصصة لك.'
+            : 'Sign in to access your bespoke orders, real-time express tracking across Saudi Arabia, and private client privileges.'}
+        </p>
 
-        {/* ========================================================= */}
-        {/* Guest Order Lookup & Concierge Card (Below Auth Card) */}
-        {/* ========================================================= */}
-        <div className="mt-10 rounded-[3px] border border-white/[0.08] bg-[#190F0C] p-6 md:p-8">
-          <div className="flex items-center gap-2 mb-2 text-gold-400">
-            <Search size={18} />
-            <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.14em]">
-              Guest Order Tracking
-            </h2>
-          </div>
-          <p className="mb-4 text-[0.82rem] leading-relaxed text-[#9E8E85]">
-            Looking to check the shipping status of a purchase placed as a guest? Enter your order reference code (e.g. LUM-884219) below:
-          </p>
-
-          <form onSubmit={handleTrackLookup} className="flex gap-2 max-[640px]:flex-col">
-            <input
-              type="text"
-              required
-              placeholder="e.g. LUM-884219"
-              value={lookupQuery}
-              onChange={(e) => setLookupQuery(e.target.value)}
-              className="flex-1 rounded-[2px] border border-white/[0.12] bg-[#130A08] px-3.5 py-2.5 text-[0.82rem] text-white outline-none focus:border-gold-400"
-            />
-            <button
-              type="submit"
-              disabled={lookupLoading}
-              className="btn-lumera-primary whitespace-nowrap px-6 py-2.5 text-[0.72rem] font-bold"
-            >
-              {lookupLoading ? 'Locating...' : 'Track Parcel'}
-            </button>
-          </form>
-
-          {lookupNotFound && (
-            <div className="mt-4 rounded-[2px] border border-[#D64529]/40 bg-[#D64529]/10 p-3 text-[0.78rem] text-[#FF9E8C]">
-              No order found matching &quot;{lookupQuery}&quot;. Please verify the order reference code.
-            </div>
-          )}
-
-          {lookupResult && (
-            <div className="mt-5 rounded-[2px] border border-gold-400/30 bg-[#150D0A] p-5">
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-2.5 mb-3">
-                <div>
-                  <span className="text-[0.68rem] uppercase text-[#9E8E85]">Reference</span>
-                  <h3 className="font-serif text-[1.05rem] text-gold-400">
-                    #{lookupResult.order_number}
-                  </h3>
-                </div>
-                <span className="rounded-[2px] border border-[#3EED8B]/40 bg-[#3EED8B]/10 px-2 py-0.5 text-[0.68rem] font-bold uppercase text-[#3EED8B]">
-                  {lookupResult.order_status}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-[0.78rem] text-[#D8C7B2]">
-                <div>
-                  <span className="text-[#9E8E85]">Customer:</span>{' '}
-                  <span className="text-white">{lookupResult.customer_name}</span>
-                </div>
-                <div>
-                  <span className="text-[#9E8E85]">City:</span>{' '}
-                  <span className="text-white">
-                    {lookupResult.shipping_address?.city || 'Jeddah'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[#9E8E85]">Total:</span>{' '}
-                  <span className="font-semibold text-gold-400">
-                    {formatPrice(lookupResult.total)}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[#9E8E85]">Payment:</span>{' '}
-                  <span className="uppercase text-white">{lookupResult.payment_status}</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Concierge Help Badge */}
-        <div className="mt-6 text-center">
-          <p className="text-[0.76rem] text-[#9E8E85]">
-            Need immediate concierge assistance? WhatsApp:{' '}
-            <a
-              href="https://wa.me/966501234567"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gold-400 hover:underline"
-            >
-              +966 50 123 4567
-            </a>{' '}
-            · Jeddah, KSA
-          </p>
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={() => openAuthModal('signin')}
+            className="btn-lumera-primary w-full py-3.5 text-[0.78rem] font-bold tracking-[0.14em]"
+          >
+            {locale === 'ar' ? 'تسجيل الدخول' : 'Sign In to LUMÉRA'}
+          </button>
+          <button
+            type="button"
+            onClick={() => openAuthModal('signup')}
+            className="w-full rounded-[2px] border border-white/[0.12] bg-white/[0.04] py-3 text-[0.75rem] font-semibold uppercase tracking-[0.12em] text-[#D8C7B2] transition-colors hover:bg-white/[0.08] hover:text-white"
+          >
+            {locale === 'ar' ? 'إنشاء حساب جديد' : 'Join LUMÉRA Privé'}
+          </button>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import './globals.css';
 import { LocaleProvider } from '@/context/LocaleContext';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
+import { CustomerAuthProvider } from '@/context/CustomerAuthContext';
 import { StorefrontShell } from '@/components/layout/StorefrontShell';
 import { getAnnouncementBanners } from '@/services/banners';
 import { getCategories } from '@/services/categories';
@@ -53,9 +54,11 @@ export default async function RootLayout({
         <LocaleProvider>
           <WishlistProvider>
             <CartProvider>
-              <StorefrontShell banners={banners} categories={categories}>
-                {children}
-              </StorefrontShell>
+              <CustomerAuthProvider>
+                <StorefrontShell banners={banners} categories={categories}>
+                  {children}
+                </StorefrontShell>
+              </CustomerAuthProvider>
             </CartProvider>
           </WishlistProvider>
         </LocaleProvider>
@@ -63,3 +66,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

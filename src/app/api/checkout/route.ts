@@ -51,11 +51,27 @@ export async function POST(req: NextRequest) {
 
     const orderNumber = `LUM-${Date.now().toString().slice(-6)}`;
 
+    // Check if customer is authenticated
+    let customerUserId: string | null = null;
+    try {
+      const { verifySessionToken } = await import('@/services/customerAuth');
+      const sessionCookie = req.cookies.get('lumera_customer_session')?.value;
+      if (sessionCookie) {
+        const payload = verifySessionToken(sessionCookie);
+        if (payload?.sub) {
+          customerUserId = payload.sub;
+        }
+      }
+    } catch {
+      // Ignore if session cannot be parsed
+    }
+
     // Insert order in Supabase
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .insert({
         order_number: orderNumber,
+        user_id: customerUserId,
         customer_name: shippingAddress.fullName,
         customer_email: contact.email,
         customer_phone: contact.phone,

@@ -9,6 +9,7 @@ import { MobileNavigation } from '@/components/layout/MobileNavigation';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { CartToast } from '@/components/cart/CartToast';
 import { LuxuryPreloader } from '@/components/layout/LuxuryPreloader';
+import { AuthModal } from '@/components/auth/AuthModal';
 import { Banner, Category } from '@/types';
 
 interface StorefrontShellProps {
@@ -40,6 +41,7 @@ export const StorefrontShell: React.FC<StorefrontShellProps> = ({
       <MobileNavigation />
       <CartDrawer />
       <CartToast />
+      <AuthModal />
     </>
   );
 };

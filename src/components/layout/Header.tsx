@@ -12,6 +12,7 @@ import { useLocale } from '@/context/LocaleContext';
 import { useCustomerAuth } from '@/context/CustomerAuthContext';
 import { Category } from '@/types';
 import { formatPrice } from '@/utils/formatters';
+import { SignOutConfirmModal } from '@/components/auth/SignOutConfirmModal';
 
 interface SearchProduct {
   id: string;
@@ -119,11 +120,12 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
   const { itemCount, openDrawer } = useCart();
   const { wishlistCount } = useWishlist();
   const { locale, t } = useLocale();
-  const { customer, logout } = useCustomerAuth();
+  const { customer, logout, openAuthModal } = useCustomerAuth();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchProduct[]>([]);
@@ -251,18 +253,27 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
               onMouseEnter={() => setAccountMenuOpen(true)}
               onMouseLeave={() => setAccountMenuOpen(false)}
             >
-              <Link
-                href="/account"
-                aria-label={t('nav.account')}
-                className="flex items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400"
-              >
-                <div className="relative flex items-center">
-                  <User size={20} strokeWidth={1.5} />
-                  {customer && (
+              {customer ? (
+                <Link
+                  href="/account"
+                  aria-label={t('nav.account')}
+                  className="flex items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400"
+                >
+                  <div className="relative flex items-center">
+                    <User size={20} strokeWidth={1.5} />
                     <span className="absolute -top-[1px] -right-[1px] h-[7px] w-[7px] rounded-full bg-gold-400 ring-2 ring-[#140C09]" />
-                  )}
-                </div>
-              </Link>
+                  </div>
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => openAuthModal('signin')}
+                  aria-label={t('nav.account')}
+                  className="flex items-center p-[0.4rem] text-[#E3D9D2] transition-colors duration-200 hover:text-gold-400"
+                >
+                  <User size={20} strokeWidth={1.5} />
+                </button>
+              )}
 
               {/* Luxury Account Flyout Dropdown */}
               {customer && accountMenuOpen && (
@@ -293,11 +304,11 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
                         type="button"
                         onClick={() => {
                           setAccountMenuOpen(false);
-                          logout();
+                          setShowLogoutConfirm(true);
                         }}
                         className="flex w-full items-center justify-between rounded-[2px] px-2 py-1.5 text-[0.75rem] text-[#FF8E78] hover:bg-white/[0.04]"
                       >
-                        <span>Sign Out</span>
+                        <span>{locale === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
                         <LogOut size={12} />
                       </button>
                     </div>
@@ -529,23 +540,38 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
 
             <div className="border-t border-white/[0.08] pt-6">
               <div className="flex flex-col gap-4">
-                <Link
-                  href="/account"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-[0.85rem] text-[#D8C7B2] transition-colors hover:text-gold-400"
-                >
-                  <div className="flex items-center gap-3">
-                    <User size={18} className="text-gold-400" />
-                    <span>
-                      {customer ? `Account (${customer.name.split(' ')[0]})` : 'Sign In / Register'}
-                    </span>
-                  </div>
-                  {customer && (
+                {customer ? (
+                  <Link
+                    href="/account"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between text-[0.85rem] text-[#D8C7B2] transition-colors hover:text-gold-400"
+                  >
+                    <div className="flex items-center gap-3">
+                      <User size={18} className="text-gold-400" />
+                      <span>{`Account (${customer.name.split(' ')[0]})`}</span>
+                    </div>
                     <span className="rounded bg-gold-400/10 px-1.5 py-0.5 text-[0.6rem] uppercase tracking-wider text-gold-400">
                       Privé
                     </span>
-                  )}
-                </Link>
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      openAuthModal('signin');
+                    }}
+                    className="flex w-full items-center justify-between text-left text-[0.85rem] text-[#D8C7B2] transition-colors hover:text-gold-400"
+                  >
+                    <div className="flex items-center gap-3">
+                      <User size={18} className="text-gold-400" />
+                      <span>{locale === 'ar' ? 'تسجيل الدخول / إنشاء حساب' : 'Sign In / Register'}</span>
+                    </div>
+                    <span className="rounded bg-gold-400/10 px-1.5 py-0.5 text-[0.6rem] uppercase tracking-wider text-gold-400">
+                      Privé
+                    </span>
+                  </button>
+                )}
 
                 <Link
                   href="/wishlist"
@@ -563,12 +589,12 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
                     type="button"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      logout();
+                      setShowLogoutConfirm(true);
                     }}
                     className="flex items-center gap-3 border-t border-white/[0.04] pt-2 text-left text-[0.82rem] text-[#FF8E78] hover:underline"
                   >
                     <LogOut size={16} />
-                    <span>Sign Out</span>
+                    <span>{locale === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
                   </button>
                 )}
               </div>
@@ -576,6 +602,14 @@ export const Header: React.FC<HeaderProps> = ({ categories = [] }) => {
           </div>
         </div>
       )}
+
+      {/* Customer Sign Out Confirmation Modal */}
+      <SignOutConfirmModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={logout}
+        customerName={customer?.name}
+      />
     </>
   );
 };

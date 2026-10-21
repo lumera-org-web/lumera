@@ -29,6 +29,10 @@ interface CustomerAuthContextType {
     shipping_address?: Partial<SaudiAddress>;
   }) => Promise<{ success: boolean; error?: string }>;
   refreshCustomer: () => Promise<void>;
+  isAuthModalOpen: boolean;
+  authModalMode: 'signin' | 'signup' | 'forgot_request';
+  openAuthModal: (mode?: 'signin' | 'signup' | 'forgot_request') => void;
+  closeAuthModal: () => void;
 }
 
 const CustomerAuthContext = createContext<CustomerAuthContextType | undefined>(undefined);
@@ -36,6 +40,17 @@ const CustomerAuthContext = createContext<CustomerAuthContextType | undefined>(u
 export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [customer, setCustomer] = useState<CustomerSafeProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | 'forgot_request'>('signin');
+
+  const openAuthModal = useCallback((mode: 'signin' | 'signup' | 'forgot_request' = 'signin') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  }, []);
+
+  const closeAuthModal = useCallback(() => {
+    setIsAuthModalOpen(false);
+  }, []);
 
   const fetchCurrentCustomer = useCallback(async () => {
     try {
@@ -196,6 +211,10 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         resetPassword,
         updateProfile,
         refreshCustomer: fetchCurrentCustomer,
+        isAuthModalOpen,
+        authModalMode,
+        openAuthModal,
+        closeAuthModal,
       }}
     >
       {children}

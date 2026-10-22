@@ -526,6 +526,23 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {/* Legal consent notice for Moyasar and Saudi SAMA compliance */}
+            <div className="text-[0.725rem] text-[#9E8E85] leading-relaxed">
+              By placing this order, you agree to LUMÉRA&apos;s{' '}
+              <Link href="/terms" target="_blank" className="text-gold-400 underline underline-offset-2 hover:text-gold-300">
+                Terms of Sale
+              </Link>
+              ,{' '}
+              <Link href="/privacy" target="_blank" className="text-gold-400 underline underline-offset-2 hover:text-gold-300">
+                Privacy Policy
+              </Link>
+              , and{' '}
+              <Link href="/refund" target="_blank" className="text-gold-400 underline underline-offset-2 hover:text-gold-300">
+                Return &amp; Refund Policy
+              </Link>
+              . Transactions are encrypted &amp; processed via Moyasar (SAMA licensed).
+            </div>
+
             {/* Place Order CTA Button */}
             <button
               type="submit"

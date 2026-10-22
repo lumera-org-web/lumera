@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
-import { ShieldCheck, Truck, RotateCcw, ArrowRight, Check, ChevronDown } from 'lucide-react';
+import { ShieldCheck, Truck, RotateCcw, ArrowRight, Check, ChevronDown, MapPin } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useLocale } from '@/context/LocaleContext';
 
@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     collections: false,
     care: false,
-    maison: false,
+    policies: false,
   });
 
   const toggleSection = (key: string) => {
@@ -112,8 +112,17 @@ export const Footer: React.FC = () => {
                 ? 'قمة الفخامة في العطور العربية والعالمية ومستحضرات التجميل الراقية. مصممة لأناقة لا تزول وطقوس لا تُنسى في المملكة العربية السعودية.'
                 : 'The pinnacle of luxury Arabian and international beauty. Curated for timeless elegance and unforgettable rituals across Saudi Arabia.'}
             </p>
-            <div className="mt-5 text-[0.725rem] text-gold-400">
-              <span>{locale === 'ar' ? '📍 جدة، المملكة العربية السعودية' : '📍 Jeddah, Kingdom of Saudi Arabia'}</span>
+            <div className="mt-4 flex flex-col gap-1 text-[0.72rem] text-[#A89A90]">
+              <div className="flex items-center gap-1.5 text-gold-400 font-medium">
+                <MapPin size={13} className="shrink-0" />
+                <span>{locale === 'ar' ? 'العنوان الوطني: JDSA4605' : 'National Address: JDSA4605'}</span>
+              </div>
+              <div className="text-[0.68rem] text-[#8E7D74]">
+                {locale === 'ar' ? 'حي الصفا، جدة · إثبات رقم: 1095366853' : 'As Safa Dist., Jeddah · Proof No: 1095366853'}
+              </div>
+              <div className="text-[0.66rem] text-[#7A6A62]">
+                {locale === 'ar' ? 'معفى من ضريبة القيمة المضافة لعدم بلوغ الحد الإلزامي (ZATCA)' : 'VAT-exempt under statutory small enterprise threshold (ZATCA)'}
+              </div>
             </div>
           </div>
 
@@ -218,6 +227,14 @@ export const Footer: React.FC = () => {
                 <ul className="m-0 flex list-none flex-col gap-3 p-0">
                   <li>
                     <Link
+                      href="/contact"
+                      className="text-[0.8rem] text-[#D8C7B2] transition-colors duration-200 hover:text-gold-300"
+                    >
+                      {locale === 'ar' ? 'تواصل معنا والكونسيرج' : 'Customer Concierge'}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       href="/account"
                       className="text-[0.8rem] text-[#D8C7B2] transition-colors duration-200 hover:text-gold-300"
                     >
@@ -240,40 +257,32 @@ export const Footer: React.FC = () => {
                       {locale === 'ar' ? 'المفضلة الخاصة' : 'Private Wishlist'}
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      href="/shop"
-                      className="text-[0.8rem] text-[#D8C7B2] transition-colors duration-200 hover:text-gold-300"
-                    >
-                      {locale === 'ar' ? 'توصيل مجاني للطلبات' : 'Complimentary Saudi Delivery'}
-                    </Link>
-                  </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Accordion 3: Maison LUMÉRA */}
+          {/* Accordion 3: Policies & Legal (Crucial for Moyasar & Ministry of Commerce compliance) */}
           <div className="border-b border-white/[0.08] min-[900px]:border-b-0">
             <button
               type="button"
               className="flex w-full items-center justify-between bg-transparent py-[1.1rem] text-left rtl:text-right min-[900px]:pointer-events-none min-[900px]:cursor-default min-[900px]:py-0 min-[900px]:pb-5"
-              onClick={() => toggleSection('maison')}
-              aria-expanded={!!openSections.maison}
+              onClick={() => toggleSection('policies')}
+              aria-expanded={!!openSections.policies}
             >
               <h5 className="m-0 text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-gold-400">
-                {locale === 'ar' ? 'دار لوميرا' : 'Maison LUMÉRA'}
+                {locale === 'ar' ? 'الشروط والسياسات' : 'Policies & Legal'}
               </h5>
               <ChevronDown
                 size={16}
                 className={`text-gold-400 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] min-[900px]:hidden ${
-                  openSections.maison ? 'rotate-180' : ''
+                  openSections.policies ? 'rotate-180' : ''
                 }`}
               />
             </button>
             <div
               className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] min-[900px]:!block min-[900px]:!overflow-visible min-[900px]:!opacity-100 ${
-                openSections.maison
+                openSections.policies
                   ? 'grid-rows-[1fr] opacity-100'
                   : 'grid-rows-[0fr] overflow-hidden opacity-0'
               }`}
@@ -282,34 +291,42 @@ export const Footer: React.FC = () => {
                 <ul className="m-0 flex list-none flex-col gap-3 p-0">
                   <li>
                     <Link
-                      href="/shop"
+                      href="/terms"
                       className="text-[0.8rem] text-[#D8C7B2] transition-colors duration-200 hover:text-gold-300"
                     >
-                      {locale === 'ar' ? 'قصتنا وتراثنا' : 'Our Saudi Heritage'}
+                      {locale === 'ar' ? 'الشروط والأحكام وشروط الدفع' : 'Terms & Conditions'}
                     </Link>
                   </li>
                   <li>
                     <Link
-                      href="/shop"
+                      href="/privacy"
                       className="text-[0.8rem] text-[#D8C7B2] transition-colors duration-200 hover:text-gold-300"
                     >
-                      {locale === 'ar' ? 'بوتيك جدة الرئيسي' : 'Jeddah Flagship Boutique'}
+                      {locale === 'ar' ? 'سياسة الخصوصية (PDPL)' : 'Privacy Policy'}
                     </Link>
                   </li>
                   <li>
                     <Link
-                      href="/shop"
+                      href="/refund"
                       className="text-[0.8rem] text-[#D8C7B2] transition-colors duration-200 hover:text-gold-300"
                     >
-                      {locale === 'ar' ? 'استشارات العطور الخاصة' : 'Bespoke Fragrance Consultation'}
+                      {locale === 'ar' ? 'الاسترجاع والاستبدال' : 'Returns & Refunds'}
                     </Link>
                   </li>
                   <li>
                     <Link
-                      href="/shop"
+                      href="/shipping"
                       className="text-[0.8rem] text-[#D8C7B2] transition-colors duration-200 hover:text-gold-300"
                     >
-                      {locale === 'ar' ? 'ضمان الأصالة والجودة' : 'Authenticity Guarantee'}
+                      {locale === 'ar' ? 'سياسة الشحن والتوصيل' : 'Shipping & Delivery'}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/contact"
+                      className="text-[0.8rem] text-[#D8C7B2] transition-colors duration-200 hover:text-gold-300"
+                    >
+                      {locale === 'ar' ? 'العنوان الوطني وتواصل معنا' : 'Merchant Identity & Address'}
                     </Link>
                   </li>
                 </ul>
@@ -379,28 +396,35 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Saudi Payment Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#D8C7B2]">
-              mada
-            </span>
-            <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#D8C7B2]">
-              Apple Pay
-            </span>
-            <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#D8C7B2]">
-              Visa
-            </span>
-            <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#D8C7B2]">
-              Mastercard
-            </span>
-            <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#DEC197]">
-              tabby
-            </span>
-            <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#DEC197]">
-              tamara
-            </span>
-            <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#A88143]">
-              stc pay
-            </span>
+          <div className="flex flex-col items-center gap-2 md:items-end rtl:md:items-start">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#D8C7B2]">
+                mada
+              </span>
+              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#D8C7B2]">
+                Apple Pay
+              </span>
+              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#D8C7B2]">
+                Visa
+              </span>
+              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#D8C7B2]">
+                Mastercard
+              </span>
+              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#DEC197]">
+                tabby
+              </span>
+              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#DEC197]">
+                tamara
+              </span>
+              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#A88143]">
+                stc pay
+              </span>
+            </div>
+            <div className="text-[0.65rem] text-[#8E7D74]">
+              {locale === 'ar'
+                ? 'مدفوعات إلكترونية آمنة بمعايير PCI-DSS عبر بوابة ميسر (Moyasar) المرخصة من البنك المركزي السعودي SAMA'
+                : 'Secure PCI-DSS encrypted payments powered by Moyasar (Licensed by SAMA)'}
+            </div>
           </div>
         </div>
       </div>

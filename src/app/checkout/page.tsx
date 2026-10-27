@@ -85,6 +85,12 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to place order');
       }
 
+      if (data.paymentUrl) {
+        // Redirect to Moyasar secure 3D-Secure payment screen
+        window.location.href = data.paymentUrl;
+        return;
+      }
+
       clearCart();
       router.push(`/checkout/confirmation?order=${data.orderNumber}&total=${data.total}`);
     } catch (err: any) {

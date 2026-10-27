@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { sendOrderConfirmation, sendAdminOrderNotification } from '@/services/brevo';
+import { createMoyasarInvoice } from '@/services/moyasar';
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,12 +18,11 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient();
 
-    // Server-side price calculation to ensure security (Rule 65)
+    // Server-side price calculation to ensure security
     let calculatedSubtotal = 0;
     const verifiedItems = [];
 
     for (const item of items) {
-      // Lookup real price from Supabase
       const { data: dbProduct } = await supabase
         .from('products')
         .select('id, name, price, stock')
@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
     const finalTotal = calculatedSubtotal + shippingFee - discount;
 
     const orderNumber = `LUM-${Date.now().toString().slice(-6)}`;
+    const isOnlinePayment = paymentMethod !== 'cod';
 
     // Check if customer is authenticated
     let customerUserId: string | null = null;
@@ -82,8 +83,8 @@ export async function POST(req: NextRequest) {
         total: finalTotal,
         currency: 'SAR',
         payment_method: paymentMethod || 'card',
-        payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
-        order_status: 'processing',
+        payment_status: 'pending',
+        order_status: isOnlinePayment ? 'pending_payment' : 'processing',
       })
       .select('id')
       .single();
@@ -102,26 +103,62 @@ export async function POST(req: NextRequest) {
       await supabase.from('order_items').insert(itemsToInsert);
     }
 
-    // Trigger Brevo transactional emails: User Confirmation + Automatic Admin Notification
-    try {
-      const emailPayload = {
-        order_number: orderNumber,
-        customer_name: shippingAddress.fullName,
-        customer_email: contact.email,
-        customer_phone: contact.phone,
-        shipping_address: shippingAddress,
-        payment_method: paymentMethod || 'card',
-        payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
-        total: finalTotal,
-        items: verifiedItems,
-      };
+    // Handle Online Payment via Moyasar
+    let paymentUrl: string | null = null;
+    if (isOnlinePayment) {
+      try {
+        const origin =
+          req.headers.get('origin') ||
+          req.nextUrl.origin ||
+          process.env.NEXT_PUBLIC_SITE_URL ||
+          'http://localhost:3000';
+        const callbackUrl = `${origin}/checkout/confirmation?order=${orderNumber}&total=${finalTotal}`;
 
-      await Promise.allSettled([
-        sendOrderConfirmation(emailPayload),
-        sendAdminOrderNotification(emailPayload),
-      ]);
-    } catch (emailErr) {
-      console.warn('[Brevo order confirmation email error]', emailErr);
+        const invoice = await createMoyasarInvoice({
+          amountInSAR: finalTotal,
+          orderNumber,
+          customerName: shippingAddress.fullName,
+          customerEmail: contact.email,
+          callbackUrl,
+          metadata: {
+            order_id: orderData.id,
+            payment_method: paymentMethod,
+          },
+        });
+
+        paymentUrl = invoice.url;
+      } catch (moyasarErr: any) {
+        console.error('[Moyasar Invoice Error]', moyasarErr);
+        return NextResponse.json(
+          {
+            error:
+              'Failed to initiate secure payment gateway with Moyasar. Please try again or select Cash on Delivery.',
+          },
+          { status: 502 }
+        );
+      }
+    } else {
+      // Cash on Delivery: Trigger Brevo confirmation emails immediately
+      try {
+        const emailPayload = {
+          order_number: orderNumber,
+          customer_name: shippingAddress.fullName,
+          customer_email: contact.email,
+          customer_phone: contact.phone,
+          shipping_address: shippingAddress,
+          payment_method: 'cod',
+          payment_status: 'pending',
+          total: finalTotal,
+          items: verifiedItems,
+        };
+
+        await Promise.allSettled([
+          sendOrderConfirmation(emailPayload),
+          sendAdminOrderNotification(emailPayload),
+        ]);
+      } catch (emailErr) {
+        console.warn('[Brevo order confirmation email error]', emailErr);
+      }
     }
 
     return NextResponse.json({
@@ -129,6 +166,7 @@ export async function POST(req: NextRequest) {
       orderNumber,
       orderId: orderData?.id,
       total: finalTotal,
+      paymentUrl,
     });
   } catch (error: any) {
     console.error('[Checkout API Exception]', error);

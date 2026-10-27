@@ -49,19 +49,23 @@ const DATA_DIR = path.join(process.cwd(), 'data');
 const CUSTOMERS_FILE = path.join(DATA_DIR, 'customers.json');
 const OTPS_FILE = path.join(DATA_DIR, 'customer_otps.json');
 
-// Ensure local persistence data dir exists
+// Ensure local persistence data dir exists (safely catch read-only serverless environments)
 function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  } catch (err) {
+    // Read-only serverless environment (e.g. Vercel)
   }
 }
 
 function readLocalCustomers(): Record<string, CustomerUser> {
-  ensureDataDir();
-  if (!fs.existsSync(CUSTOMERS_FILE)) {
-    return {};
-  }
   try {
+    ensureDataDir();
+    if (!fs.existsSync(CUSTOMERS_FILE)) {
+      return {};
+    }
     const raw = fs.readFileSync(CUSTOMERS_FILE, 'utf-8');
     return JSON.parse(raw);
   } catch {
@@ -70,16 +74,20 @@ function readLocalCustomers(): Record<string, CustomerUser> {
 }
 
 function writeLocalCustomers(customers: Record<string, CustomerUser>) {
-  ensureDataDir();
-  fs.writeFileSync(CUSTOMERS_FILE, JSON.stringify(customers, null, 2), 'utf-8');
+  try {
+    ensureDataDir();
+    fs.writeFileSync(CUSTOMERS_FILE, JSON.stringify(customers, null, 2), 'utf-8');
+  } catch (err) {
+    console.warn('[Serverless] Local file write skipped (read-only environment)');
+  }
 }
 
 function readLocalOtps(): Record<string, StoredOtp> {
-  ensureDataDir();
-  if (!fs.existsSync(OTPS_FILE)) {
-    return {};
-  }
   try {
+    ensureDataDir();
+    if (!fs.existsSync(OTPS_FILE)) {
+      return {};
+    }
     const raw = fs.readFileSync(OTPS_FILE, 'utf-8');
     return JSON.parse(raw);
   } catch {
@@ -88,8 +96,12 @@ function readLocalOtps(): Record<string, StoredOtp> {
 }
 
 function writeLocalOtps(otps: Record<string, StoredOtp>) {
-  ensureDataDir();
-  fs.writeFileSync(OTPS_FILE, JSON.stringify(otps, null, 2), 'utf-8');
+  try {
+    ensureDataDir();
+    fs.writeFileSync(OTPS_FILE, JSON.stringify(otps, null, 2), 'utf-8');
+  } catch (err) {
+    console.warn('[Serverless] Local OTP file write skipped (read-only environment)');
+  }
 }
 
 // ------------------------------------------------------------

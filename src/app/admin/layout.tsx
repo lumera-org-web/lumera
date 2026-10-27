@@ -18,12 +18,19 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const auth = sessionStorage.getItem('lumera_admin_auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
+    fetch('/api/admin/auth')
+      .then((res) => {
+        if (res.ok) {
+          sessionStorage.setItem('lumera_admin_auth', 'true');
+          setIsAuthenticated(true);
+        } else {
+          sessionStorage.removeItem('lumera_admin_auth');
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+      });
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -60,7 +67,10 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
       cancelText: 'Stay Logged In',
       variant: 'danger',
       iconType: 'logout',
-      onConfirm: () => {
+      onConfirm: async () => {
+        try {
+          await fetch('/api/admin/auth', { method: 'DELETE' });
+        } catch {}
         sessionStorage.removeItem('lumera_admin_auth');
         setIsAuthenticated(false);
       },

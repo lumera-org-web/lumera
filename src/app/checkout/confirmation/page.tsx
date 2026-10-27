@@ -44,6 +44,27 @@ export default async function OrderConfirmationPage({ searchParams }: Confirmati
             .select('*, order_items(*)')
             .single();
 
+          // Decrement inventory stock on verified payment
+          if (updatedOrder?.order_items && Array.isArray(updatedOrder.order_items)) {
+            for (const itm of updatedOrder.order_items) {
+              try {
+                const { data: p } = await supabase
+                  .from('products')
+                  .select('stock')
+                  .eq('id', itm.product_id)
+                  .single();
+                if (p && typeof p.stock === 'number') {
+                  await supabase
+                    .from('products')
+                    .update({ stock: Math.max(0, p.stock - (itm.quantity || 1)) })
+                    .eq('id', itm.product_id);
+                }
+              } catch (stkErr) {
+                console.warn('[Confirmation stock decrement error]', stkErr);
+              }
+            }
+          }
+
           // Send confirmation emails if not sent yet
           if (updatedOrder) {
             const emailPayload = {

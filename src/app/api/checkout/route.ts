@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient();
 
-    // Server-side price calculation to ensure security
+    // Server-side price calculation and stock validation
     let calculatedSubtotal = 0;
     const verifiedItems = [];
 
@@ -29,14 +29,32 @@ export async function POST(req: NextRequest) {
         .eq('id', item.productId)
         .single();
 
-      const unitPrice = dbProduct ? Number(dbProduct.price) : Number(item.price);
+      if (!dbProduct) {
+        return NextResponse.json(
+          { error: `Product "${item.name || item.productId}" is unavailable or no longer in catalog.` },
+          { status: 400 }
+        );
+      }
+
       const quantity = Math.max(1, Number(item.quantity) || 1);
+      const stock = typeof dbProduct.stock === 'number' ? dbProduct.stock : 999;
+
+      if (stock < quantity) {
+        return NextResponse.json(
+          {
+            error: `Insufficient inventory for "${dbProduct.name}". Only ${stock} units remaining.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      const unitPrice = Number(dbProduct.price);
       const totalItemPrice = unitPrice * quantity;
 
       calculatedSubtotal += totalItemPrice;
       verifiedItems.push({
         product_id: item.productId,
-        product_name: dbProduct?.name || item.name,
+        product_name: dbProduct.name,
         product_image: item.imageUrl || null,
         variant_title: item.size || null,
         unit_price: unitPrice,
@@ -138,7 +156,27 @@ export async function POST(req: NextRequest) {
         );
       }
     } else {
-      // Cash on Delivery: Trigger Brevo confirmation emails immediately
+      // Cash on Delivery: Decrement inventory immediately
+      for (const vi of verifiedItems) {
+        try {
+          const { data: currentProd } = await supabase
+            .from('products')
+            .select('stock')
+            .eq('id', vi.product_id)
+            .single();
+
+          if (currentProd && typeof currentProd.stock === 'number') {
+            await supabase
+              .from('products')
+              .update({ stock: Math.max(0, currentProd.stock - vi.quantity) })
+              .eq('id', vi.product_id);
+          }
+        } catch (stockErr) {
+          console.warn('[Stock decrement error on COD]', stockErr);
+        }
+      }
+
+      // Trigger Brevo confirmation emails immediately
       try {
         const emailPayload = {
           order_number: orderNumber,

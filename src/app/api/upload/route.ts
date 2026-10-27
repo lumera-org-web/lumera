@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { Readable } from 'stream';
 
+import { isAdminAuthorized } from '@/utils/adminAuth';
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'vyrukryf',
   api_key: process.env.CLOUDINARY_API_KEY || '197112263564374',
@@ -11,12 +13,21 @@ cloudinary.config({
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isAdminAuthorized(req)) {
+      return NextResponse.json({ error: 'Unauthorized: Admin privileges required for media upload' }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
     const folder = (formData.get('folder') as string) || 'lumera_products';
 
     if (!file) {
       return NextResponse.json({ error: 'No image file provided' }, { status: 400 });
+    }
+
+    // MIME type security check
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json({ error: 'Invalid file format: Only image files are permitted' }, { status: 400 });
     }
 
     // Stream directly into Cloudinary without allocating large memory ArrayBuffers

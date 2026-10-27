@@ -6,9 +6,14 @@ import {
   sendOrderConfirmation,
   sendAdminOrderNotification,
 } from '@/services/brevo';
+import { isAdminAuthorized } from '@/utils/adminAuth';
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isAdminAuthorized(req)) {
+      return NextResponse.json({ error: 'Unauthorized: Admin authentication required to trigger notifications' }, { status: 401 });
+    }
+
     const body = await req.json();
     const {
       type,

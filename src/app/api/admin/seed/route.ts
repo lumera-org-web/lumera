@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
+import { isAdminAuthorized } from '@/utils/adminAuth';
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isAdminAuthorized(req)) {
+      return NextResponse.json({ error: 'Unauthorized: Administrative credentials required' }, { status: 401 });
+    }
+
     const supabase = await createClient();
 
     // 1. BRANDS

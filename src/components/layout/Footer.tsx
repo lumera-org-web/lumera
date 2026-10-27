@@ -411,13 +411,7 @@ export const Footer: React.FC = () => {
                 Mastercard
               </span>
               <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#DEC197]">
-                tabby
-              </span>
-              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#DEC197]">
-                tamara
-              </span>
-              <span className="rounded-[2px] border border-white/[0.08] bg-[#160E0B] px-[0.55rem] py-1 text-[0.625rem] font-semibold text-[#A88143]">
-                stc pay
+                COD
               </span>
             </div>
             <div className="text-[0.65rem] text-[#8E7D74]">

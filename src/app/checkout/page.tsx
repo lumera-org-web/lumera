@@ -45,7 +45,7 @@ export default function CheckoutPage() {
   const [city, setCity] = useState('Jeddah');
   const [postalCode, setPostalCode] = useState('');
   const [saveAddress, setSaveAddress] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple_pay' | 'tabby' | 'tamara' | 'stc_pay' | 'cod'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple_pay' | 'cod'>('card');
 
   useEffect(() => {
     if (customer) {
@@ -432,81 +432,6 @@ export default function CheckoutPage() {
                   </span>
                 </label>
 
-                {/* Tabby */}
-                <label
-                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
-                    paymentMethod === 'tabby'
-                      ? 'border-gold-400 bg-gold-400/[0.08]'
-                      : 'border-white/[0.08]'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === 'tabby'}
-                      onChange={() => setPaymentMethod('tabby')}
-                      className="accent-[#DEC197]"
-                    />
-                    <span className="text-[0.85rem] font-medium text-white">
-                      Tabby (4 interest-free payments)
-                    </span>
-                  </div>
-                  <span className="rounded-[2px] bg-[#3EED8B] px-2 py-[0.15rem] text-[0.68rem] font-bold text-black">
-                    tabby
-                  </span>
-                </label>
-
-                {/* Tamara */}
-                <label
-                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
-                    paymentMethod === 'tamara'
-                      ? 'border-gold-400 bg-gold-400/[0.08]'
-                      : 'border-white/[0.08]'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === 'tamara'}
-                      onChange={() => setPaymentMethod('tamara')}
-                      className="accent-[#DEC197]"
-                    />
-                    <span className="text-[0.85rem] font-medium text-white">
-                      Tamara (Split or pay later)
-                    </span>
-                  </div>
-                  <span className="rounded-[2px] bg-[#FFAE80] px-2 py-[0.15rem] text-[0.68rem] font-bold text-black">
-                    tamara
-                  </span>
-                </label>
-
-                {/* STC Pay */}
-                <label
-                  className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
-                    paymentMethod === 'stc_pay'
-                      ? 'border-gold-400 bg-gold-400/[0.08]'
-                      : 'border-white/[0.08]'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === 'stc_pay'}
-                      onChange={() => setPaymentMethod('stc_pay')}
-                      className="accent-[#DEC197]"
-                    />
-                    <span className="text-[0.85rem] font-medium text-white">
-                      STC Pay
-                    </span>
-                  </div>
-                  <span className="rounded-[2px] bg-[#4F008C] px-2 py-[0.15rem] text-[0.68rem] font-bold text-white">
-                    stc pay
-                  </span>
-                </label>
-
                 {/* Cash on Delivery */}
                 <label
                   className={`flex cursor-pointer items-center justify-between rounded-[2px] border bg-[#130A08] p-[0.9rem_1rem] transition-all max-[768px]:p-[0.75rem_0.85rem] ${
@@ -527,7 +452,9 @@ export default function CheckoutPage() {
                       Cash on Delivery
                     </span>
                   </div>
-                  <span className="text-[0.7rem] text-[#9E8E85]">COD</span>
+                  <span className="rounded-[2px] bg-[#241611] px-[0.55rem] py-[0.15rem] text-[0.68rem] font-semibold text-[#DEC197]">
+                    COD
+                  </span>
                 </label>
               </div>
             </div>

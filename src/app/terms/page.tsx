@@ -75,8 +75,6 @@ export default function TermsPage() {
                   <li><strong>بطاقات مدى (Mada):</strong> بطاقات الصراف الآلي للبنوك السعودية.</li>
                   <li><strong>أبل باي (Apple Pay):</strong> السداد السريع والآمن بنقرة واحدة عبر أجهزة أبل.</li>
                   <li><strong>البطاقات الائتمانية:</strong> فيزا (Visa) وماستركارد (Mastercard).</li>
-                  <li><strong>تقسيط المشتريات بدون فوائد:</strong> عبر تابي (Tabby) وتمارا (Tamara) للمواطنين والمقيمين المؤهلين.</li>
-                  <li><strong>إس تي سي باي (STC Pay):</strong> المحفظة الرقمية المعتمدة.</li>
                   <li><strong>الدفع عند الاستلام (COD):</strong> متاح داخل مدينة جدة والمدن الرئيسية وفق رسوم خدمة محددة.</li>
                 </ul>
                 <p>
@@ -153,8 +151,6 @@ export default function TermsPage() {
                   <li><strong>Mada Debit Cards:</strong> Standard bank cards issued in the Kingdom of Saudi Arabia.</li>
                   <li><strong>Apple Pay:</strong> Instant, biometric contactless checkout for Apple device users.</li>
                   <li><strong>Credit Cards:</strong> Visa and Mastercard with 3D-Secure authentication.</li>
-                  <li><strong>Buy Now, Pay Later:</strong> Interest-free split installments via Tabby and Tamara for qualified residents.</li>
-                  <li><strong>STC Pay:</strong> Certified Saudi digital wallet payments.</li>
                   <li><strong>Cash on Delivery (COD):</strong> Available for Jeddah and major Saudi metropolitan areas.</li>
                 </ul>
                 <p>

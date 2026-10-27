@@ -92,7 +92,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen items-center justify-center bg-[#0D0705] p-8">
         <div className="w-full max-w-[440px] rounded border border-gold-400/30 bg-[#140C09] p-10 text-center shadow-[0_20px_40px_rgba(0,0,0,0.7)] max-[768px]:p-6">
           <div className="mb-6 flex justify-center">
-            <Logo width={170} height={68} href="#" />
+            <Logo width={170} height={68} href="/admin" />
           </div>
 
           <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-gold-400/10 text-gold-400">

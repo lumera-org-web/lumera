@@ -86,10 +86,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               No Products Found
             </h3>
             <p className="mx-auto mb-8 max-w-[420px] text-[0.85rem] text-[#9E8E85]">
-              Add real products to your catalog through the LUMÉRA Admin / CMS portal.
+              No products match your current filter selection. Discover our curated collections or reset your search.
             </p>
-            <Link href="/admin/products" className="btn-lumera-outline">
-              Go to Admin Portal
+            <Link href="/shop" className="btn-lumera-outline">
+              Explore All Products
             </Link>
           </div>
         ) : (

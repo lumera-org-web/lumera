@@ -87,13 +87,13 @@ export default async function CategoryPage({
         {products.length === 0 ? (
           <div className="rounded-[3px] border border-white/[0.05] bg-[#190F0C] px-8 py-20 text-center">
             <h3 className="mb-3 font-serif text-[1.5rem] text-gold-400">
-              No Products in this Category Yet
+              No Products Found
             </h3>
             <p className="mx-auto mb-8 max-w-[420px] text-[0.85rem] text-[#9E8E85]">
-              Real products added via the Admin / CMS portal with category &quot;{categoryName}&quot; will automatically populate this page.
+              There are currently no items matching your criteria in &quot;{categoryName}&quot;. Discover our full catalog or check back soon.
             </p>
-            <Link href="/admin/products" className="btn-lumera-outline">
-              Add Products in Admin
+            <Link href="/shop" className="btn-lumera-outline">
+              Explore All Collections
             </Link>
           </div>
         ) : (
